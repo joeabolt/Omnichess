@@ -4,10 +4,6 @@ class Vector
 	constructor(x, y)
 	{
 		this.components = [x, y];
-		this.maxRepetitions = [1, 1];
-		this.jump = [false, false];
-		this.hop = [false, false];
-		this.promote = [false, false];
 	}
 	
 	static create(str)
@@ -17,6 +13,28 @@ class Vector
 		if (matches <= 0)
 		{
 			// improperly formatted vector notation
+			throw new Error("Improperly formatted vector: " + str);
 		}
+		
+		/* Build x component */
+		Component xComp = new Component(0, 1, false, false, false);
+		
+		// Get x length
+		var length = Number(str.match(/\((-?\d+)/g)[0]);
+		xComp.length = length;
+		
+		// Check for jump on first component or end
+		if (str.match(/(\([^j,]+j[\d{}+hpmd]*, -?\d+[\d{}hpmd]*\))|(\)[\d{}+hpmd]*j[\d{}+hpmd]*)/g).length > 0)
+		{
+			xComp.jump = true;
+		}
+		
+		// Check for hop on first component or end
+		if (str.match(/(\([^h,]+h[\d{}+jpmd]*, -?\d+[\d{}jpmd]*\))|(\)[\d{}+jpmd]*h[\d{}+jpmd]*)/g).length > 0)
+		{
+			xComp.hop = true;
+		}
+		
+		/* Build y component */
 	}
 }
