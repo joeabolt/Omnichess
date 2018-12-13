@@ -10,7 +10,9 @@ class Vector
 	 *  Creates one or more Vectors based on the string passed in.
 	 *  Returns an array of Vectors containing all Vectors described in the string.
 	 *
-	 *  If an invalidly formatted string is passed in, an error is thrown.
+	 *  If an invalidly formatted string is passed in, an error is logged to the
+	 *  console, but execution continues (and all validly formatted Vectors are
+	 *  output normally).
 	 */
 	static Create(str)
 	{
@@ -20,51 +22,45 @@ class Vector
 			var comp = new Component(0, 1, false, false, false);
 			comp.length = Number(compStr.match(/(-?\d+)/g)[0]);
 			
-			// Check for jump on first component or end
+			/* Check for jump on first component or end */
 			if (compStr.includes("j") || globalStr.includes("j"))
 			{
 				comp.jump = true;
 			}
 			
-			// Check for hop on first component or end
+			/* Check for hop on first component or end */
 			if (compStr.includes("h") || globalStr.includes("h"))
 			{
 				comp.hop = true;
 			}
 			
-			// Check for promote on first component or end
+			/* Check for promote on first component or end */
 			if (compStr.includes("p") || globalStr.includes("p"))
 			{
 				comp.promote = true;
 			}
 			
-			// Check for finite repetition on end
+			/* Check for finite repetition on end */
 			var repetition = globalStr.match(/{(\d+)}/g);
 			if (repetition)
 			{
 				comp.maxRep = Number(repetition[0].slice(2, -1));
 			}
 			
-			// Check for infinite repetition on end
-			if(globalStr.includes("+"))
+			/* Check for infinite repetition */
+			if(compStr.includes("+") || globalStr.includes("+"))
 			{
-				comp.maxRep = 100; // arbitrarily large
+				comp.maxRep = 100; /* arbitrarily large */
 			}
 	
-			// Check for finite specific repeition
+			/* Check for finite specific repeition */
 			repetition = compStr.match(/{(\d+)}/);
 			if (repetition)
 			{
 				comp.maxRep = Number(repetition[1]);
 			}
 			
-			// Check for infinite specific repetition
-			if (compStr.includes("+"))
-			{
-				comp.maxRep = 100; // arbitrarily large
-			}
-			
-			// Check for directional or zero length
+			/* Check for directional or zero length */
 			if (compStr.includes("d") || globalStr.includes("d") || comp.length == 0)
 			{
 				return [comp];
@@ -76,7 +72,7 @@ class Vector
 			return [comp, reverseComp];
 		}
 		
-		/* Make every vector possible */
+		/* Make all possible vectors */
 		var toReturn = [];
 		var substrings = str.split(";");
 		for (var i = 0; i < substrings.length; i++)
@@ -84,17 +80,17 @@ class Vector
 			var vectorString = substrings[i].trim();
 			if (vectorString == "")
 			{
-				// silent error - common if vector list ended with semicolon
+				/* silent error - common if vector list ended with semicolon */
 				continue;
 			}
 			var matches = vectorString.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
 			if (matches <= 0)
 			{
-				// improperly formatted vector notation
 				console.error(`Improperly formatted vector: ${vectorString}`);
 				continue;
 			}
-			// Identify components
+			
+			/* Identify components */
 			var endStr = vectorString.slice(vectorString.indexOf(")")+1);
 			var parts = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
 			
@@ -104,6 +100,7 @@ class Vector
 			/* Build y component */
 			var yComp = buildComponent(parts[1], endStr);
 			
+			/* Cross product all x and y components to produce directional vectors */
 			for (var j = 0; j < xComp.length; j++)
 			{
 				for (var k = 0; k < yComp.length; k++)
