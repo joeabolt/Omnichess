@@ -18,7 +18,7 @@ class Vector
 		function buildComponent(compStr, globalStr)
 		{
 			var comp = new Component(0, 1, false, false, false);
-			comp.length = Number(compStr.match(/(-?\d+)/g)[0].slice(1));
+			comp.length = Number(compStr.match(/(-?\d+)/g)[0]);
 			
 			// Check for jump on first component or end
 			if (compStr.includes("j") || globalStr.includes("j"))
