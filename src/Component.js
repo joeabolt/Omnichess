@@ -4,7 +4,7 @@ class Component
 	constructor(length, maxRep, jump, hop, promote)
 	{
 		this.length = length;
-		this.maxRep = repetitions;
+		this.maxRep = maxRep;
 		this.jump = jump;
 		this.hop = hop;
 		this.promote = promote;

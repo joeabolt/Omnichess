@@ -16,7 +16,7 @@ class Vector
 	{
 		// TODO: Get all the segments individually
 		str = str.match(/([^;\n]+?)(?=;|$)/gm)[0].trim();
-		var matches = str.match(/(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
+		var matches = str.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
 		if (matches <= 0)
 		{
 			// improperly formatted vector notation
@@ -24,48 +24,48 @@ class Vector
 		}
 		
 		/* Build x component */
-		Component xComp = new Component(0, 1, false, false, false);
+		var xComp = new Component(0, 1, false, false, false);
 		
 		// Get x length
-		var length = Number(str.match(/\((-?\d+)/g)[0]);
+		var length = Number(str.match(/\((-?\d+)/g)[0].slice(1));
 		xComp.length = length;
 		
 		// Check for jump on first component or end
-		if (str.match(/(\([^j,]+j[\d{}+hpmd]*, -?\d+[\d{}hpmd]*\))|(\)[\d{}+hpmd]*j)/g).length > 0)
+		if (str.match(/(\([^j,]+j[\d{}+hpmd]*, -?\d+[\d{}hpmd]*\))|(\)[\d{}+hpmd]*j)/g))
 		{
 			xComp.jump = true;
 		}
 		
 		// Check for hop on first component or end
-		if (str.match(/(\([^h,]+h[\d{}+jpmd]*, -?\d+[\d{}jpmd]*\))|(\)[\d{}+jpmd]*h)/g).length > 0)
+		if (str.match(/(\([^h,]+h[\d{}+jpmd]*, -?\d+[\d{}jpmd]*\))|(\)[\d{}+jpmd]*h)/g))
 		{
 			xComp.hop = true;
 		}
 		
 		// Check for promote on first component or end
-		if (str.match(/(\([^p,]+p[\d{}+jhmd]*, -?\d+[\d{}jhmd]*\))|(\)[\d{}+jhmd]*p)/g).length > 0)
+		if (str.match(/(\([^p,]+p[\d{}+jhmd]*, -?\d+[\d{}jhmd]*\))|(\)[\d{}+jhmd]*p)/g))
 		{
 			xComp.promote = true;
 		}
 		
 		// Check for finite repetition on end
 		var repetition = str.match(/\)[jhpmd]*{(\d)}[jhpmd]*/g);
-		if (repetition.length > 0)
+		if (repetition)
 		{
-			xComp.maxRep = Number(repetition[0]);
+			xComp.maxRep = Number(repetition[0].slice(2, -1));
 		}
 		
 		// Check for infinite repetition on end
-		if(str.match(/\)[jhpmd]*\+[jhpmd]*/).length > 0)
+		if(str.match(/\)[jhpmd]*\+[jhpmd]*/))
 		{
 			xComp.maxRep = 100; // arbitrarily large
 		}
 
 		// Check for finite specific repeition
 		repetition = str.match(/\(-?\d[jhpmd]*{(\d+)}/);
-		if (repetition.length > 0)
+		if (repetition)
 		{
-			xComp.maxRep = Number(repetition[0]);
+			xComp.maxRep = Number(repetition[1]);
 		}
 		
 		// Check for infinite specific repetition
