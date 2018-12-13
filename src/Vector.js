@@ -12,7 +12,7 @@ class Vector
 	 *
 	 *  If an invalidly formatted string is passed in, an error is thrown.
 	 */
-	static create(str)
+	static Create(str)
 	{
 		/* helper function */
 		function buildComponent(compStr, globalStr)
