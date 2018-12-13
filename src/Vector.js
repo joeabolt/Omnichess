@@ -64,7 +64,16 @@ class Vector
 				comp.maxRep = 100; // arbitrarily large
 			}
 			
-			return comp;
+			// Check for directional or zero length
+			if (compStr.includes("d") || globalStr.includes("d") || comp.length == 0)
+			{
+				return [comp];
+			}
+			
+			var reverseComp = new Component(comp.length * -1, comp.maxRep, 
+				comp.jump, comp.hop, comp.promote);
+				
+			return [comp, reverseComp];
 		}
 		
 		/* Make every vector possible */
@@ -95,7 +104,13 @@ class Vector
 			/* Build y component */
 			var yComp = buildComponent(parts[1], endStr);
 			
-			toReturn.push(new Vector(xComp, yComp));
+			for (var j = 0; j < xComp.length; j++)
+			{
+				for (var k = 0; k < yComp.length; k++)
+				{
+					toReturn.push(new Vector(xComp[j], yComp[k]));
+				}
+			}
 		}
 
 		return toReturn;
