@@ -1,6 +1,6 @@
 /* Initial script */
 
-console.log(Vector.create("(2p, 1{3})j"));
+console.log(Vector.create("(2p, 1{3})j; (1, 0);"));
 // console.log(Vector.create("(1, 0)"));
 // console.log(Vector.create("(1+, 0)"));
 // console.log(Vector.create("(1, 0)+"));

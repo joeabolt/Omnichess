@@ -14,15 +14,7 @@ class Vector
 	 */
 	static create(str)
 	{
-		// TODO: Get all the segments individually
-		str = str.match(/([^;\n]+?)(?=;|$)/gm)[0].trim();
-		var matches = str.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
-		if (matches <= 0)
-		{
-			// improperly formatted vector notation
-			console.error(`Improperly formatted vector: ${str}`);
-		}
-		
+		/* helper function */
 		function buildComponent(compStr, globalStr)
 		{
 			var comp = new Component(0, 1, false, false, false);
@@ -75,18 +67,37 @@ class Vector
 			return comp;
 		}
 		
-		// Identify components
-		var endStr = str.slice(str.indexOf(")")+1);
-		var parts = str.slice(str.indexOf("(")+1, str.indexOf(")")).split(",");
-		
-		/* Build x component */
-		var xComp = buildComponent(parts[0], endStr);
-		console.log(xComp);
-		
-		/* Build y component */
-		var yComp = buildComponent(parts[1], endStr);
-		console.log(yComp);
-		
-		return [new Vector(xComp, yComp)];
+		/* Make every vector possible */
+		var toReturn = [];
+		var substrings = str.split(";");
+		for (var i = 0; i < substrings.length; i++)
+		{
+			var vectorString = substrings[i].trim();
+			if (vectorString == "")
+			{
+				// silent error - common if vector list ended with semicolon
+				continue;
+			}
+			var matches = vectorString.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
+			if (matches <= 0)
+			{
+				// improperly formatted vector notation
+				console.error(`Improperly formatted vector: ${vectorString}`);
+				continue;
+			}
+			// Identify components
+			var endStr = vectorString.slice(vectorString.indexOf(")")+1);
+			var parts = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
+			
+			/* Build x component */
+			var xComp = buildComponent(parts[0], endStr);
+			
+			/* Build y component */
+			var yComp = buildComponent(parts[1], endStr);
+			
+			toReturn.push(new Vector(xComp, yComp));
+		}
+
+		return toReturn;
 	}
 }
