@@ -52,14 +52,25 @@ class Vector
 			/* Build y component */
 			var yComp = Component.Create(parts[1], endStr);
 			
-			/* Cross product all x and y components to produce directional vectors */
-			for (var j = 0; j < xComp.length; j++)
+			/* Cross product all components to produce directional vectors */
+			function CrossProduct(arr1, arr2)
 			{
-				for (var k = 0; k < yComp.length; k++)
+				var toReturn = [];
+				for (var i = 0; i < arr1.length; i++)
 				{
-					toReturn.push(new Vector(xComp[j], yComp[k]));
+					for (var j = 0; j < arr2.length; j++)
+					{
+						toReturn.push([arr1[i], arr2[j]]);
+					}
 				}
+				return toReturn;
 			}
+			
+			/* TODO: rewrite when updating to N-dimensions */
+			var combinations = CrossProduct(xComp, yComp);
+			combinations.forEach(function(element) {
+				toReturn.push(new Vector(element[0], element[1]));
+			});
 		}
 
 		return toReturn;
