@@ -9,6 +9,18 @@ class Piece
 		this.player = undefined;
 	}
 	
+	static Create(baseObj)
+	{
+		/* Currently assumes baseObj has a string for
+		 * move, capture, moveCapture, and player.
+		 */
+		return new Piece()
+			.setMoveVectors(Vector.Create(baseObj.move))
+			.setCaptureVectors(Vector.Create(baseObj.capture))
+			.setMoveCaptureVectors(Vector.Create(baseObj.moveCapture))
+			.setPlayer(baseObj.player);
+	}
+	
 	setMoveVectors(newValue)
 	{
 		this.moveVectors = newValue;
