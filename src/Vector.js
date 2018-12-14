@@ -80,7 +80,7 @@ class Vector
 			var vectorString = substrings[i].trim();
 			if (vectorString == "")
 			{
-				/* silent error - common if vector list ended with semicolon */
+				/* Ignore empty strings - common if vector list ended with semicolon */
 				continue;
 			}
 			var matches = vectorString.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
