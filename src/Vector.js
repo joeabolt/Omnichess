@@ -35,6 +35,13 @@ class Vector
 				continue;
 			}
 			
+			matches = vectorString.match(/(({\d+})[dphj]*\+)|(\+[dphj]*({\d+}))/g);
+			if (matches != undefined && matches.length > 0)
+			{
+				console.error(`Illegal repetition format: ${vectorString}`);
+				continue;
+			}
+			
 			/* Identify components */
 			var endStr = vectorString.slice(vectorString.indexOf(")")+1);
 			var parts = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
