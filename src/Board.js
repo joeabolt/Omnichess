@@ -11,6 +11,23 @@ class Board
 		}
 	}
 	
+	GetCellIndices(vector, startLocation)
+	{
+		/* Initial: aggressively simplified */
+		var toReturn = new Set();
+		
+		/* Determine direction */
+		var direction = 4; // the "no movement direction"
+		if (vector.components[0].length < 0) direction--;
+		if (vector.components[0].length > 0) direction++;
+		if (vector.components[1].length < 0) direction -= 3;
+		if (vector.components[1].length > 0) direction += 3;
+		
+		toReturn.add(this.cells[startLocation][direction]);
+		
+		return toReturn;
+	}
+	
 	static Create(boardObj)
 	{
 		/* expects boardObj to have a string dimensions "AxB" */
