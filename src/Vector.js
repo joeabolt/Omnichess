@@ -27,8 +27,9 @@ class Vector
 				/* silent error - common if vector list ended with semicolon */
 				continue;
 			}
+			
 			var matches = vectorString.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
-			if (matches <= 0)
+			if (matches == undefined || matches.length <= 0)
 			{
 				console.error(`Improperly formatted vector: ${vectorString}`);
 				continue;
