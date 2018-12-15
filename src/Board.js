@@ -26,8 +26,9 @@ class Board
 			for (var j = 0; j < y.maxRep; j++)
 			{
 				dy += y.length;
-				var output = this.GetPathOutput(startLocation, dx, dy);
-				if (output == -1)
+				var output = this.GetPathOutput(startLocation, dx, dy, x.hop && y.hop, x.jump && y.jump);
+				// TODO: Update second clause so this function works for capture and for movement
+				if (output == -1 || this.contents[output] != undefined)
 					continue;
 				toReturn.add(output);
 			}
@@ -38,14 +39,16 @@ class Board
 	
 	/**
 	 *  Returns the index of the cell dx and dy units
-	 *  away from start. Returns -1 if the path is 
-	 *  obstructed, or if no such destination exists.
+	 *  away from start. Returns -1 if no such 
+	 *  destination exists. 
 	 *
-	 * Does not account for hop, jump.
+	 *  Does not account for hop/jump only on one
+	 *  component.
 	 */
-	GetPathOutput(start, dx, dy)
+	GetPathOutput(start, dx, dy, hop, jump)
 	{
 		var destination = start;
+		var previous = start;
 		while (dx != 0 || dy != 0)
 		{
 			var direction = 4; // the "no movement" direction
@@ -70,10 +73,22 @@ class Board
 				dy--;
 			}
 			
+			previous = destination;
 			destination = this.cells[destination][direction];
-			if (destination == -1 || this.contents[destination] != undefined)
+			if (destination == -1)
 				break;
+			
+			/* Stop iterating when we hit an occupied square, unless jump or hop */
+			if ((dx != 0 || dy != 0) && this.contents[destination] != undefined)
+			{
+				if (jump || hop) continue;
+				return -1;
+			}
 		}
+		
+		/* If hop, only output when the previous is occupied */
+		if (hop && this.contents[previous] == undefined)
+			return -1;
 		
 		return destination;
 	}

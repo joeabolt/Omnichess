@@ -37,3 +37,19 @@ output = board.GetCellIndices(testVector, 0);
 console.log(output.size == 2);
 console.log(output.has(1));
 console.log(output.has(2));
+
+console.log("Test navigation: (1, 0)j+");
+testVector = Vector.Create("(1, 0)j+")[0];
+board.contents[1] = 1;
+output = board.GetCellIndices(testVector, 0);
+board.contents[1] = undefined;
+console.log(output.size == 1);
+console.log(output.has(2));
+
+console.log("Test navigation: (1, 0)h+");
+testVector = Vector.Create("(1, 0)h+")[0];
+board.contents[1] = 1;
+output = board.GetCellIndices(testVector, 0);
+board.contents[1] = undefined;
+console.log(output.size == 1);
+console.log(output.has(2));
