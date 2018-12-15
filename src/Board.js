@@ -13,19 +13,69 @@ class Board
 	
 	GetCellIndices(vector, startLocation)
 	{
-		/* Initial: aggressively simplified */
 		var toReturn = new Set();
 		
-		/* Determine direction */
-		var direction = 4; // the "no movement direction"
-		if (vector.components[0].length < 0) direction--;
-		if (vector.components[0].length > 0) direction++;
-		if (vector.components[1].length < 0) direction -= 3;
-		if (vector.components[1].length > 0) direction += 3;
+		var x = vector.components[0];
+		var y = vector.components[1];
 		
-		toReturn.add(this.cells[startLocation][direction]);
+		var dx = 0;
+		var dy = 0;
+		for (var i = 0; i < x.maxRep; i++)
+		{
+			dx += x.length;
+			for (var j = 0; j < y.maxRep; j++)
+			{
+				dy += y.length;
+				var output = this.GetPathOutput(startLocation, dx, dy);
+				if (output == -1)
+					continue;
+				toReturn.add(output);
+			}
+		}
 		
 		return toReturn;
+	}
+	
+	/**
+	 *  Returns the index of the cell dx and dy units
+	 *  away from start. Returns -1 if the path is 
+	 *  obstructed, or if no such destination exists.
+	 *
+	 * Does not account for hop, jump.
+	 */
+	GetPathOutput(start, dx, dy)
+	{
+		var destination = start;
+		while (dx != 0 || dy != 0)
+		{
+			var direction = 4; // the "no movement" direction
+			if (dx < 0)
+			{
+				direction--;
+				dx++;
+			}
+			if (dx > 0)
+			{
+				direction++;
+				dx--;
+			}
+			if (dy < 0)
+			{
+				direction += 3;
+				dy++;
+			}
+			if (dy > 0)
+			{
+				direction -= 3;
+				dy--;
+			}
+			
+			destination = this.cells[destination][direction];
+			if (destination == -1 || this.contents[destination] != undefined)
+				break;
+		}
+		
+		return destination;
 	}
 	
 	static Create(boardObj)

@@ -18,3 +18,22 @@
 
 var board = Board.Create({dimensions:"3x3"});
 console.log(board);
+
+console.log("Test navigation: (0, 1)d");
+var testVector = Vector.Create("(0, 1)d")[0];
+var output = board.GetCellIndices(testVector, 4);
+console.log(output.size == 1);
+console.log(output.has(1));
+
+console.log("Test navigation: (1, 0)d");
+testVector = Vector.Create("(1, 0)d")[0];
+output = board.GetCellIndices(testVector, 4);
+console.log(output.size == 1);
+console.log(output.has(5));
+
+console.log("Test navigation: (1, 0)d+");
+testVector = Vector.Create("(1, 0)d+")[0];
+output = board.GetCellIndices(testVector, 0);
+console.log(output.size == 2);
+console.log(output.has(1));
+console.log(output.has(2));
