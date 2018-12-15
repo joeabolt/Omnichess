@@ -26,7 +26,7 @@ class Board
 			for (var j = 0; j < y.maxRep; j++)
 			{
 				dy += y.length;
-				var output = this.GetPathOutput(startLocation, dx, dy, x.hop && y.hop, x.jump && y.jump);
+				var output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 				// TODO: Update second clause so this function works for capture and for movement
 				if (output == -1 || this.contents[output] != undefined)
 					continue;
@@ -41,53 +41,58 @@ class Board
 	 *  Returns the index of the cell dx and dy units
 	 *  away from start. Returns -1 if no such 
 	 *  destination exists. 
-	 *
-	 *  Does not account for hop/jump only on one
-	 *  component.
 	 */
-	GetPathOutput(start, dx, dy, hop, jump)
+	GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
 	{
 		var destination = start;
 		var previous = start;
+		var stepX = 0;
+		var stepY = 0;
+			
 		while (dx != 0 || dy != 0)
 		{
-			var direction = 4; // the "no movement" direction
+			stepX = 0;
+			stepY = 0;
 			if (dx < 0)
 			{
-				direction--;
+				stepX = -1;
 				dx++;
 			}
 			if (dx > 0)
 			{
-				direction++;
+				var stepX = 1;
 				dx--;
 			}
 			if (dy < 0)
 			{
-				direction += 3;
+				var stepY = 1;
 				dy++;
 			}
 			if (dy > 0)
 			{
-				direction -= 3;
+				var stepY = -1;
 				dy--;
 			}
 			
+			/* Add 1 because arrays cannot have negative indices */
+			var direction = (stepY+1) * 3 + (stepX+1);
 			previous = destination;
 			destination = this.cells[destination][direction];
 			if (destination == -1)
-				break;
+				break;		
 			
 			/* Stop iterating when we hit an occupied square, unless jump or hop */
+			var stepJump = (xJump && stepX != 0) || (yJump && stepY != 0);
+			var stepHop = (xHop && stepX != 0) || (yHop && stepY != 0);
 			if ((dx != 0 || dy != 0) && this.contents[destination] != undefined)
 			{
-				if (jump || hop) continue;
+				if (stepJump || stepHop) continue;
 				return -1;
 			}
 		}
 		
 		/* If hop, only output when the previous is occupied */
-		if (hop && this.contents[previous] == undefined)
+		if (((xHop && stepX != 0) || (yHop && stepY != 0)) && this.contents[previous] == undefined)
 			return -1;
 		
 		return destination;
