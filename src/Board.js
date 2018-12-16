@@ -11,6 +11,15 @@ class Board
 		}
 	}
 	
+	/**
+	 *  Returns a Set of all locations (as indices) described
+	 *  by the vector relative to startLocation. Does not account
+	 *  for a blocked destination, since this could be used for
+	 *  capture, but it will not continue down a blocked path.
+	 *  
+	 *  Always returns a Set. Returns an empty Set if no such
+	 *  locations can be found. 
+	 */
 	GetCellIndices(vector, startLocation)
 	{
 		var toReturn = new Set();
@@ -98,6 +107,13 @@ class Board
 		return destination;
 	}
 	
+	/**
+	 *  Creates a Board object based on the passed in JSON object.
+	 *  Expects boardObj to have a sting called dimensions of the form
+	 *  "AxB" for A rows and B columns. 
+	 *
+	 *  In the future, this will take take the form "AxBx...xZ".
+	 */
 	static Create(boardObj)
 	{
 		/* expects boardObj to have a string dimensions "AxB" */
@@ -105,6 +121,11 @@ class Board
 		return new Board(Board.Generate2D(Number(lengths[0]), Number(lengths[1])));
 	}
 	
+	/**
+	 *  Generates and returns a new 2D Board with the specified
+	 *  number of rows and columns. Uses a square grid and the
+	 *  usual 2 axes.
+	 */
 	static Generate2D(rows, cols)
 	{
 		/* UL, U, UR, L, 0, R, DL, D, DR */
