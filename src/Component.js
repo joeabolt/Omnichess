@@ -10,56 +10,56 @@ class Component
 		this.promote = promote;
 	}
 	
-	static Create(compStr, globalStr)
+	static Create(componentString, globalString)
 	{
-		var comp = new Component(0, 1, false, false, false);
-		comp.length = Number(compStr.match(/(-?\d+)/g)[0]);
+		const comp = new Component(0, 1, false, false, false);
+		comp.length = Number(componentString.match(/(-?\d+)/g)[0]);
 		
 		/* Check for jump on first component or end */
-		if (compStr.includes("j") || globalStr.includes("j"))
+		if (componentString.includes("j") || globalString.includes("j"))
 		{
 			comp.jump = true;
 		}
 		
 		/* Check for hop on first component or end */
-		if (compStr.includes("h") || globalStr.includes("h"))
+		if (componentString.includes("h") || globalString.includes("h"))
 		{
 			comp.hop = true;
 		}
 		
 		/* Check for promote on first component or end */
-		if (compStr.includes("p") || globalStr.includes("p"))
+		if (componentString.includes("p") || globalString.includes("p"))
 		{
 			comp.promote = true;
 		}
 		
 		/* Check for finite repetition on end */
-		var repetition = globalStr.match(/{(\d+)}/g);
-		if (repetition)
+		const finiteEndRepetition = globalString.match(/{(\d+)}/g);
+		if (finiteEndRepetition)
 		{
-			comp.maxRep = Number(repetition[0].slice(2, -1));
+			comp.maxRep = Number(finiteEndRepetition[0].slice(2, -1));
 		}
 		
 		/* Check for infinite repetition */
-		if(compStr.includes("+") || globalStr.includes("+"))
+		if(componentString.includes("+") || globalString.includes("+"))
 		{
 			comp.maxRep = 100; /* arbitrarily large */
 		}
 
 		/* Check for finite specific repeition */
-		repetition = compStr.match(/{(\d+)}/);
-		if (repetition)
+		const finiteSpecificRepetition = componentString.match(/{(\d+)}/);
+		if (finiteSpecificRepetition)
 		{
-			comp.maxRep = Number(repetition[1]);
+			comp.maxRep = Number(finiteSpecificRepetition[1]);
 		}
 		
 		/* Check for directional or zero length */
-		if (compStr.includes("d") || globalStr.includes("d") || comp.length == 0)
+		if (componentString.includes("d") || globalString.includes("d") || comp.length == 0)
 		{
 			return [comp];
 		}
 		
-		var reverseComp = new Component(comp.length * -1, comp.maxRep, 
+		const reverseComp = new Component(comp.length * -1, comp.maxRep, 
 			comp.jump, comp.hop, comp.promote);
 			
 		return [comp, reverseComp];
