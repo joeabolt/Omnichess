@@ -21,27 +21,27 @@ class Piece
 			.setPlayer(baseObj.player);
 	}
 	
-	setMoveVectors(newValue)
+	setMoveVectors(moveVectors)
 	{
-		this.moveVectors = newValue;
+		this.moveVectors = moveVectors;
 		return this;
 	}
 	
-	setCaptureVectors(newValue)
+	setCaptureVectors(captureVectors)
 	{
-		this.captureVectors = newValue;
+		this.captureVectors = captureVectors;
 		return this;
 	}
 	
-	setMoveCaptureVectors(newValue)
+	setMoveCaptureVectors(moveCaptureVectors)
 	{
-		this.moveCaptureVectors = newValue;
+		this.moveCaptureVectors = moveCaptureVectors;
 		return this;
 	}
 	
-	setPlayer(newValue)
+	setPlayer(player)
 	{
-		this.player = newValue;
+		this.player = player;
 		return this;
 	}
 }
