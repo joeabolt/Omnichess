@@ -5,7 +5,7 @@ class Board
 	{
 		this.cells = adjacencyMatrix;
 		this.contents = [];
-		for (var i = 0; i < this.cells.length; i++)
+		for (let i = 0; i < this.cells.length; i++)
 		{
 			this.contents.push(undefined);
 		}
@@ -22,28 +22,29 @@ class Board
 	 */
 	GetCellIndices(vector, startLocation)
 	{
-		var toReturn = new Set();
+		const allCellIndices = new Set();
 		
-		var x = vector.components[0];
-		var y = vector.components[1];
+		const x = vector.components[0];
+		const y = vector.components[1];
 		
-		var dx = 0;
-		var dy = 0;
-		for (var i = 0; i < x.maxRep; i++)
+		let dx = 0;
+		let dy = 0;
+		for (let i = 0; i < x.maxRep; i++)
 		{
 			dx += x.length;
-			for (var j = 0; j < y.maxRep; j++)
+			for (let j = 0; j < y.maxRep; j++)
 			{
 				dy += y.length;
-				var output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
+				const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
+				
 				// TODO: Update second clause so this function works for capture and for movement
 				if (output == -1 || this.contents[output] != undefined)
 					continue;
-				toReturn.add(output);
+				allCellIndices.add(output);
 			}
 		}
 		
-		return toReturn;
+		return allCellIndices;
 	}
 	
 	/**
@@ -53,10 +54,10 @@ class Board
 	 */
 	GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
 	{
-		var destination = start;
-		var previous = start;
-		var stepX = 0;
-		var stepY = 0;
+		let destination = start;
+		let previous = start;
+		let stepX = 0;
+		let stepY = 0;
 			
 		while (dx != 0 || dy != 0)
 		{
@@ -84,15 +85,18 @@ class Board
 			}
 			
 			/* Add 1 because arrays cannot have negative indices */
-			var direction = (stepY+1) * 3 + (stepX+1);
+			const direction = (stepY+1) * 3 + (stepX+1);
 			previous = destination;
 			destination = this.cells[destination][direction];
 			if (destination == -1)
-				break;		
+			{
+				break;
+			}		
 			
 			/* Stop iterating when we hit an occupied square, unless jump or hop */
-			var stepJump = (xJump && stepX != 0) || (yJump && stepY != 0);
-			var stepHop = (xHop && stepX != 0) || (yHop && stepY != 0);
+			const stepJump = (xJump && stepX != 0) || (yJump && stepY != 0);
+			const stepHop = (xHop && stepX != 0) || (yHop && stepY != 0);
+			
 			if ((dx != 0 || dy != 0) && this.contents[destination] != undefined)
 			{
 				if (stepJump || stepHop) continue;
@@ -102,7 +106,9 @@ class Board
 		
 		/* If hop, only output when the previous is occupied */
 		if (((xHop && stepX != 0) || (yHop && stepY != 0)) && this.contents[previous] == undefined)
+		{
 			return -1;
+		}
 		
 		return destination;
 	}

@@ -18,9 +18,11 @@ console.log(Piece.Create(queenObj));
 
 /* Testing Board */
 
-var board = Board.Create({dimensions:"3x3"});
+const board = Board.Create({dimensions:"3x3"});
 console.log(board);
 
+/* Uses var to allow redecleration in later tests */
+// TODO: Update away from var when a testing solution is decided upon
 console.log("Test navigation: (0, 1)d");
 var testVector = Vector.Create("(0, 1)d")[0];
 var output = board.GetCellIndices(testVector, 4);
