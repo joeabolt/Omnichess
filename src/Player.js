@@ -10,11 +10,10 @@ class Player
 	 *  are pieces on the board, owned are pieces not on the board, captured
 	 *  are pieces captured from the enemy.
 	 */
-	constructor(direction, inPlayPieces, ownedPieces, capturedPieces)
+	constructor(direction, dropablePieces, capturedPieces)
 	{
 		this.direction = direction;
-		this.inPlayPieces = inPlayPieces;
-		this.ownedPieces = ownedPieces;
+		this.dropablePieces = dropablePieces;
 		this.capturedPieces = capturedPieces;
 	}
 	
