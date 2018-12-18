@@ -4,6 +4,8 @@ class Board
 	constructor(adjacencyMatrix)
 	{
 		this.cells = adjacencyMatrix;
+		/* The below works because we insist on a square/cubic grid */
+		this.dimensions = Math.log(adjacencyMatrix[0].length) / Math.log(3);
 		this.contents = [];
 		for (let i = 0; i < this.cells.length; i++)
 		{
@@ -38,7 +40,7 @@ class Board
 				const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 				
 				// TODO: Update second clause so this function works for capture and for movement
-				if (output == -1 || this.contents[output] != undefined)
+				if (output === -1 || this.contents[output] !== undefined)
 					continue;
 				allCellIndices.add(output);
 			}
@@ -59,45 +61,27 @@ class Board
 		let stepX = 0;
 		let stepY = 0;
 			
-		while (dx != 0 || dy != 0)
+		while (dx !== 0 || dy !== 0)
 		{
-			stepX = 0;
-			stepY = 0;
-			if (dx < 0)
-			{
-				stepX = -1;
-				dx++;
-			}
-			if (dx > 0)
-			{
-				var stepX = 1;
-				dx--;
-			}
-			if (dy < 0)
-			{
-				var stepY = 1;
-				dy++;
-			}
-			if (dy > 0)
-			{
-				var stepY = -1;
-				dy--;
-			}
+			stepX = Math.sign(dx);
+			stepY = Math.sign(dy);
+			dx -= Math.sign(dx);
+			dy -= Math.sign(dy);
 			
 			/* Add 1 because arrays cannot have negative indices */
-			const direction = (stepY+1) * 3 + (stepX+1);
+			const direction = (stepY+1) * this.dimensions + (stepX+1);
 			previous = destination;
 			destination = this.cells[destination][direction];
-			if (destination == -1)
+			if (destination === -1)
 			{
 				break;
 			}		
 			
 			/* Stop iterating when we hit an occupied square, unless jump or hop */
-			const stepJump = (xJump && stepX != 0) || (yJump && stepY != 0);
-			const stepHop = (xHop && stepX != 0) || (yHop && stepY != 0);
+			const stepJump = (xJump && stepX !== 0) || (yJump && stepY !== 0);
+			const stepHop = (xHop && stepX !== 0) || (yHop && stepY !== 0);
 			
-			if ((dx != 0 || dy != 0) && this.contents[destination] != undefined)
+			if ((dx !== 0 || dy !== 0) && this.contents[destination] !== undefined)
 			{
 				if (stepJump || stepHop) continue;
 				return -1;
@@ -105,7 +89,7 @@ class Board
 		}
 		
 		/* If hop, only output when the previous is occupied */
-		if (((xHop && stepX != 0) || (yHop && stepY != 0)) && this.contents[previous] == undefined)
+		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[previous] === undefined)
 		{
 			return -1;
 		}
@@ -123,7 +107,7 @@ class Board
 	static Create(boardObj)
 	{
 		/* expects boardObj to have a string dimensions "AxB" */
-		var lengths = boardObj.dimensions.split("x");
+		const lengths = boardObj.dimensions.split("x");
 		return new Board(Board.Generate2D(Number(lengths[0]), Number(lengths[1])));
 	}
 	
@@ -135,38 +119,42 @@ class Board
 	static Generate2D(rows, cols)
 	{
 		/* UL, U, UR, L, 0, R, DL, D, DR */
-		var toReturn = [];
-		for (var i = 0; i < rows * cols; i++)
+		const adjacencyMatrix = [];
+		for (let i = 0; i < rows * cols; i++)
 		{
-			toReturn[i] = [i-cols-1, i-cols, i-cols+1, 
+			adjacencyMatrix[i] = [i-cols-1, i-cols, i-cols+1, 
 				i-1, i, i+1, 
 				i+cols-1, i+cols, i+cols+1];
 				
+			/* Removes above if at top of board */
 			if (i < cols)
 			{
-				toReturn[i][0] = -1;
-				toReturn[i][1] = -1;
-				toReturn[i][2] = -1;
+				adjacencyMatrix[i][0] = -1;
+				adjacencyMatrix[i][1] = -1;
+				adjacencyMatrix[i][2] = -1;
 			}
-			if (i % cols == 0)
+			/* Removes to the left if at left of board */
+			if (i % cols === 0)
 			{
-				toReturn[i][0] = -1;
-				toReturn[i][3] = -1;
-				toReturn[i][6] = -1;
+				adjacencyMatrix[i][0] = -1;
+				adjacencyMatrix[i][3] = -1;
+				adjacencyMatrix[i][6] = -1;
 			}
-			if (i % cols == (cols - 1))
+			/* Removes to the right if at right of board */
+			if (i % cols === (cols - 1))
 			{
-				toReturn[i][2] = -1;
-				toReturn[i][5] = -1;
-				toReturn[i][8] = -1;
+				adjacencyMatrix[i][2] = -1;
+				adjacencyMatrix[i][5] = -1;
+				adjacencyMatrix[i][8] = -1;
 			}
+			/* Removes below if at bottom of board */
 			if ((i + cols) >= (rows * cols))
 			{
-				toReturn[i][6] = -1;
-				toReturn[i][7] = -1;
-				toReturn[i][8] = -1;
+				adjacencyMatrix[i][6] = -1;
+				adjacencyMatrix[i][7] = -1;
+				adjacencyMatrix[i][8] = -1;
 			}
 		}
-		return toReturn;
+		return adjacencyMatrix;
 	}
 }
