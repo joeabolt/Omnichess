@@ -72,8 +72,29 @@ class Game
 		return true;
 	}
 	
+	/**
+	 *  Commits a move to the board.
+	 *  Valid move syntaxes:
+	 *    pos_ident -> pos_ident (movement)
+	 *    pos_ident x pos_ident (capture)
+	 *    pos_ident x-> pos_ident (move-capture)
+	 *    piece_ident drop pos_ident (drop)
+	 *    pos_ident promote (promote)
+	 */
 	CommitMove(move)
 	{
-		
+		const words = move.split(" ");
+		if (move.includes("x"))
+		{
+			this.nextTurn.player.capturedPieces.push(this.board.contents[Number(words[2])]);
+			this.board.contents[Number(words[2])] = undefined;
+		}
+		if (move.includes("->"))
+		{
+			this.board.contents[Number(words[2])] = this.board.contents[Number(words[0])];
+			this.board.contents[Number(words[0])] = undefined;
+			return;
+		}
+		// TODO: Add support for promote, drop
 	}
 }
