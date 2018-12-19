@@ -1,10 +1,11 @@
 /* Manages the state of the game */
 class Game 
 {
-	constructor(board, players)
+	constructor(board, players, endConditions)
 	{
 		this.board = board;
 		this.players = players;
+		this.endConditions = endConditions;
 		this.turnOrder = [
 			new Turn(this.players[0], "* *"),
 			new Turn(this.players[1], "* *")
@@ -55,12 +56,20 @@ class Game
 	
 	CheckGameEnd()
 	{
-		
+		// TODO: Update to allow multiple simultaneous win/loss conditions
+		this.endConditions.forEach((endCondition) => {
+			const evaluation = endCondition.EvaluateGame(this.board, this.lastTurn, this.nextTurn);
+			if (evaluation !== 0)
+			{
+				this.gameState = evaluation * (this.players.indexOf(endCondition.player) + 1);
+			}
+		});
 	}
 	
 	Validate(move)
 	{
-		
+		// This is definitely a permanent solution
+		return true;
 	}
 	
 	CommitMove(move)
