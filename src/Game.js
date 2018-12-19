@@ -68,9 +68,3 @@ class Game
 		
 	}
 }
-
-/*
-Ways to note win/loss conditions
-count piece_ident = 0 @ start player_ident (also <, >, and end instead of start)
-check piece_ident @ end player_ident
-*/

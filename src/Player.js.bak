@@ -18,9 +18,19 @@ class Player
 	}
 	
 }
-	getMove()
+	GetMove()
 	{
 		/* Stub */
 		// TODO: Ask the player for a move to make
+		// TODO: Return a string notating the move
+		/*
+			pos_ident -> pos_ident signifies a piece moving
+			pos_ident x pos_ident signifies a piece capturing
+			pos_ident x-> pos_ident signifies move-capture
+			piece_ident drop pos_ident signifies a drop
+			pos_ident promote
+			
+			Can be semi-colon delimited if multiple things happened (e.g., move and promote)
+		*/
 	}
 }

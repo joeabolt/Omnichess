@@ -44,6 +44,7 @@ class Game
 		CommitMove(proposedMove);
 		
 		/* Get the next move */
+		this.lastTurn = this.nextTurn;
 		this.nextTurn = this.nextTurn.EndTurn();
 		if (this.nextTurn === undefined)
 		{
