@@ -49,11 +49,6 @@ class Game
 	{
 		
 	}
-	
-	CommitMove(move)
-	{
-		
-	}
 }
 
 /*
