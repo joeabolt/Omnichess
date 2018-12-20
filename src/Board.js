@@ -22,10 +22,8 @@ class Board
 	 *  Always returns a Set. Returns an empty Set if no such
 	 *  locations can be found. 
 	 */
-	GetCellIndices(vector, startLocation)
+	GetCellIndices(vector, startLocation, includeCaptureEligible = false)
 	{
-		console.log("GetCellIndices");
-		console.log(vector);
 		const allCellIndices = new Set();
 		
 		const x = vector.components[0];
@@ -42,7 +40,7 @@ class Board
 				const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 				
 				// TODO: Update second clause so this function works for capture and for movement
-				if (output === -1 || this.contents[output] !== undefined)
+				if (output === -1 || (this.contents[output] !== undefined && !includeCaptureEligible))
 					continue;
 				allCellIndices.add(output);
 			}
@@ -58,7 +56,6 @@ class Board
 	 */
 	GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
 	{
-		console.log(`GetPathOutput for (${dx}, ${dy})`);
 		let destination = start;
 		let previous = start;
 		let stepX = 0;
@@ -73,12 +70,11 @@ class Board
 			
 			/* Add 1 because arrays cannot have negative indices */
 			// TODO: Adapt this for N-dimensional boards, eventually
-			const direction = (stepY+1) * Math.pow(3, this.dimensions-1) + (stepX+1) * Math.pow(3, this.dimensions-2);
+			const direction = Math.round((stepY+1) * Math.pow(3, this.dimensions-1) + (stepX+1) * Math.pow(3, this.dimensions-2));
 			previous = destination;
 			destination = this.cells[destination][direction];
 			if (destination === -1)
 			{
-				console.log("Hit edge of board");
 				break;
 			}
 			

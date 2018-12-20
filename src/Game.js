@@ -100,6 +100,7 @@ class Game
 		const target = Number(parts[2]);
 		
 		let vectorList = [];
+		let includeCaptureEligible = false;
 		
 		if (action === "->")
 		{
@@ -108,14 +109,16 @@ class Game
 		else if (action === "x")
 		{
 			vectorList = actor.captureVectors;
+			includeCaptureEligible = true;
 		}
 		else if (action === "x->")
 		{
 			vectorList = actor.moveCaptureVectors;
+			includeCaptureEligible = true;
 		}
 		
 		vectorList.forEach((vector) => {
-				validity = validity || this.board.GetCellIndices(vector, startLocation).has(target);
+				validity = validity || this.board.GetCellIndices(vector, startLocation, includeCaptureEligible).has(target);
 			});
 		
 		console.log(`Validity of move (${move}): ${validity}`);
