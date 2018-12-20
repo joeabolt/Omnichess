@@ -9,26 +9,28 @@ class EndCondition
 	{
 		this.player = player;
 		this.state = win ? 1 : -1;
+		this.configurationString = configurationString;
 	}
 	
 	EvaluateGame(board, lastTurn, nextTurn)
 	{
-		if (!this.configurationString.includes(`@ end ${lastTurn.player.identifier}`)
+		if ((lastTurn === undefined || !this.configurationString.includes(`@ end ${lastTurn.player.identifier}`))
 			&& !this.configurationString.includes(`@ start ${nextTurn.player.identifier}`))
 		{
 			/* This condition does not apply at this time */
+			console.log(`Condition (${this.configurationString}) does not apply at this time.`);
 			return 0;
 		}
 		
 		/* Evaluate */
-		const words = this.configurationString().trim().split(" ");
+		const words = this.configurationString.trim().split(" ");
 		if (words[0] === "count")
 		{
 			let pieceCount = 0;
 			board.contents.forEach((piece) => {
 				if (piece === undefined)
 				{
-					continue;
+					return;
 				}
 				if (piece.player === this.player && piece.identifier === words[1])
 				{
@@ -47,6 +49,7 @@ class EndCondition
 			{
 				return this.state;
 			}
+			console.log("Pieces did not match condition.");
 			return 0;
 		}
 		if (words[1] === "check")

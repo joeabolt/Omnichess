@@ -41,10 +41,32 @@ class Game
 	{
 		/* Get a legal move */
 		let proposedMove = this.nextTurn.GetMove();
-		while (!Validate(proposedMove)) proposedMove = this.nextTurn.GetMove();
+		while (!this.Validate(proposedMove)) proposedMove = this.nextTurn.GetMove();
 		
 		/* Make the move */
-		CommitMove(proposedMove);
+		this.CommitMove(proposedMove);
+		
+		/* Get the next move */
+		this.lastTurn = this.nextTurn;
+		this.nextTurn = this.nextTurn.EndTurn();
+		if (this.nextTurn === undefined)
+		{
+			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+			this.nextTurn = this.turnOrder[this.turnIndex];
+		}
+	}
+	
+	/* Special version for testing */
+	DoTurn_Test(move)
+	{
+		if (!this.Validate(move))
+		{
+			throw "Invalid move passed to DoTurn_Test";
+			return;
+		}
+		
+		/* Make the move */
+		this.CommitMove(move);
 		
 		/* Get the next move */
 		this.lastTurn = this.nextTurn;
