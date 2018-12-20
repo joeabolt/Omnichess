@@ -52,7 +52,7 @@ class EndCondition
 		}
 		if (words[1] === "check")
 		{
-			// TODO: Implement
+			// TODO: Implement the check end condition
 		}
 		
 		return 0;

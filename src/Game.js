@@ -90,6 +90,11 @@ class Game
 		});
 	}
 	
+	/**
+	 *  Validates that a move is legal.
+	 *
+	 *  TODO: Add support for promote, drop
+	 */
 	Validate(move)
 	{
 		let validity = false;
