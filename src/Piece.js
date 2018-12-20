@@ -6,6 +6,7 @@ class Piece
 		this.moveVectors = [];
 		this.captureVectors = [];
 		this.moveCaptureVectors = [];
+		this.identifier = "";
 		this.player = undefined;
 	}
 	
@@ -36,6 +37,12 @@ class Piece
 	setMoveCaptureVectors(moveCaptureVectors)
 	{
 		this.moveCaptureVectors = moveCaptureVectors;
+		return this;
+	}
+	
+	setIdentifier(identifier)
+	{
+		this.identifier = identifier;
 		return this;
 	}
 	

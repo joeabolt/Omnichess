@@ -6,6 +6,8 @@ class Game
 		this.board = board;
 		this.players = players;
 		this.endConditions = endConditions;
+		
+		/* Default turn order is alternating */
 		this.turnOrder = [
 			new Turn(this.players[0], "* *"),
 			new Turn(this.players[1], "* *")
