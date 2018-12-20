@@ -92,8 +92,34 @@ class Game
 	
 	Validate(move)
 	{
-		// This is definitely a permanent solution
-		return true;
+		let validity = false;
+		const parts = move.split(" ");
+		const startLocation = Number(parts[0]);
+		const actor = this.board.contents[startLocation];
+		const action = parts[1];
+		const target = Number(parts[2]);
+		
+		let vectorList = [];
+		
+		if (action === "->")
+		{
+			vectorList = actor.moveVectors;
+		}
+		else if (action === "x")
+		{
+			vectorList = actor.captureVectors;
+		}
+		else if (action === "x->")
+		{
+			vectorList = actor.moveCaptureVectors;
+		}
+		
+		vectorList.forEach((vector) => {
+				validity = validity || this.board.GetCellIndices(vector, startLocation).has(target);
+			});
+		
+		console.log(`Validity of move (${move}): ${validity}`);
+		return validity;
 	}
 	
 	/**
@@ -102,7 +128,8 @@ class Game
 	 *    pos_ident -> pos_ident (movement)
 	 *    pos_ident x pos_ident (capture)
 	 *    pos_ident x-> pos_ident (move-capture)
-	 *    piece_ident drop pos_ident (drop)
+	 *  Valid, but unsupported:
+	 *    pos_ident drop piece_ident (drop)
 	 *    pos_ident promote (promote)
 	 */
 	CommitMove(move)

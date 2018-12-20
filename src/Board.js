@@ -24,6 +24,8 @@ class Board
 	 */
 	GetCellIndices(vector, startLocation)
 	{
+		console.log("GetCellIndices");
+		console.log(vector);
 		const allCellIndices = new Set();
 		
 		const x = vector.components[0];
@@ -56,6 +58,7 @@ class Board
 	 */
 	GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
 	{
+		console.log(`GetPathOutput for (${dx}, ${dy})`);
 		let destination = start;
 		let previous = start;
 		let stepX = 0;
@@ -69,13 +72,15 @@ class Board
 			dy -= Math.sign(dy);
 			
 			/* Add 1 because arrays cannot have negative indices */
-			const direction = (stepY+1) * this.dimensions + (stepX+1);
+			// TODO: Adapt this for N-dimensional boards, eventually
+			const direction = (stepY+1) * Math.pow(3, this.dimensions-1) + (stepX+1) * Math.pow(3, this.dimensions-2);
 			previous = destination;
 			destination = this.cells[destination][direction];
 			if (destination === -1)
 			{
+				console.log("Hit edge of board");
 				break;
-			}		
+			}
 			
 			/* Stop iterating when we hit an occupied square, unless jump or hop */
 			const stepJump = (xJump && stepX !== 0) || (yJump && stepY !== 0);

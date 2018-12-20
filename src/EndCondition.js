@@ -18,7 +18,6 @@ class EndCondition
 			&& !this.configurationString.includes(`@ start ${nextTurn.player.identifier}`))
 		{
 			/* This condition does not apply at this time */
-			console.log(`Condition (${this.configurationString}) does not apply at this time.`);
 			return 0;
 		}
 		
@@ -49,7 +48,6 @@ class EndCondition
 			{
 				return this.state;
 			}
-			console.log("Pieces did not match condition.");
 			return 0;
 		}
 		if (words[1] === "check")

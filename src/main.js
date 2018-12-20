@@ -7,12 +7,12 @@ const board = new Board(Board.Generate2D(3, 3));
 const rook_alice = new Piece()
 	.setPlayer(alice)
 	.setIdentifier("rook")
-	.setMoveCaptureVectors(Vector.Create("(1, 0)*; (0, 1)*;"));
+	.setMoveCaptureVectors(Vector.Create("(1, 0)+; (0, 1)+;"));
 
 const bishop_bob = new Piece()
 	.setPlayer(bob)
 	.setIdentifier("bishop")
-	.setMoveCaptureVectors(Vector.Create("(1, 1)*;"));
+	.setMoveCaptureVectors(Vector.Create("(1, 1)+;"));
 
 board.contents[7] = rook_alice;
 board.contents[1] = bishop_bob;

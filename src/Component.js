@@ -4,7 +4,8 @@ class Component
 	constructor(length, maxRep, jump, hop, promote)
 	{
 		this.length = length;
-		this.maxRep = maxRep;
+		/* Slight efficiency, clean output while debugging */
+		this.maxRep = length !== 0 ? maxRep : 1;
 		this.jump = jump;
 		this.hop = hop;
 		this.promote = promote;
@@ -51,6 +52,11 @@ class Component
 		if (finiteSpecificRepetition)
 		{
 			comp.maxRep = Number(finiteSpecificRepetition[1]);
+		}
+		
+		if (comp.length === 0)
+		{
+			comp.maxRep = 1; // slight efficiency, clean output for debugging
 		}
 		
 		/* Check for directional or zero length */
