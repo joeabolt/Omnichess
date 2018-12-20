@@ -18,7 +18,6 @@ class Player
 		this.capturedPieces = capturedPieces;
 	}
 	
-}
 	GetMove()
 	{
 		/* Stub */
