@@ -14,6 +14,10 @@ class EndCondition
 	
 	EvaluateGame(board, lastTurn, nextTurn)
 	{
+		/* Tests that this EndCondition applies either at the end of the
+		 * last player's turn or at the beginning of the next player's turn;
+		 * if not, this if is true and an inconclusive result (0) is returned.
+		 */
 		if ((lastTurn === undefined || !this.configurationString.includes(`@ end ${lastTurn.player.identifier}`))
 			&& !this.configurationString.includes(`@ start ${nextTurn.player.identifier}`))
 		{

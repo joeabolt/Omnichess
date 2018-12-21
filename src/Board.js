@@ -39,7 +39,6 @@ class Board
 				dy += y.length;
 				const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 				
-				// TODO: Update second clause so this function works for capture and for movement
 				if (output === -1 || (this.contents[output] !== undefined && !includeCaptureEligible))
 					continue;
 				allCellIndices.add(output);
@@ -68,9 +67,14 @@ class Board
 			dx -= Math.sign(dx);
 			dy -= Math.sign(dy);
 			
-			/* Add 1 because arrays cannot have negative indices */
+			/*
+			 * Add 1 because arrays cannot have negative indices
+			 * Use powers of 3 because there are always three options in a direction
+			 * (e.g., top-left, top-center, top-right).
+			 */
 			// TODO: Adapt this for N-dimensional boards, eventually
-			const direction = Math.round((stepY+1) * Math.pow(3, this.dimensions-1) + (stepX+1) * Math.pow(3, this.dimensions-2));
+			const direction = Math.round((stepY+1) * Math.pow(3, this.dimensions - 1) 
+				+ (stepX+1) * Math.pow(3, this.dimensions - 2));
 			previous = destination;
 			destination = this.cells[destination][direction];
 			if (destination === -1)

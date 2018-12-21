@@ -35,6 +35,7 @@ class Game
 			DoTurn();
 			CheckGameEnd();
 		}
+		// TODO: Output winner / loser
 	}
 	
 	DoTurn()
@@ -126,7 +127,6 @@ class Game
 				validity = validity || this.board.GetCellIndices(vector, startLocation, includeCaptureEligible).has(target);
 			});
 		
-		console.log(`Validity of move (${move}): ${validity}`);
 		return validity;
 	}
 	
