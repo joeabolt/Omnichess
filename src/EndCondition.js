@@ -29,17 +29,10 @@ class EndCondition
 		const words = this.configurationString.trim().split(" ");
 		if (words[0] === "count")
 		{
-			let pieceCount = 0;
-			board.contents.forEach((piece) => {
-				if (piece === undefined)
-				{
-					return;
-				}
-				if (piece.player === this.player && piece.identifier === words[1])
-				{
-					pieceCount++;
-				}
-			});
+			const pieceCount = board.contents.find(
+				(piece) => piece && piece.player === this.player && piece.identifier === words[1]
+			).length;
+			
 			if (words[2] === "=" && pieceCount === Number(words[3]))
 			{
 				return this.state;

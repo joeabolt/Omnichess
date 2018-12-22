@@ -99,11 +99,8 @@ class Game
 	Validate(move)
 	{
 		let validity = false;
-		const parts = move.split(" ");
-		const startLocation = Number(parts[0]);
+		const [startLocation, action, target] = move.split(" ");
 		const actor = this.board.contents[startLocation];
-		const action = parts[1];
-		const target = Number(parts[2]);
 		
 		let vectorList = [];
 		let includeCaptureEligible = false;
@@ -124,7 +121,7 @@ class Game
 		}
 		
 		vectorList.forEach((vector) => {
-				validity = validity || this.board.GetCellIndices(vector, startLocation, includeCaptureEligible).has(target);
+				validity = validity || this.board.GetCellIndices(vector, Number(startLocation), includeCaptureEligible).has(target);
 			});
 		
 		return validity;
