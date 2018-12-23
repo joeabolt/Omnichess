@@ -38,21 +38,21 @@ class Vector
 			if (vectorString == "")
 			{
 				/* Ignore empty strings - common if vector list ended with semicolon */
-				continue;
+				return;
 			}
 			
 			const checkValid = vectorString.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
 			if (checkValid == undefined || checkValid.length <= 0)
 			{
 				console.error(`Improperly formatted vector: ${vectorString}`);
-				continue;
+				return;
 			}
 			
 			const checkRepetition = vectorString.match(/(({\d+})[dphj]*\+)|(\+[dphj]*({\d+}))/g);
 			if (checkRepetition != undefined && checkRepetition.length > 0)
 			{
 				console.error(`Illegal repetition format: ${vectorString}`);
-				continue;
+				return;
 			}
 			
 			/* Identify components */
