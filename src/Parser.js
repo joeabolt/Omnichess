@@ -62,14 +62,12 @@ class Parser
 			piece.setDirection(piece.player.direction);
 			board.contents[entry.location] = piece;
 		});
-		
-		console.log(board);
-		
+				
 		/* Build the game */
 		const playerList = [];
 		players.forEach((value, key) => playerList.push(value));
 		const game = new Game(board, playerList, endConditions);
 		
-		console.log(game);
+		return game;
 	}
 }

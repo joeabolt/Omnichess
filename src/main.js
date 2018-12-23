@@ -1,3 +1,3 @@
 /* Initial script */
 
-Parser.Parse("./src/config/test01.js");
+const game = Parser.Parse("./src/config/test01.js");
