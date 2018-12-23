@@ -29,7 +29,7 @@ class EndCondition
 		const words = this.configurationString.trim().split(" ");
 		if (words[0] === "count")
 		{
-			const pieceCount = board.contents.find(
+			const pieceCount = board.contents.filter(
 				(piece) => piece && piece.player === this.player && piece.identifier === words[1]
 			).length;
 			

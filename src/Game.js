@@ -12,7 +12,7 @@ class Game
 		constraints.piece = undefined; // flag for any
 		constraints.action = undefined; // flag for any
 		this.turnOrder = [
-			new Turn(this.players[0], contraints),
+			new Turn(this.players[0], constraints),
 			new Turn(this.players[1], constraints)
 		];
 		this.turnIndex = 0;
@@ -102,29 +102,28 @@ class Game
 	Validate(move)
 	{
 		let validity = false;
-		const [startLocation, action, target] = move.split(" ");
-		const actor = this.board.contents[startLocation];
+		const actor = this.board.contents[move.source];
 		
 		let vectorList = [];
 		let includeCaptureEligible = false;
 		
-		if (action === "->")
+		if (move.move && !move.capture)
 		{
 			vectorList = actor.moveVectors;
 		}
-		else if (action === "x")
+		else if (move.capture && !move.move)
 		{
 			vectorList = actor.captureVectors;
 			includeCaptureEligible = true;
 		}
-		else if (action === "x->")
+		else if (move.move && move.capture)
 		{
 			vectorList = actor.moveCaptureVectors;
 			includeCaptureEligible = true;
 		}
 		
 		vectorList.forEach((vector) => {
-				validity = validity || this.board.GetCellIndices(vector, Number(startLocation), includeCaptureEligible).has(target);
+				validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).has(move.target);
 			});
 		
 		return validity;
@@ -132,26 +131,25 @@ class Game
 	
 	/**
 	 *  Commits a move to the board.
-	 *  Valid move syntaxes:
-	 *    pos_ident -> pos_ident (movement)
-	 *    pos_ident x pos_ident (capture)
-	 *    pos_ident x-> pos_ident (move-capture)
-	 *  Valid, but unsupported:
-	 *    pos_ident drop piece_ident (drop)
-	 *    pos_ident promote (promote)
+	 *  Move should be an object with the following properties:
+	 *    move.move => true if moving, false otherwise
+	 *    move.capture => true if capturing, false otherwise
+	 *    move.drop => true if dropping, false otherwise
+	 *    move.promote => true if promoting, false otherwise
+	 *    move.source => where this action originates from, a number
+	 *    move.target => the target of this move, either a number (location) or string (piece type)
 	 */
 	CommitMove(move)
 	{
-		const words = move.split(" ");
-		if (move.includes("x"))
+		if (move.capture)
 		{
-			this.nextTurn.player.capturedPieces.push(this.board.contents[Number(words[2])]);
-			this.board.contents[Number(words[2])] = undefined;
+			this.nextTurn.player.capturedPieces.push(this.board.contents[move.target]);
+			this.board.contents[move.target] = undefined;
 		}
-		if (move.includes("->"))
+		if (move.move)
 		{
-			this.board.contents[Number(words[2])] = this.board.contents[Number(words[0])];
-			this.board.contents[Number(words[0])] = undefined;
+			this.board.contents[move.target] = this.board.contents[move.source];
+			this.board.contents[move.source] = undefined;
 			return;
 		}
 		// TODO: Add support for promote, drop

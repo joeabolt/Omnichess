@@ -20,11 +20,19 @@ board.contents[1] = bishop_bob;
 const alice_lose = new EndCondition(alice, false, "count rook = 0 @ end bob");
 const bob_lose = new EndCondition(bob, false, "count bishop = 0 @ end alice");
 
+const testMove = {};
+testMove.source = 7;
+testMove.target = 1;
+testMove.move = true;
+testMove.capture = true;
+testMove.drop = false;
+testMove.promote = false;
+
 const game = new Game(board, [alice, bob], [alice_lose, bob_lose]);
 console.log(`Game status: ${game.gameState}`);
 game.CheckGameEnd();
 console.log(`Game status: ${game.gameState}`);
-game.DoTurn_Test("7 x-> 1");
+game.DoTurn_Test(testMove);
 console.log(`Board.contents[1] = ${board.contents[1]}`);
 console.log(`Board.contents[7] = ${board.contents[7]}`);
 console.log(`Game status: ${game.gameState}`);
