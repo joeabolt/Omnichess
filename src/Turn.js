@@ -18,7 +18,7 @@ class Turn
 	GetMove()
 	{
 		const move = player.GetMove();
-		// TODO: validate that move is described in legalActions
+		// TODO: validate that move is described in legalActions.piece and legalActions.action
 		// If so, return it; otherwise dispaly error and prompt for another
 		return move;
 	}

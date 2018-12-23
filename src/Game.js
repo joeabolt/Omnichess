@@ -7,10 +7,13 @@ class Game
 		this.players = players;
 		this.endConditions = endConditions;
 		
-		/* Default turn order is alternating */
+		/* Default turn order is alternating, any legal move goes */
+		const constraints = {};
+		constraints.piece = undefined; // flag for any
+		constraints.action = undefined; // flag for any
 		this.turnOrder = [
-			new Turn(this.players[0], "* *"),
-			new Turn(this.players[1], "* *")
+			new Turn(this.players[0], contraints),
+			new Turn(this.players[1], constraints)
 		];
 		this.turnIndex = 0;
 		
