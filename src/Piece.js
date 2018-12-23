@@ -19,7 +19,23 @@ class Piece
 			.setMoveVectors(Vector.Create(baseObj.move))
 			.setCaptureVectors(Vector.Create(baseObj.capture))
 			.setMoveCaptureVectors(Vector.Create(baseObj.moveCapture))
+			.setIdentifier(baseObj.identifier)
 			.setPlayer(baseObj.player);
+	}
+	
+	/**
+	 *  Sets a piece to face the direction passed in as an array of 1s or -1s.
+	 *  Changes the length of vector components, so it only really applies if
+	 *  the piece has directional vectors.
+	 */
+	setDirection(direction)
+	{
+		this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
+			for (let i = 0; i < vector.components.length; i++)
+			{
+				vector.components[i].length *= direction[i];
+			}
+		});
 	}
 	
 	setMoveVectors(moveVectors)

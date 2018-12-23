@@ -5,7 +5,7 @@ class Board
 	{
 		this.cells = adjacencyMatrix;
 		/* The below works because we insist on a square/cubic grid */
-		this.dimensions = Math.log(adjacencyMatrix[0].length) / Math.log(3);
+		this.dimensions = Math.round(Math.log(adjacencyMatrix[0].length) / Math.log(3));
 		this.contents = [];
 		for (let i = 0; i < this.cells.length; i++)
 		{
@@ -73,8 +73,8 @@ class Board
 			 * (e.g., top-left, top-center, top-right).
 			 */
 			// TODO: Adapt this for N-dimensional boards, eventually
-			const direction = Math.round((stepY+1) * Math.pow(3, this.dimensions - 1) 
-				+ (stepX+1) * Math.pow(3, this.dimensions - 2));
+			const direction = (stepY+1) * Math.pow(3, this.dimensions - 1) 
+				+ (stepX+1) * Math.pow(3, this.dimensions - 2);
 			previous = destination;
 			destination = this.cells[destination][direction];
 			if (destination === -1)
