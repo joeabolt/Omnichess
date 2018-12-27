@@ -14,7 +14,13 @@ class Parser
         script.setAttribute("src", filepath);
 		document.body.insertBefore(script, document.scripts[0]);
 		
-		setTimeout(() => {Parser.Load();}, 100);
+		let game = undefined;
+		setTimeout(() => {game = Parser.Load(); console.log("Ran!");}, 100);
+		while (game === undefined)
+		{
+			continue;
+		}
+		return game;
 	}
 	
 	static Load()
@@ -67,7 +73,7 @@ class Parser
 		const playerList = [];
 		players.forEach((value, key) => playerList.push(value));
 		const game = new Game(board, playerList, endConditions);
-		
+		console.log(game);
 		return game;
 	}
 }
