@@ -6,6 +6,7 @@ class Game
 		this.board = board;
 		this.players = players;
 		this.endConditions = endConditions;
+		this.realizer = undefined; /* Has to be added later */
 		
 		/* Default turn order is alternating, any legal move goes */
 		const constraints = {};
@@ -28,6 +29,11 @@ class Game
 		 *  Will need updating in the future.
 		 */
 		this.gameState = 0;
+	}
+	
+	SetRealizer(realizer)
+	{
+		this.realizer = realizer;
 	}
 	
 	PlayGame()
@@ -58,6 +64,9 @@ class Game
 			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
 			this.nextTurn = this.turnOrder[this.turnIndex];
 		}
+		
+		/* Update the vizualization */
+		realizer.Update();
 	}
 	
 	/* Special version for testing */
@@ -80,6 +89,9 @@ class Game
 			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
 			this.nextTurn = this.turnOrder[this.turnIndex];
 		}
+		
+		/* Update the vizualization */
+		realizer.Update();
 	}
 	
 	CheckGameEnd()
