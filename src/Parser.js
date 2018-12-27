@@ -7,19 +7,27 @@ class Parser
 	 *  Assumes that the json file has a single object called
 	 *  config_data.
 	 */
-	static Parse(filepath)
+	static async Parse(filepath)
 	{
 		let script = document.createElement('script');
         script.setAttribute("type","text/javascript");
         script.setAttribute("src", filepath);
 		document.body.insertBefore(script, document.scripts[0]);
 		
-		let game = undefined;
-		setTimeout(() => {game = Parser.Load(); console.log("Ran!");}, 100);
-		while (game === undefined)
-		{
-			continue;
+		/* Inspired by / copied from https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep */
+		function sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
 		}
+		
+		let game = undefined;
+		async function load() {
+			await sleep(100);
+			game = Parser.Load();
+		}
+		
+		await load();
+		/* End inspiration */
+		
 		return game;
 	}
 	
@@ -73,7 +81,7 @@ class Parser
 		const playerList = [];
 		players.forEach((value, key) => playerList.push(value));
 		const game = new Game(board, playerList, endConditions);
-		console.log(game);
+
 		return game;
 	}
 }
