@@ -7,19 +7,7 @@ class Realizer
 		this.board = game.board;
 		this.isFullyUpdated = false;
 		
-		let lineSegment = "+";
-		this.cellLength = ("" + this.board.contents.length).length;
-		for (let i = 0; i < this.cellLength; i++)
-		{
-			lineSegment += "-";
-		}
-		this.intermediateLine = "";
 		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
-		for (let i = 0; i < this.cellsPerRow; i++)
-		{
-			this.intermediateLine += lineSegment;
-		}
-		this.intermediateLine += "+";
 		
 		this.displayBoard = this.CreateDisplayBoard();
 	}
@@ -56,45 +44,26 @@ class Realizer
 	CreateDisplayBoard()
 	{
 		console.log("Creating the display board.");
-		let board = this.intermediateLine + "<br />";
+		let board = "<table>";
 		for (let row = 0; row < this.cellsPerRow; row++)
 		{
+			board += "<tr>";
 			for (let col = 0; col < this.cellsPerRow; col++)
 			{
-				let stringToAdd = "|" + (row * this.cellsPerRow + col);
-				/* cellLength + 1 accounts for the separators between cells */
-				for (let spacing = stringToAdd.length; spacing < this.cellLength + 1; spacing++)
-				{
-					stringToAdd += " ";
-				}
-				board += stringToAdd;
-			}
-			board += "|<br />";
-			/* This loop adds the actual contents of the cells */
-			for (let col = 0; col < this.cellsPerRow; col++)
-			{
+				const index = row * this.cellsPerRow + col;
+				
 				/* Obtain the contents of this cell, as a string */
-				let contents = this.board.contents[row * this.cellsPerRow + col];
-				contents = contents == undefined ? "" : contents.identifier;
+				let contents = this.board.contents[index];
+				contents = contents == undefined ? "&nbsp" : contents.identifier;
 				
-				/* Pad it to length, centered */
-				for (let i = 0; contents.length < this.cellLength; i++)
-				{
-					if (i % 0 == 0)
-					{
-						contents = contents.padEnd(contents.length + 1);
-					}
-					else
-					{
-						contents = contents.padStart(contents.length + 1);
-					}
-				}
+				const darkBackground = (row % 2 == 0) ^ (col % 2 == 0);
 				
-				board += "|" + contents;
+				board += `<td style="background-color: #${darkBackground ? "000000" : "ffffff"};
+					color: #${darkBackground ? "ffffff" : "000000"};">${index}<br />${contents}</td>`;
 			}
-			board += "|<br />" + this.intermediateLine + "<br />";
+			board += "</tr>";
 		}
-		board = board.replace(/\s(?!\/>)/g, "&nbsp");
+		board += "</table>";
 		
 		return board;
 	}
