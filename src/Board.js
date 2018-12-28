@@ -29,20 +29,15 @@ class Board
 		const x = vector.components[0];
 		const y = vector.components[1];
 		
-		let dx = 0;
-		let dy = 0;
-		for (let i = 0; i < x.maxRep; i++)
+		for (let i = 1; i <= Math.max(x.maxRep, y.maxRep); i++)
 		{
-			dx += x.length;
-			for (let j = 0; j < y.maxRep; j++)
-			{
-				dy += y.length;
-				const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
-				
-				if (output === -1 || (this.contents[output] !== undefined && !includeCaptureEligible))
-					continue;
-				allCellIndices.add(output);
-			}
+			const dx = x.length * Math.min(i, x.maxRep);
+			const dy = y.length * Math.min(i, y.maxRep);
+			const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
+			
+			if (output === -1 || (this.contents[output] !== undefined && !includeCaptureEligible))
+				continue;
+			allCellIndices.add(output);
 		}
 		
 		return allCellIndices;

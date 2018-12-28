@@ -14,8 +14,8 @@ class Game
 		legalActions.move = true;
 		legalActions.capture = true;
 		this.turnOrder = [
-			new Turn(this.players[0], legalActions),
-			new Turn(this.players[1], legalActions)
+			new Turn(this.players[0], this.board, legalActions),
+			new Turn(this.players[1], this.board, legalActions)
 		];
 		this.turnIndex = 0;
 		
