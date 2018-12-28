@@ -28,11 +28,11 @@ class Turn
 			{
 				// TODO: Dark magic to validate it's the right piece
 			}
-			// if (this.board.contents[move.source].player !== this.player)
-			// {
-				// console.log("Tried to move the enemy's piece.");
-				// approved = false;
-			// }
+			if (this.board.contents[move.source].player !== this.player)
+			{
+				console.log("Tried to move the enemy's piece.");
+				approved = false;
+			}
 			if (move.move && !this.legalActions.move)
 			{
 				console.log("Tried to move when move disallowed.");

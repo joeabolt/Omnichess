@@ -24,6 +24,7 @@ class EndCondition
 			/* This condition does not apply at this time */
 			return 0;
 		}
+		console.log(`Evaluating ${this.configurationString}`);
 		
 		/* Evaluate */
 		const words = this.configurationString.trim().split(" ");
