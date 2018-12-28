@@ -65,6 +65,9 @@ class Realizer
 		this.moveQueueMutex = true;
 		this.moveQueue.push(moveObject);
 		this.moveQueueMutex = false;
+		
+		/* Fire up the game engine */
+		this.game.Step();
 	}
 	
 	CreateDisplayBoard()

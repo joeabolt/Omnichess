@@ -10,8 +10,6 @@ async function startGame()
 	game.SetRealizer(realizer);
 	
 	setInterval(() => {realizer.Realize();}, 500);
-	
-	// game.PlayGame();
 }
 
 startGame();

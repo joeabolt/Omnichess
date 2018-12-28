@@ -18,7 +18,7 @@ class Turn
 	GetMove()
 	{
 		let move = undefined;
-		let approved = false;
+		let approved = false;		
 		while (!approved)
 		{
 			move = this.player.GetMove();
@@ -27,9 +27,20 @@ class Turn
 			{
 				// TODO: Dark magic to validate it's the right piece
 			}
-			approved = approved && ~(this.legalActions.move ^ move.move);
-			approved = approved && ~(this.legalActions.capture ^ move.capture);
-			if (!approved) console.log("Did not approve!");
+			if (move.move && !this.legalActions.move)
+			{
+				console.log("Tried to move when move disallowed.");
+				approved = false;
+			}
+			if (move.capture && !this.legalActions.capture)
+			{
+				console.log("Tried to capture when capture disallowed.");
+				approved = false;
+			}
+			if (!approved)
+			{
+				console.log("Did not approve!");
+			}
 		}
 		return move;
 	}

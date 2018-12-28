@@ -21,9 +21,7 @@ class Player
 	
 	GetMove()
 	{
-		while (this.realizer === undefined);
-		let move = this.realizer.GetMove();
-		while (move === undefined) move = this.realizer.GetMove();
+		const move = this.realizer.GetMove();
 		return move;
 	}
 }

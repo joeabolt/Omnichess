@@ -37,52 +37,34 @@ class Game
 		this.realizer = realizer;
 		this.players.forEach((player) => {player.realizer = realizer; });
 	}
+
 	
-	PlayGame()
+	Step()
 	{
 		this.CheckGameEnd();
-		while (this.gameState === 0)
+		if (this.gameState === 0)
 		{
 			this.DoTurn();
 			this.CheckGameEnd();
 		}
-		/* Output winner / loser */
-		document.getElementById("message").innerHTML = "The game is now over!";
+		if (this.gameState !== 0)
+		{
+			document.getElementById("message").innerHTML = "The game is now over!";
+		}
 	}
 	
 	DoTurn()
 	{
 		/* Get a legal move */
 		let proposedMove = this.nextTurn.GetMove();
-		while (!this.Validate(proposedMove)) proposedMove = this.nextTurn.GetMove();
+		while (!this.Validate(proposedMove))
+		{
+			console.log("Game invalidated the move.");
+			proposedMove = this.nextTurn.GetMove();
+		}
 		
 		/* Make the move */
 		this.CommitMove(proposedMove);
-		
-		/* Get the next move */
-		this.lastTurn = this.nextTurn;
-		this.nextTurn = this.nextTurn.EndTurn();
-		if (this.nextTurn === undefined)
-		{
-			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
-			this.nextTurn = this.turnOrder[this.turnIndex];
-		}
-		
-		/* Update the vizualization */
-		realizer.Update();
-	}
-	
-	/* Special version for testing */
-	DoTurn_Test(move)
-	{
-		if (!this.Validate(move))
-		{
-			throw "Invalid move passed to DoTurn_Test";
-			return;
-		}
-		
-		/* Make the move */
-		this.CommitMove(move);
 		
 		/* Get the next move */
 		this.lastTurn = this.nextTurn;
