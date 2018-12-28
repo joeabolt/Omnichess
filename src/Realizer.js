@@ -58,7 +58,7 @@ class Realizer
 		moveObject.move = move.includes("->");
 		moveObject.capture = move.includes("x");
 		moveObject.source = Number(move.match(/^\d+/));
-		moveObject.target = Number(move.match(/\d+^/));
+		moveObject.target = Number(move.trim().match(/\d+$/));
 		
 		/* Load move */
 		while (this.moveQueueMutex);
