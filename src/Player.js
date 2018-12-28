@@ -16,12 +16,14 @@ class Player
 		this.direction = direction;
 		this.dropablePieces = dropablePieces;
 		this.capturedPieces = capturedPieces;
+		this.realizer = undefined;
 	}
 	
 	GetMove()
 	{
-		/* Stub */
-		// TODO: Ask the player for a move to make
-		// TODO: Return a string notating the move
+		while (this.realizer === undefined);
+		let move = this.realizer.GetMove();
+		while (move === undefined) move = this.realizer.GetMove();
+		return move;
 	}
 }

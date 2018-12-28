@@ -25,7 +25,6 @@ class Realizer
 		{
 			return;
 		}
-		// TODO: Dark magic to output the state of the game
 		document.getElementById("output").innerHTML = this.displayBoard;
 		this.isFullyUpdated = true;
 		console.log("Updated the display.");

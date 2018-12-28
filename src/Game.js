@@ -9,12 +9,13 @@ class Game
 		this.realizer = undefined; /* Has to be added later */
 		
 		/* Default turn order is alternating, any legal move goes */
-		const constraints = {};
-		constraints.piece = undefined; // flag for any
-		constraints.action = undefined; // flag for any
+		const legalActions = {};
+		legalActions.piece = undefined; // flag for any
+		legalActions.move = true;
+		legalActions.capture = true;
 		this.turnOrder = [
-			new Turn(this.players[0], constraints),
-			new Turn(this.players[1], constraints)
+			new Turn(this.players[0], legalActions),
+			new Turn(this.players[1], legalActions)
 		];
 		this.turnIndex = 0;
 		
@@ -34,17 +35,19 @@ class Game
 	SetRealizer(realizer)
 	{
 		this.realizer = realizer;
+		this.players.forEach((player) => {player.realizer = realizer; });
 	}
 	
 	PlayGame()
 	{
-		CheckGameEnd();
-		while (turnIndex === 0)
+		this.CheckGameEnd();
+		while (this.gameState === 0)
 		{
-			DoTurn();
-			CheckGameEnd();
+			this.DoTurn();
+			this.CheckGameEnd();
 		}
-		// TODO: Output winner / loser
+		/* Output winner / loser */
+		document.getElementById("message").innerHTML = "The game is now over!";
 	}
 	
 	DoTurn()

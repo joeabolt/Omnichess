@@ -17,9 +17,20 @@ class Turn
 	
 	GetMove()
 	{
-		const move = player.GetMove();
-		// TODO: validate that move is described in legalActions.piece and legalActions.action
-		// If so, return it; otherwise dispaly error and prompt for another
+		let move = undefined;
+		let approved = false;
+		while (!approved)
+		{
+			move = this.player.GetMove();
+			approved = true;
+			if (this.legalActions.piece !== undefined)
+			{
+				// TODO: Dark magic to validate it's the right piece
+			}
+			approved = approved && ~(this.legalActions.move ^ move.move);
+			approved = approved && ~(this.legalActions.capture ^ move.capture);
+			if (!approved) console.log("Did not approve!");
+		}
 		return move;
 	}
 	
