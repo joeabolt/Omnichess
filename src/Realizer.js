@@ -6,6 +6,8 @@ class Realizer
 		this.game = game;
 		this.board = game.board;
 		this.isFullyUpdated = false;
+		this.moveQueue = [];
+		this.moveQueueMutex = false;
 		
 		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
 		
@@ -39,6 +41,31 @@ class Realizer
 		// Keep track of what we are supposed to display
 		this.displayBoard = this.CreateDisplayBoard();
 		this.isFullyUpdated = false;
+	}
+	
+	GetMove()
+	{
+		while (this.moveQueueMutex);
+		this.moveQueueMutex = true;
+		const move = this.moveQueue.shift();
+		this.moveQueueMutex = false;
+		return move;
+	}
+	
+	InputMove(move)
+	{
+		/* Parse move into object */
+		const moveObject = {};
+		moveObject.move = move.includes("->");
+		moveObject.capture = move.includes("x");
+		moveObject.source = Number(move.match(/^\d+/));
+		moveObject.target = Number(move.match(/\d+^/));
+		
+		/* Load move */
+		while (this.moveQueueMutex);
+		this.moveQueueMutex = true;
+		this.moveQueue.push(moveObject);
+		this.moveQueueMutex = false;
 	}
 	
 	CreateDisplayBoard()
