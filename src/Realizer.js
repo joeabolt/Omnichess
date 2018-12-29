@@ -83,10 +83,14 @@ class Realizer
 				let contents = this.board.contents[index];
 				contents = contents == undefined ? "&nbsp" : contents.identifier;
 				
-				const darkBackground = (row % 2 == 0) ^ (col % 2 == 0);
+				const backgroundColor = (row % 2 == 0) ^ (col % 2 == 0) ? "#000000" : "#FFFFFF";
+				let foregroundColor = (row % 2 == 0) ^ (col % 2 == 0) ? "#FFFFFF" : "#000000";
+				if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
+				{
+					foregroundColor = this.board.contents[index].player.color;
+				}
 				
-				board += `<td style="background-color: #${darkBackground ? "000000" : "ffffff"};
-					color: #${darkBackground ? "ffffff" : "000000"};">${index}<br />${contents}</td>`;
+				board += `<td style="background-color: ${backgroundColor}; color: ${foregroundColor};">${index}<br />${contents}</td>`;
 			}
 			board += "</tr>";
 		}

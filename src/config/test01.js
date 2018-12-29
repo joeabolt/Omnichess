@@ -45,12 +45,14 @@ var config_data = {
 	players: [
 		{ // White
 			identifier: "White",
+			color: "#0088FF",
 			direction: [1, -1],
 			dropablePieces: "",
 			capturedPieces: ""
 		},
 		{ // Black
 			identifier: "Black",
+			color: "#FF0000",
 			direction: [1, 1],
 			dropablePieces: "",
 			capturedPieces: ""
