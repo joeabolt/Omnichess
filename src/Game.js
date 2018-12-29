@@ -41,7 +41,6 @@ class Game
 	
 	Step()
 	{
-		// this.CheckGameEnd();
 		if (this.gameState === 0)
 		{
 			this.DoTurn();

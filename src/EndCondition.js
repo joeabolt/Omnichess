@@ -18,7 +18,7 @@ class EndCondition
 		 * last player's turn or at the beginning of the next player's turn;
 		 * if not, this if is true and an inconclusive result (0) is returned.
 		 */
-		if ((!this.configurationString.includes(`@ end ${lastTurn.player.identifier}`))
+		if (!this.configurationString.includes(`@ end ${lastTurn.player.identifier}`)
 			&& !this.configurationString.includes(`@ start ${nextTurn.player.identifier}`))
 		{
 			/* This condition does not apply at this time */
