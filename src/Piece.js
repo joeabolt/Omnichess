@@ -36,6 +36,7 @@ class Piece
 				vector.components[i].length *= direction[i];
 			}
 		});
+		return this;
 	}
 	
 	setMoveVectors(moveVectors)

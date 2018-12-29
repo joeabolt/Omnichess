@@ -67,12 +67,12 @@ class Parser
 				
 		/* Initialize the board */
 		config_data.boardState.forEach((entry) => {
-			const piece = new Piece();
-			piece.setIdentifier(entry.piece);
-			piece.setPlayer(players.get(entry.player));
-			piece.setMoveVectors(Vector.Create(pieceTemplates.get(entry.piece).move));
-			piece.setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture));
-			piece.setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture));
+			const piece = new Piece()
+				.setIdentifier(entry.piece)
+				.setPlayer(players.get(entry.player))
+				.setMoveVectors(Vector.Create(pieceTemplates.get(entry.piece).move))
+				.setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture))
+				.setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture));
 			piece.setDirection(piece.player.direction);
 			board.contents[entry.location] = piece;
 		});
