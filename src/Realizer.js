@@ -27,7 +27,6 @@ class Realizer
 		}
 		document.getElementById("output").innerHTML = this.displayBoard;
 		this.isFullyUpdated = true;
-		console.log("Updated the display.");
 	}
 	
 	/**
@@ -72,7 +71,6 @@ class Realizer
 	
 	CreateDisplayBoard()
 	{
-		console.log("Creating the display board.");
 		let board = "<table>";
 		for (let row = 0; row < this.cellsPerRow; row++)
 		{

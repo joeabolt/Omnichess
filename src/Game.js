@@ -41,7 +41,7 @@ class Game
 	
 	Step()
 	{
-		this.CheckGameEnd();
+		// this.CheckGameEnd();
 		if (this.gameState === 0)
 		{
 			this.DoTurn();
@@ -60,8 +60,10 @@ class Game
 		while (!this.Validate(proposedMove))
 		{
 			console.log("Game invalidated the move.");
+			document.getElementById("message").innerHTML = "Illegal move.";
 			proposedMove = this.nextTurn.GetMove();
 		}
+		document.getElementById("message").innerHTML = "";
 		
 		/* Make the move */
 		this.CommitMove(proposedMove);

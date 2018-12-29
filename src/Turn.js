@@ -31,16 +31,19 @@ class Turn
 			if (this.board.contents[move.source].player !== this.player)
 			{
 				console.log("Tried to move the enemy's piece.");
+				document.getElementById("message").innerHTML = "Invalid action: tried to move the opponent's piece.";
 				approved = false;
 			}
 			if (move.move && !this.legalActions.move)
 			{
 				console.log("Tried to move when move disallowed.");
+				document.getElementById("message").innerHTML = "Invalid action: must not move.";
 				approved = false;
 			}
 			if (move.capture && !this.legalActions.capture)
 			{
 				console.log("Tried to capture when capture disallowed.");
+				document.getElementById("message").innerHTML = "Invalid action: must not capture.";
 				approved = false;
 			}
 			if (!approved)
