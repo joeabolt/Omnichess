@@ -25,7 +25,12 @@ class Realizer
 		{
 			return;
 		}
-		document.getElementById("output").innerHTML = this.displayBoard;
+		let outputArea = document.getElementById("output");
+		if (outputArea.firstChild)
+		{
+			outputArea.removeChild(outputArea.firstChild);
+		}
+		outputArea.appendChild(this.displayBoard);
 		this.isFullyUpdated = true;
 	}
 	
@@ -71,30 +76,31 @@ class Realizer
 	
 	CreateDisplayBoard()
 	{
-		let board = "<table>";
-		for (let row = 0; row < this.cellsPerRow; row++)
+		let board = document.createElement("table");
+		for (let rowIndex = 0; rowIndex < this.cellsPerRow; rowIndex++)
 		{
-			board += "<tr>";
+			let row = board.insertRow(rowIndex);
 			for (let col = 0; col < this.cellsPerRow; col++)
 			{
-				const index = row * this.cellsPerRow + col;
+				let cell = row.insertCell(col);
+				const index = rowIndex * this.cellsPerRow + col;
 				
 				/* Obtain the contents of this cell, as a string */
 				let contents = this.board.contents[index];
-				contents = contents == undefined ? "&nbsp" : contents.identifier;
+				contents = contents === undefined ? "&nbsp" : contents.identifier;
 				
-				const backgroundColor = (row % 2 == 0) ^ (col % 2 == 0) ? "#000000" : "#FFFFFF";
-				let foregroundColor = (row % 2 == 0) ^ (col % 2 == 0) ? "#FFFFFF" : "#000000";
+				const backgroundColor = (rowIndex % 2 === 0) ^ (col % 2 === 0) ? "#000000" : "#FFFFFF";
+				let foregroundColor = (rowIndex % 2 === 0) ^ (col % 2 === 0) ? "#FFFFFF" : "#000000";
 				if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
 				{
 					foregroundColor = this.board.contents[index].player.color;
 				}
 				
-				board += `<td style="background-color: ${backgroundColor}; color: ${foregroundColor};">${index}<br />${contents}</td>`;
+				cell.style.backgroundColor = backgroundColor;
+				cell.style.color = foregroundColor;
+				cell.innerHTML = `${index}<br />${contents}`;
 			}
-			board += "</tr>";
 		}
-		board += "</table>";
 		
 		return board;
 	}
