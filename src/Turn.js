@@ -9,17 +9,48 @@
  */
 class Turn
 {
-	constructor(player, legalActions)
+	constructor(player, board, legalActions)
 	{
 		this.player = player;
+		this.board = board;
 		this.legalActions = legalActions;
 	}
 	
 	GetMove()
 	{
-		const move = player.GetMove();
-		// TODO: validate that move is described in legalActions.piece and legalActions.action
-		// If so, return it; otherwise dispaly error and prompt for another
+		let move = undefined;
+		let approved = false;		
+		while (!approved)
+		{
+			move = this.player.GetMove();
+			approved = true;
+			if (this.legalActions.piece !== undefined)
+			{
+				// TODO: Dark magic to validate it's the right piece
+			}
+			if (this.board.contents[move.source].player !== this.player)
+			{
+				document.getElementById("message").innerHTML = "Invalid action: tried to move the opponent's piece.";
+				approved = false;
+				throw "Tried to move the enemy's piece.";
+			}
+			if (move.move && !this.legalActions.move)
+			{
+				document.getElementById("message").innerHTML = "Invalid action: must not move.";
+				approved = false;
+				throw "Tried to move when move disallowed.";
+			}
+			if (move.capture && !this.legalActions.capture)
+			{
+				document.getElementById("message").innerHTML = "Invalid action: must not capture.";
+				approved = false;
+				throw "Tried to capture when capture disallowed.";
+			}
+			if (!approved)
+			{
+				console.log("Did not approve!");
+			}
+		}
 		return move;
 	}
 	

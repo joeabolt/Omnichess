@@ -6,14 +6,16 @@ class Game
 		this.board = board;
 		this.players = players;
 		this.endConditions = endConditions;
+		this.realizer = undefined; /* Has to be added later */
 		
 		/* Default turn order is alternating, any legal move goes */
-		const constraints = {};
-		constraints.piece = undefined; // flag for any
-		constraints.action = undefined; // flag for any
+		const legalActions = {};
+		legalActions.piece = undefined; // flag for any
+		legalActions.move = true;
+		legalActions.capture = true;
 		this.turnOrder = [
-			new Turn(this.players[0], constraints),
-			new Turn(this.players[1], constraints)
+			new Turn(this.players[0], this.board, legalActions),
+			new Turn(this.players[1], this.board, legalActions)
 		];
 		this.turnIndex = 0;
 		
@@ -30,22 +32,37 @@ class Game
 		this.gameState = 0;
 	}
 	
-	PlayGame()
+	SetRealizer(realizer)
 	{
-		CheckGameEnd();
-		while (turnIndex === 0)
+		this.realizer = realizer;
+		this.players.forEach((player) => {player.realizer = realizer; });
+	}
+
+	
+	Step()
+	{
+		if (this.gameState === 0)
 		{
-			DoTurn();
-			CheckGameEnd();
+			this.DoTurn();
+			this.CheckGameEnd();
 		}
-		// TODO: Output winner / loser
+		if (this.gameState !== 0)
+		{
+			document.getElementById("message").innerHTML = "The game is now over!";
+		}
 	}
 	
 	DoTurn()
 	{
 		/* Get a legal move */
 		let proposedMove = this.nextTurn.GetMove();
-		while (!this.Validate(proposedMove)) proposedMove = this.nextTurn.GetMove();
+		while (!this.Validate(proposedMove))
+		{
+			console.log("Game invalidated the move.");
+			document.getElementById("message").innerHTML = "Illegal move.";
+			proposedMove = this.nextTurn.GetMove();
+		}
+		document.getElementById("message").innerHTML = "";
 		
 		/* Make the move */
 		this.CommitMove(proposedMove);
@@ -58,28 +75,9 @@ class Game
 			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
 			this.nextTurn = this.turnOrder[this.turnIndex];
 		}
-	}
-	
-	/* Special version for testing */
-	DoTurn_Test(move)
-	{
-		if (!this.Validate(move))
-		{
-			throw "Invalid move passed to DoTurn_Test";
-			return;
-		}
 		
-		/* Make the move */
-		this.CommitMove(move);
-		
-		/* Get the next move */
-		this.lastTurn = this.nextTurn;
-		this.nextTurn = this.nextTurn.EndTurn();
-		if (this.nextTurn === undefined)
-		{
-			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
-			this.nextTurn = this.turnOrder[this.turnIndex];
-		}
+		/* Update the vizualization */
+		realizer.Update();
 	}
 	
 	CheckGameEnd()
@@ -121,7 +119,7 @@ class Game
 			vectorList = actor.moveCaptureVectors;
 			includeCaptureEligible = true;
 		}
-		
+
 		vectorList.forEach((vector) => {
 				validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).has(move.target);
 			});
