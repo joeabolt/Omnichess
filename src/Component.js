@@ -24,7 +24,7 @@ class Component {
 		const localInfiniteRepetition = componentString.includes("+");
 
 		// Check for global finite and infinite repetition
-		if (globalFiniteRepetition && globalFiniteRepetition) {
+		if (globalFiniteRepetition && globalInfiniteRepetition) {
 			throw "ERROR: Component global flags contain both a finite and an infinite repetition flag";
 		} else if (globalFiniteRepetition) {
 			component.maxRep = Number(globalFiniteRepetition[1]);
@@ -33,7 +33,7 @@ class Component {
 		}
 
 		// Check for local finite and infinite repetition
-		if (localFiniteRepetition && localFiniteRepetition) {
+		if (localFiniteRepetition && localInfiniteRepetition) {
 			throw "ERROR: Component local flags contain both a finite and an infinite repetition flag";
 		} else if (localFiniteRepetition) {
 			component.maxRep = Number(localFiniteRepetition[1]);
