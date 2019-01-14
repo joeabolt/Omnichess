@@ -1,50 +1,107 @@
-// NOTE: This does not test for local and global finite repetition flags
-for (let i = 0; i < 256; i++) {
-    // Treats i, conceptually, like a binary number and sets each bit to a boolean flag
-    const localInfinite =   Math.floor(i / 128) % 2 === 1
-    const localJump =       Math.floor(i / 64) % 2 === 1;
-    const localHop =        Math.floor(i / 32) % 2 === 1;
-    const localPromote =    Math.floor(i / 16) % 2 === 1;
-    const globalInfinite =  Math.floor(i / 8) % 2 === 1;
-    const globalJump =      Math.floor(i / 4) % 2 === 1;
-    const globalHop =       Math.floor(i / 2) % 2 === 1;
-    const globalPromote =   Math.floor(i / 1) % 2 === 1;
+QUnit.test("Component parses notation with a local infinite-repetition flag", function (assert) {
+    const expected = [new Component(1, 100, false, false, false), new Component(-1, 100, false, false, false)];
+    const actual = Component.Create("1+", "");
+    assert.deepEqual(actual, expected);
+});
 
-    // Append comma-delimited descriptors to the test title based on what flags are enabled
-    const descriptors = [];
-    if (i === 0) descriptors.push("no flags");
-    else {
-        if (localInfinite && globalInfinite) descriptors.push("local and global infinite repetition flags");
-        else if (localInfinite) descriptors.push("local infinite repetition flag");
-        else if (globalInfinite) descriptors.push("global infinite repetition flag");
+QUnit.test("Component parses notation with a local finite-repetition flag", function (assert) {
+    const expected = [new Component(1, 5, false, false, false), new Component(-1, 5, false, false, false)];
+    const actual = Component.Create("1{5}", "");
+    assert.deepEqual(actual, expected);
+});
 
-        if (localJump && globalJump) descriptors.push("local and global jump flags");
-        else if (localJump) descriptors.push("local jump flag");
-        else if (globalJump) descriptors.push("global jump flag");
+QUnit.test("Component parses notation with a local jump flag", function (assert) {
+    const expected = [new Component(1, 1, true, false, false), new Component(-1, 1, true, false, false)];
+    const actual = Component.Create("1j", "");
+    assert.deepEqual(actual, expected);
+});
 
-        if (localHop && globalHop) descriptors.push("local and global hop flags");
-        else if (localHop) descriptors.push("local hop flag");
-        else if (globalHop) descriptors.push("global hop flag");
+QUnit.test("Component parses notation with a local hop flag", function (assert) {
+    const expected = [new Component(1, 1, false, true, false), new Component(-1, 1, false, true, false)];
+    const actual = Component.Create("1h", "");
+    assert.deepEqual(actual, expected);
+});
 
-        if (localPromote && globalPromote) descriptors.push("local and global promote flags");
-        else if (localPromote) descriptors.push("local promote flag");
-        else if (globalPromote) descriptors.push("global promote flag");
-    }
+QUnit.test("Component parses notation with a local promote flag", function (assert) {
+    const expected = [new Component(1, 1, false, false, true), new Component(-1, 1, false, false, true)];
+    const actual = Component.Create("1p", "");
+    assert.deepEqual(actual, expected);
+});
 
-    // Begin unit test
-    QUnit.test(`Component parses notation with ${descriptors.join(", ")}`, function (assert) {
-        // Arrange
-        const componentString = `1${localInfinite ? "+" : ""}${localJump ? "j" : ""}${localHop ? "h" : ""}${localPromote ? "p" : ""}`;
-        const globalString = `(${componentString}, 0)${globalInfinite ? "+" : ""}${globalJump ? "j" : ""}${globalHop ? "h" : ""}${globalPromote ? "p" : ""}`;
-        const expected = [
-            new Component(1, localInfinite || globalInfinite ? 100 : 1, localJump || globalJump, localHop || globalHop, localPromote || globalPromote),
-            new Component(-1, localInfinite || globalInfinite ? 100 : 1, localJump || globalJump, localHop || globalHop, localPromote || globalPromote),
-        ];
+QUnit.test("Component parses notation with a local directional flag", function (assert) {
+    const expected = [new Component(1, 1, false, false, false)];
+    const actual = Component.Create("1d", "");
+    assert.deepEqual(actual, expected);
+});
 
-        // Act
-        const actual = Component.Create(componentString, globalString);
+QUnit.test("Component parses notation with a global infinite-repetition flag", function (assert) {
+    const expected = [new Component(1, 100, false, false, false), new Component(-1, 100, false, false, false)];
+    const actual = Component.Create("1", "+");
+    assert.deepEqual(actual, expected);
+});
 
-        // Assert
-        assert.deepEqual(actual, expected);
-    });
-}
+QUnit.test("Component parses notation with a global finite-repetition flag", function (assert) {
+    const expected = [new Component(1, 5, false, false, false), new Component(-1, 5, false, false, false)];
+    const actual = Component.Create("1", "{5}");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with a global jump flag", function (assert) {
+    const expected = [new Component(1, 1, true, false, false), new Component(-1, 1, true, false, false)];
+    const actual = Component.Create("1", "j");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with a global hop flag", function (assert) {
+    const expected = [new Component(1, 1, false, true, false), new Component(-1, 1, false, true, false)];
+    const actual = Component.Create("1", "h");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with a global promote flag", function (assert) {
+    const expected = [new Component(1, 1, false, false, true), new Component(-1, 1, false, false, true)];
+    const actual = Component.Create("1", "p");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with a global directional flag", function (assert) {
+    const expected = [new Component(1, 1, false, false, false)];
+    const actual = Component.Create("1", "d");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with multiple local flags", function (assert) {
+    const expected = [new Component(1, 100, true, false, true), new Component(-1, 100, true, false, true)];
+    const actual = Component.Create("1+jp", "");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with multiple global flags", function (assert) {
+    const expected = [new Component(1, 7, false, true, true)];
+    const actual = Component.Create("1", "{5}hpd");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with multiple distinct local and global flags", function (assert) {
+    const expected = [new Component(1, 100, false, true, true)];
+    const actual = Component.Create("1pd", "+h");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with multiple duplicate local and global flags", function (assert) {
+    const expected = [new Component(1, 1, false, true, true)];
+    const actual = Component.Create("1hphp", "hhphphphhd");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with a local infinite-repetition flag and a global finite-repetition flag", function (assert) {
+    const expected = [new Component(1, 100, false, false, false), new Component(-1, 100, false, false, false)];
+    const actual = Component.Create("1+", "{9}");
+    assert.deepEqual(actual, expected);
+});
+
+QUnit.test("Component parses notation with a local finite-repetition flag and a global infinite-repetition flag", function (assert) {
+    const expected = [new Component(1, 2, false, false, false), new Component(-1, 2, false, false, false)];
+    const actual = Component.Create("1{2}", "+");
+    assert.deepEqual(actual, expected);
+});
