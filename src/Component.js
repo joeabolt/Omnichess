@@ -9,19 +9,19 @@ class Component {
 		this.promote = promote;
 	}
 
-	static Create(componentString, globalString) {
+	static Create(localFlags, globalFlags) {
 		const component = new Component(
-			Number(componentString.match(/(-?\d+)/g)[0]),
+			Number(localFlags.match(/(-?\d+)/g)[0]),
 			1,
-			componentString.includes("j") || globalString.includes("j"),
-			componentString.includes("h") || globalString.includes("h"),
-			componentString.includes("p") || globalString.includes("p")
+			localFlags.includes("j") || globalFlags.includes("j"),
+			localFlags.includes("h") || globalFlags.includes("h"),
+			localFlags.includes("p") || globalFlags.includes("p")
 		);
 
-		const globalFiniteRepetition = globalString.match(/{(\d+)}/);
-		const globalInfiniteRepetition = globalString.includes("+");
-		const localFiniteRepetition = componentString.match(/{(\d+)}/);
-		const localInfiniteRepetition = componentString.includes("+");
+		const globalFiniteRepetition = globalFlags.match(/{(\d+)}/);
+		const globalInfiniteRepetition = globalFlags.includes("+");
+		const localFiniteRepetition = localFlags.match(/{(\d+)}/);
+		const localInfiniteRepetition = localFlags.includes("+");
 
 		// Check for global finite and infinite repetition
 		if (globalFiniteRepetition && globalInfiniteRepetition) {
@@ -46,6 +46,6 @@ class Component {
 		}
 
 		const reversedComponent = new Component(-component.length, component.maxRep, component.jump, component.hop, component.promote);
-		return componentString.includes("d") || globalString.includes("d") || component.length === 0 ? [component] : [component, reversedComponent];
+		return localFlags.includes("d") || globalFlags.includes("d") || component.length === 0 ? [component] : [component, reversedComponent];
 	}
 }
