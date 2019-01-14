@@ -77,7 +77,7 @@ QUnit.test("Component parses notation with multiple local flags", function (asse
 });
 
 QUnit.test("Component parses notation with multiple global flags", function (assert) {
-    const expected = [new Component(1, 7, false, true, true)];
+    const expected = [new Component(1, 5, false, true, true)];
     const actual = Component.Create("1", "{5}hpd");
     assert.deepEqual(actual, expected);
 });
