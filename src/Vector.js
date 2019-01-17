@@ -18,7 +18,7 @@ class Vector
 	{
 		const vectors = [];
 		
-		// Iterate over each vector string, delimited by semicolon
+		/* Iterate over each vector string, delimited by semicolon */
 		str.split(";").forEach((substring) => {
 			const vectorString = substring.trim();
 			if (vectorString === "")

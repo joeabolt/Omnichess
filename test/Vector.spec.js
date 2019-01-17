@@ -1,4 +1,5 @@
-QUnit.test("Vector parses notation with a single element", function (assert) {
+QUnit.test("Vector parses notation with a single element", function (assert)
+{
     const unit = new Component(1, 1, false, false, false);
     const inverse = new Component(-1, 1, false, false, false);
     const expected = [new Vector(unit, unit), new Vector(unit, inverse), new Vector(inverse, unit), new Vector(inverse, inverse)];
@@ -6,7 +7,8 @@ QUnit.test("Vector parses notation with a single element", function (assert) {
     assert.deepEqual(actual, expected);
 });
 
-QUnit.test("Vector parses notation with a single element and ignores semicolons", function (assert) {
+QUnit.test("Vector parses notation with a single element and ignores semicolons", function (assert)
+{
     const unit = new Component(1, 1, false, false, false);
     const inverse = new Component(-1, 1, false, false, false);
     const expected = [new Vector(unit, unit), new Vector(unit, inverse), new Vector(inverse, unit), new Vector(inverse, inverse)];
@@ -14,7 +16,8 @@ QUnit.test("Vector parses notation with a single element and ignores semicolons"
     assert.deepEqual(actual, expected);
 });
 
-QUnit.test("Vector parses notation with two elements", function (assert) {
+QUnit.test("Vector parses notation with two elements", function (assert)
+{
     const zero = new Component(0, 1, false, false, false);
     const unit = new Component(1, 1, false, false, false);
     const inverse = new Component(-1, 1, false, false, false);
@@ -24,7 +27,8 @@ QUnit.test("Vector parses notation with two elements", function (assert) {
     assert.deepEqual(actual, expected);
 });
 
-QUnit.test("Vector parses notation regardless of whitespace", function (assert) {
+QUnit.test("Vector parses notation regardless of whitespace", function (assert)
+{
     const unit = new Component(1, 1, false, false, false);
     const inverse = new Component(-1, 1, false, false, false);
     const expected = [new Vector(unit, unit), new Vector(unit, inverse), new Vector(inverse, unit), new Vector(inverse, inverse)];
