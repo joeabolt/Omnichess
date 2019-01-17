@@ -121,7 +121,7 @@ class Game
 		}
 
 		vectorList.forEach((vector) => {
-				validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).has(move.target);
+				validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).includes(move.target);
 			});
 		
 		return validity;

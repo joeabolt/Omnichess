@@ -19,7 +19,7 @@ class Board
 	 *  for a blocked destination, since this could be used for
 	 *  capture, but it will not continue down a blocked path.
 	 *  
-	 *  Always returns a Set. Returns an empty Set if no such
+	 *  Always returns an array. Returns an empty array if no such
 	 *  locations can be found. 
 	 */
 	GetCellIndices(vector, startLocation, includeCaptureEligible = false)
@@ -40,7 +40,7 @@ class Board
 			allCellIndices.add(output);
 		}
 		
-		return allCellIndices;
+		return [...allCellIndices];
 	}
 	
 	/**
