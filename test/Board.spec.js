@@ -50,6 +50,12 @@ QUnit.test("Board.GetPathOutput returns -1 when directed off the board", functio
 	assert.deepEqual(board.GetPathOutput(7, 2, 0, false, false, false, false), -1);
 });
 
+QUnit.test("Board.GetPathOutput returns the destination even when directed into an occupied square", function(assert) {
+	const board = new Board(Board.Generate2D(3, 3));
+	board.contents[2] = 1;
+	assert.deepEqual(board.GetPathOutput(7, 0, -2, false, false, false, false), 1);
+});
+
 QUnit.test("Board.GetPathOutput returns the destination when directed along the board", function (assert) {
 	const board = new Board(Board.Generate2D(3, 3));
 	assert.deepEqual(board.GetPathOutput(7, 0, -2, false, false, false, false), 1);
@@ -105,9 +111,28 @@ QUnit.test("Board.GetPathOutput not blocked by occupied square with jump", funct
 	assert.deepEqual(board.GetPathOutput(13, 0, -3, false, false, true, true), 1);
 });
 
-QUnit.test("Board.GetPathOutput not blocked by occupied square with hop", function (assert) {
+QUnit.test("Board.GetPathOutput with hop stops just past occupied square", function (assert) {
 	const board = new Board(Board.Generate2D(4, 4));
 	board.contents[9] = 1;
 	assert.deepEqual(board.GetPathOutput(13, 0, -2, true, true, false, false), 5);
 	assert.deepEqual(board.GetPathOutput(13, 0, -3, true, true, false, false), -1);
+});
+
+QUnit.test("Board.GetPathOutput attempts to move diagonally as long as possible", function (assert) {
+	const board = new Board(Board.Generate2D(4, 4));
+	/* Creates a diagonal corridor so the test will fail if the "walls" are intersected */
+	board.contents[5] = 1;
+	board.contents[10] = 1;
+	board.contents[8] = 1;
+	board.contents[13] = 1;
+	assert.deepEqual(board.GetPathOutput(12, 3, -2, false, false, false, false), 7);
+	assert.deepEqual(board.GetPathOutput(12, 2, -3, false, false, false, false), 2);
+});
+
+QUnit.test("Board.GetPathOutput correctly applies different x and y flags", function (assert) {
+	const board = new Board(Board.Generate2D(4, 4));
+	board.contents[10] = 1;
+	assert.deepEqual(board.GetPathOutput(8, 3, 0, false, false, true, false), 11);
+	assert.deepEqual(board.GetPathOutput(14, 0, -3, false, false, true, false), -1);
+	assert.deepEqual(board.GetPathOutput(15, -2, -3, false, false, true, false), 1);
 });
