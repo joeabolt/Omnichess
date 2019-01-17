@@ -34,13 +34,6 @@ class Vector
 				return;
 			}
 			
-			const checkRepetition = vectorString.match(/(({\d+})[dphj]*\+)|(\+[dphj]*({\d+}))/g);
-			if (checkRepetition !== null && checkRepetition.length > 0)
-			{
-				console.error(`Illegal repetition format: ${vectorString}`);
-				return;
-			}
-			
 			/* Identify components */
 			const globalFlags = vectorString.slice(vectorString.indexOf(")")+1);
 			const componentStrings = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
