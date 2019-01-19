@@ -14,16 +14,15 @@ class Realizer
 	}
 	
 	/**
-	 * Method to be called by the front-end. Can be called multiple
-	 * times without incurring computational cost if no update is
-	 * available. Outputs the current state of the board.
+	 * Method to be called by the front-end. Incurs computational
+	 * cost each time called. Outputs the current state of the board.
 	 */
 	Realize()
 	{
-		if (this.isFullyUpdated)
-		{
-			return;
-		}
+		/* Update the board */
+		this.displayBoard = this.CreateDisplayBoard();
+		
+		/* Display it */
 		let outputArea = document.getElementById("output");
 		if (outputArea.firstChild)
 		{
@@ -33,28 +32,8 @@ class Realizer
 		this.isFullyUpdated = true;
 	}
 	
-	/**
-	 * Causes the realizer to update its representation of the
-	 * stored board. Should be called by the back-end. Incurs
-	 * computational cost each time it is run.
-	 */
-	Update()
-	{
-		// Keep track of what we are supposed to display
-		this.displayBoard = this.CreateDisplayBoard();
-		this.isFullyUpdated = false;
-	}
-	
-	GetMove()
-	{
-		const move = this.moveQueue.shift();
-		return move;
-	}
-	
 	InputMove(move)
 	{
-		console.log("Realizer.InputMove fired!");
-		
 		/* Parse move into object */
 		const moveObject = {};
 		moveObject.move = move.includes("->");

@@ -17,6 +17,5 @@ class Player
 		this.dropablePieces = dropablePieces;
 		this.capturedPieces = capturedPieces;
 		this.color = color;
-		this.realizer = undefined;
 	}
 }

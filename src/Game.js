@@ -6,7 +6,6 @@ class Game
 		this.board = board;
 		this.players = players;
 		this.endConditions = endConditions;
-		this.realizer = undefined; /* Has to be added later */
 		
 		/* Default turn order is alternating, any legal move goes */
 		const legalActions = {};
@@ -32,16 +31,8 @@ class Game
 		this.gameState = 0;
 	}
 	
-	SetRealizer(realizer)
-	{
-		this.realizer = realizer;
-		this.players.forEach((player) => {player.realizer = realizer; });
-	}
-	
 	Step(move)
 	{
-		console.log("Game.Step(move) fired!");
-		
 		if (this.gameState === 0)
 		{
 			this.DoTurn(move);
@@ -67,7 +58,7 @@ class Game
 		}
 		
 		/* Make the move */
-		this.CommitMove(proposedMove);
+		this.CommitMove(move);
 		
 		/* Get the next move */
 		this.lastTurn = this.nextTurn;
@@ -77,9 +68,6 @@ class Game
 			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
 			this.nextTurn = this.turnOrder[this.turnIndex];
 		}
-		
-		/* Update the vizualization */
-		realizer.Update();
 	}
 	
 	CheckGameEnd()
