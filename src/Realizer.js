@@ -53,6 +53,8 @@ class Realizer
 	
 	InputMove(move)
 	{
+		console.log("Realizer.InputMove fired!");
+		
 		/* Parse move into object */
 		const moveObject = {};
 		moveObject.move = move.includes("->");

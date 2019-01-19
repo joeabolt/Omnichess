@@ -19,10 +19,4 @@ class Player
 		this.color = color;
 		this.realizer = undefined;
 	}
-	
-	GetMove()
-	{
-		const move = this.realizer.GetMove();
-		return move;
-	}
 }

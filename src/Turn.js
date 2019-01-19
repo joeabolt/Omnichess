@@ -16,18 +16,6 @@ class Turn
 		this.legalActions = legalActions;
 	}
 	
-	GetMove()
-	{
-		let move = undefined;
-		let approved = false;		
-		while (!approved)
-		{
-			move = this.player.GetMove();
-			approved = this.Validate(move);
-		}
-		return move;
-	}
-	
 	Validate(move)
 	{
 		let approved = true;

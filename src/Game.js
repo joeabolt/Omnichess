@@ -40,6 +40,8 @@ class Game
 	
 	Step(move)
 	{
+		console.log("Game.Step(move) fired!");
+		
 		if (this.gameState === 0)
 		{
 			this.DoTurn(move);
@@ -51,20 +53,6 @@ class Game
 		}
 	}
 
-	
-	Step()
-	{
-		if (this.gameState === 0)
-		{
-			this.DoTurn();
-			this.CheckGameEnd();
-		}
-		if (this.gameState !== 0)
-		{
-			document.getElementById("message").innerHTML = "The game is now over!";
-		}
-	}
-	
 	DoTurn(move)
 	{
 		if (!this.nextTurn.Validate(move))
@@ -77,34 +65,6 @@ class Game
 			document.getElementById("message").innerHTML = "Illegal move.";
 			return;
 		}
-		
-		/* Make the move */
-		this.CommitMove(proposedMove);
-		
-		/* Get the next move */
-		this.lastTurn = this.nextTurn;
-		this.nextTurn = this.nextTurn.EndTurn();
-		if (this.nextTurn === undefined)
-		{
-			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
-			this.nextTurn = this.turnOrder[this.turnIndex];
-		}
-		
-		/* Update the vizualization */
-		realizer.Update();
-	}
-	
-	DoTurn()
-	{
-		/* Get a legal move */
-		let proposedMove = this.nextTurn.GetMove();
-		while (!this.Validate(proposedMove))
-		{
-			console.log("Game invalidated the move.");
-			document.getElementById("message").innerHTML = "Illegal move.";
-			proposedMove = this.nextTurn.GetMove();
-		}
-		document.getElementById("message").innerHTML = "";
 		
 		/* Make the move */
 		this.CommitMove(proposedMove);
