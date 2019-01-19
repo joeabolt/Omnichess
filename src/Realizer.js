@@ -7,7 +7,6 @@ class Realizer
 		this.board = game.board;
 		this.isFullyUpdated = false;
 		this.moveQueue = [];
-		this.moveQueueMutex = false;
 		
 		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
 		
@@ -48,10 +47,7 @@ class Realizer
 	
 	GetMove()
 	{
-		while (this.moveQueueMutex);
-		this.moveQueueMutex = true;
 		const move = this.moveQueue.shift();
-		this.moveQueueMutex = false;
 		return move;
 	}
 	
@@ -65,13 +61,10 @@ class Realizer
 		moveObject.target = Number(move.trim().match(/\d+$/));
 		
 		/* Load move */
-		while (this.moveQueueMutex);
-		this.moveQueueMutex = true;
 		this.moveQueue.push(moveObject);
-		this.moveQueueMutex = false;
 		
 		/* Fire up the game engine */
-		this.game.Step();
+		this.game.Step(moveObject);
 	}
 	
 	CreateDisplayBoard()

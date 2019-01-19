@@ -23,35 +23,42 @@ class Turn
 		while (!approved)
 		{
 			move = this.player.GetMove();
-			approved = true;
-			if (this.legalActions.piece !== undefined)
-			{
-				// TODO: Dark magic to validate it's the right piece
-			}
-			if (this.board.contents[move.source].player !== this.player)
-			{
-				document.getElementById("message").innerHTML = "Invalid action: tried to move the opponent's piece.";
-				approved = false;
-				throw "Tried to move the enemy's piece.";
-			}
-			if (move.move && !this.legalActions.move)
-			{
-				document.getElementById("message").innerHTML = "Invalid action: must not move.";
-				approved = false;
-				throw "Tried to move when move disallowed.";
-			}
-			if (move.capture && !this.legalActions.capture)
-			{
-				document.getElementById("message").innerHTML = "Invalid action: must not capture.";
-				approved = false;
-				throw "Tried to capture when capture disallowed.";
-			}
-			if (!approved)
-			{
-				console.log("Did not approve!");
-			}
+			approved = this.Validate(move);
 		}
 		return move;
+	}
+	
+	Validate(move)
+	{
+		let approved = true;
+		if (this.legalActions.piece !== undefined)
+		{
+			// TODO: Dark magic to validate it's the right piece
+		}
+		if (this.board.contents[move.source].player !== this.player)
+		{
+			document.getElementById("message").innerHTML = "Invalid action: tried to move the opponent's piece.";
+			approved = false;
+			throw "Tried to move the enemy's piece.";
+		}
+		if (move.move && !this.legalActions.move)
+		{
+			document.getElementById("message").innerHTML = "Invalid action: must not move.";
+			approved = false;
+			throw "Tried to move when move disallowed.";
+		}
+		if (move.capture && !this.legalActions.capture)
+		{
+			document.getElementById("message").innerHTML = "Invalid action: must not capture.";
+			approved = false;
+			throw "Tried to capture when capture disallowed.";
+		}
+		if (!approved)
+		{
+			console.log("Did not approve!");
+		}
+		
+		return approved;
 	}
 	
 	/**

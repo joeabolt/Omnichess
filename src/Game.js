@@ -37,6 +37,19 @@ class Game
 		this.realizer = realizer;
 		this.players.forEach((player) => {player.realizer = realizer; });
 	}
+	
+	Step(move)
+	{
+		if (this.gameState === 0)
+		{
+			this.DoTurn(move);
+			this.CheckGameEnd();
+		}
+		if (this.gameState !== 0)
+		{
+			document.getElementById("message").innerHTML = "The game is now over!";
+		}
+	}
 
 	
 	Step()
@@ -50,6 +63,35 @@ class Game
 		{
 			document.getElementById("message").innerHTML = "The game is now over!";
 		}
+	}
+	
+	DoTurn(move)
+	{
+		if (!this.nextTurn.Validate(move))
+		{
+			return;
+		}
+		if (!this.Validate(move))
+		{
+			console.log("Game invalidated the move.");
+			document.getElementById("message").innerHTML = "Illegal move.";
+			return;
+		}
+		
+		/* Make the move */
+		this.CommitMove(proposedMove);
+		
+		/* Get the next move */
+		this.lastTurn = this.nextTurn;
+		this.nextTurn = this.nextTurn.EndTurn();
+		if (this.nextTurn === undefined)
+		{
+			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+			this.nextTurn = this.turnOrder[this.turnIndex];
+		}
+		
+		/* Update the vizualization */
+		realizer.Update();
 	}
 	
 	DoTurn()
