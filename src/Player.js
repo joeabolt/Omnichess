@@ -17,12 +17,5 @@ class Player
 		this.dropablePieces = dropablePieces;
 		this.capturedPieces = capturedPieces;
 		this.color = color;
-		this.realizer = undefined;
-	}
-	
-	GetMove()
-	{
-		const move = this.realizer.GetMove();
-		return move;
 	}
 }

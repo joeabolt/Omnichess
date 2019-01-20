@@ -16,63 +16,51 @@ class Vector
 	 */
 	static Create(str)
 	{
-		const allVectors = [];
-		const substrings = str.split(";");
+		const vectors = [];
 		
-		/* Helper function */
-		function CrossProduct(arr1, arr2)
-		{
-			const crossProduct = [];
-			for (let i = 0; i < arr1.length; i++)
-			{
-				for (let j = 0; j < arr2.length; j++)
-				{
-					crossProduct.push([arr1[i], arr2[j]]);
-				}
-			}
-			return crossProduct;
-		}
-		
-		substrings.forEach((substring) => {
+		/* Iterate over each vector string, delimited by semicolon */
+		str.split(";").forEach((substring) => {
 			const vectorString = substring.trim();
-			if (vectorString == "")
+			if (vectorString === "")
 			{
 				/* Ignore empty strings - common if vector list ended with semicolon */
 				return;
 			}
 			
-			const checkValid = vectorString.match(/\(-?\d+[\d{}+jhpmd]*, -?\d+[\d{}+jhpmd]*\)[\d{}+jhpmd]*/g);
-			if (checkValid == undefined || checkValid.length <= 0)
+			const checkValid = vectorString.match(/\(\ *-?\d+[\d{}+jhpmd]*\ *,\ *-?\d+[\d{}+jhpmd]*\ *\)[\d{}+jhpmd]*/g);
+			if (checkValid === null || checkValid.length <= 0)
 			{
 				console.error(`Improperly formatted vector: ${vectorString}`);
 				return;
 			}
 			
-			const checkRepetition = vectorString.match(/(({\d+})[dphj]*\+)|(\+[dphj]*({\d+}))/g);
-			if (checkRepetition != undefined && checkRepetition.length > 0)
-			{
-				console.error(`Illegal repetition format: ${vectorString}`);
-				return;
-			}
-			
 			/* Identify components */
-			const endStr = vectorString.slice(vectorString.indexOf(")")+1);
-			const parts = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
+			const globalFlags = vectorString.slice(vectorString.indexOf(")")+1);
+			const componentStrings = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
 			
-			/* Build x component */
-			const xComp = Component.Create(parts[0], endStr);
-			
-			/* Build y component */
-			const yComp = Component.Create(parts[1], endStr);
+			/* Build x and y components */
+			const xComponents = Component.Create(componentStrings[0], globalFlags);
+			const yComponents = Component.Create(componentStrings[1], globalFlags);
 			
 			/* Cross product all components to produce directional vectors */
 			// TODO: rewrite when updating to N-dimensions
-			const combinations = CrossProduct(xComp, yComp);
-			combinations.forEach((vector) => {
-				allVectors.push(new Vector(vector[0], vector[1]));
-			});
+			vectors.push(...CrossProduct(xComponents, yComponents));
 		});
 
-		return allVectors;
+		return vectors;
+		
+		/* Helper function */
+		function CrossProduct(xComponents, yComponents)
+		{
+			const crossProduct = [];
+
+			xComponents.forEach((xComponent) => {
+				yComponents.forEach((yComponent) => {
+					crossProduct.push(new Vector(xComponent, yComponent));
+				})
+			});
+
+			return crossProduct;
+		}
 	}
 }
