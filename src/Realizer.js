@@ -9,8 +9,6 @@ class Realizer
 		this.moveQueue = [];
 		
 		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
-		
-		this.displayBoard = this.CreateDisplayBoard();
 	}
 	
 	/**
@@ -19,16 +17,12 @@ class Realizer
 	 */
 	Realize()
 	{
-		/* Update the board */
-		this.displayBoard = this.CreateDisplayBoard();
-		
-		/* Display it */
 		let outputArea = document.getElementById("output");
 		if (outputArea.firstChild)
 		{
 			outputArea.removeChild(outputArea.firstChild);
 		}
-		outputArea.appendChild(this.displayBoard);
+		outputArea.appendChild(this.CreateDisplayBoard());
 		this.isFullyUpdated = true;
 	}
 	
