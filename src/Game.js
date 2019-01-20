@@ -6,7 +6,6 @@ class Game
 		this.board = board;
 		this.players = players;
 		this.endConditions = endConditions;
-		this.realizer = undefined; /* Has to be added later */
 		
 		/* Default turn order is alternating, any legal move goes */
 		const legalActions = {};
@@ -32,18 +31,11 @@ class Game
 		this.gameState = 0;
 	}
 	
-	SetRealizer(realizer)
-	{
-		this.realizer = realizer;
-		this.players.forEach((player) => {player.realizer = realizer; });
-	}
-
-	
-	Step()
+	Step(move)
 	{
 		if (this.gameState === 0)
 		{
-			this.DoTurn();
+			this.DoTurn(move);
 			this.CheckGameEnd();
 		}
 		if (this.gameState !== 0)
@@ -51,21 +43,22 @@ class Game
 			document.getElementById("message").innerHTML = "The game is now over!";
 		}
 	}
-	
-	DoTurn()
+
+	DoTurn(move)
 	{
-		/* Get a legal move */
-		let proposedMove = this.nextTurn.GetMove();
-		while (!this.Validate(proposedMove))
+		if (!this.nextTurn.Validate(move))
+		{
+			return;
+		}
+		if (!this.Validate(move))
 		{
 			console.log("Game invalidated the move.");
 			document.getElementById("message").innerHTML = "Illegal move.";
-			proposedMove = this.nextTurn.GetMove();
+			return;
 		}
-		document.getElementById("message").innerHTML = "";
 		
 		/* Make the move */
-		this.CommitMove(proposedMove);
+		this.CommitMove(move);
 		
 		/* Get the next move */
 		this.lastTurn = this.nextTurn;
@@ -75,9 +68,6 @@ class Game
 			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
 			this.nextTurn = this.turnOrder[this.turnIndex];
 		}
-		
-		/* Update the vizualization */
-		realizer.Update();
 	}
 	
 	CheckGameEnd()
