@@ -10,64 +10,58 @@ class Component
 		this.hop = hop;
 		this.promote = promote;
 	}
-	
-	static Create(componentString, globalString)
+
+	static Create(localFlags, globalFlags)
 	{
-		const comp = new Component(0, 1, false, false, false);
-		comp.length = Number(componentString.match(/(-?\d+)/g)[0]);
-		
-		/* Check for jump on first component or end */
-		if (componentString.includes("j") || globalString.includes("j"))
+		const component = new Component
+		(
+			Number(localFlags.match(/(-?\d+)/g)[0]),
+			1,
+			localFlags.includes("j") || globalFlags.includes("j"),
+			localFlags.includes("h") || globalFlags.includes("h"),
+			localFlags.includes("p") || globalFlags.includes("p")
+		);
+
+		const globalFiniteRepetition = globalFlags.match(/{(\d+)}/);
+		const globalInfiniteRepetition = globalFlags.includes("+");
+		const localFiniteRepetition = localFlags.match(/{(\d+)}/);
+		const localInfiniteRepetition = localFlags.includes("+");
+
+		/* Check for global finite and infinite repetition */
+		if (globalFiniteRepetition && globalInfiniteRepetition)
 		{
-			comp.jump = true;
+			throw "ERROR: Component global flags contain both a finite and an infinite repetition flag";
 		}
-		
-		/* Check for hop on first component or end */
-		if (componentString.includes("h") || globalString.includes("h"))
+		else if (globalFiniteRepetition)
 		{
-			comp.hop = true;
+			component.maxRep = Number(globalFiniteRepetition[1]);
 		}
-		
-		/* Check for promote on first component or end */
-		if (componentString.includes("p") || globalString.includes("p"))
+		else if (globalInfiniteRepetition)
 		{
-			comp.promote = true;
-		}
-		
-		/* Check for finite repetition on end */
-		const finiteEndRepetition = globalString.match(/{(\d+)}/g);
-		if (finiteEndRepetition)
-		{
-			comp.maxRep = Number(finiteEndRepetition[0].slice(2, -1));
-		}
-		
-		/* Check for infinite repetition */
-		if(componentString.includes("+") || globalString.includes("+"))
-		{
-			comp.maxRep = 100; /* arbitrarily large */
+			component.maxRep = 100;
 		}
 
-		/* Check for finite specific repeition */
-		const finiteSpecificRepetition = componentString.match(/{(\d+)}/);
-		if (finiteSpecificRepetition)
+		/* Check for local finite and infinite repetition */
+		if (localFiniteRepetition && localInfiniteRepetition)
 		{
-			comp.maxRep = Number(finiteSpecificRepetition[1]);
+			throw "ERROR: Component local flags contain both a finite and an infinite repetition flag";
 		}
-		
-		if (comp.length === 0)
+		else if (localFiniteRepetition)
 		{
-			comp.maxRep = 1; // slight efficiency, clean output for debugging
+			component.maxRep = Number(localFiniteRepetition[1]);
 		}
-		
-		/* Check for directional or zero length */
-		if (componentString.includes("d") || globalString.includes("d") || comp.length == 0)
+		else if (localInfiniteRepetition)
 		{
-			return [comp];
+			component.maxRep = 100;
 		}
-		
-		const reverseComp = new Component(comp.length * -1, comp.maxRep, 
-			comp.jump, comp.hop, comp.promote);
-			
-		return [comp, reverseComp];
+
+		/* slight efficiency, clean output for debugging */
+		if (component.length === 0)
+		{
+			component.maxRep = 1;
+		}
+
+		const reversedComponent = new Component(-component.length, component.maxRep, component.jump, component.hop, component.promote);
+		return localFlags.includes("d") || globalFlags.includes("d") || component.length === 0 ? [component] : [component, reversedComponent];
 	}
 }
