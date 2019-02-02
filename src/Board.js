@@ -40,6 +40,7 @@ class Board
 			allCellIndices.add(output);
 		}
 		
+		/* Convert set to array */
 		return [...allCellIndices];
 	}
 	
@@ -110,7 +111,10 @@ class Board
 		{
 			adjacencyMatrix[i] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 			
-			/* Assign cells if valid */
+			/* For each direction, checks if next cell is valid.
+			 * If so, add the next cell's index. Otherwise, -1.
+			 * 0 is up-left, 1 is up-center, and so on.
+			 */
 			adjacencyMatrix[i][0] = (i < cols || i % cols === 0) ? -1 : i-cols-1;
 			adjacencyMatrix[i][1] = (i < cols) ? -1 : i-cols;
 			adjacencyMatrix[i][2] = (i < cols || i % cols === (cols - 1)) ? -1 : i-cols+1;

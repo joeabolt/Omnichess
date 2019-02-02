@@ -110,9 +110,9 @@ class Game
 			includeCaptureEligible = true;
 		}
 
-		vectorList.forEach((vector) => {
-				validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).includes(move.target);
-			});
+		validity = vectorList.some((vector) => {
+			this.board.GetCellIndices(vector, move.source, includeCaptureEligible).includes(move.target);
+		});
 		
 		return validity;
 	}
