@@ -8,41 +8,31 @@ QUnit.test("Piece constructor makes an empty piece", function (assert) {
 });
 
 QUnit.test("Piece.setMoveVectors correctly sets moveVectors", function (assert) {
-	const piece = new Piece();
-	assert.deepEqual(piece.moveVectors, []);
-	
+	const piece = new Piece();	
 	piece.setMoveVectors(2);
 	assert.deepEqual(piece.moveVectors, 2);
 });
 
 QUnit.test("Piece.setCaptureVectors correctly sets captureVectors", function (assert) {
-	const piece = new Piece();
-	assert.deepEqual(piece.captureVectors, []);
-	
+	const piece = new Piece();	
 	piece.setCaptureVectors(2);
 	assert.deepEqual(piece.captureVectors, 2);
 });
 
 QUnit.test("Piece.setMoveCaptureVectors correctly sets moveCaptureVectors", function (assert) {
-	const piece = new Piece();
-	assert.deepEqual(piece.moveCaptureVectors, []);
-	
+	const piece = new Piece();	
 	piece.setMoveCaptureVectors(2);
 	assert.deepEqual(piece.moveCaptureVectors, 2);
 });
 
 QUnit.test("Piece.setIdentifier correctly sets identifier", function (assert) {
-	const piece = new Piece();
-	assert.deepEqual(piece.identifier, "");
-	
+	const piece = new Piece();	
 	piece.setIdentifier(2);
 	assert.deepEqual(piece.identifier, 2);
 });
 
 QUnit.test("Piece.setPlayer correctly sets player", function (assert) {
-	const piece = new Piece();
-	assert.deepEqual(piece.player, undefined);
-	
+	const piece = new Piece();	
 	piece.setPlayer(2);
 	assert.deepEqual(piece.player, 2);
 });
