@@ -19,7 +19,7 @@ class Board
 	 *  for a blocked destination, since this could be used for
 	 *  capture, but it will not continue down a blocked path.
 	 *  
-	 *  Always returns a Set. Returns an empty Set if no such
+	 *  Always returns an array. Returns an empty array if no such
 	 *  locations can be found. 
 	 */
 	GetCellIndices(vector, startLocation, includeCaptureEligible = false)
@@ -40,7 +40,8 @@ class Board
 			allCellIndices.add(output);
 		}
 		
-		return allCellIndices;
+		/* Convert set to array */
+		return [...allCellIndices];
 	}
 	
 	/**
@@ -98,20 +99,6 @@ class Board
 	}
 	
 	/**
-	 *  Creates a Board object based on the passed in JSON object.
-	 *  Expects boardObj to have a sting called dimensions of the form
-	 *  "AxB" for A rows and B columns. 
-	 *
-	 *  In the future, this will take take the form "AxBx...xZ".
-	 */
-	static Create(boardObj)
-	{
-		/* expects boardObj to have a string dimensions "AxB" */
-		const lengths = boardObj.dimensions.split("x");
-		return new Board(Board.Generate2D(Number(lengths[0]), Number(lengths[1])));
-	}
-	
-	/**
 	 *  Generates and returns a new 2D Board with the specified
 	 *  number of rows and columns. Uses a square grid and the
 	 *  usual 2 axes.
@@ -122,38 +109,21 @@ class Board
 		const adjacencyMatrix = [];
 		for (let i = 0; i < rows * cols; i++)
 		{
-			adjacencyMatrix[i] = [i-cols-1, i-cols, i-cols+1, 
-				i-1, i, i+1, 
-				i+cols-1, i+cols, i+cols+1];
-				
-			/* Removes above if at top of board */
-			if (i < cols)
-			{
-				adjacencyMatrix[i][0] = -1;
-				adjacencyMatrix[i][1] = -1;
-				adjacencyMatrix[i][2] = -1;
-			}
-			/* Removes to the left if at left of board */
-			if (i % cols === 0)
-			{
-				adjacencyMatrix[i][0] = -1;
-				adjacencyMatrix[i][3] = -1;
-				adjacencyMatrix[i][6] = -1;
-			}
-			/* Removes to the right if at right of board */
-			if (i % cols === (cols - 1))
-			{
-				adjacencyMatrix[i][2] = -1;
-				adjacencyMatrix[i][5] = -1;
-				adjacencyMatrix[i][8] = -1;
-			}
-			/* Removes below if at bottom of board */
-			if ((i + cols) >= (rows * cols))
-			{
-				adjacencyMatrix[i][6] = -1;
-				adjacencyMatrix[i][7] = -1;
-				adjacencyMatrix[i][8] = -1;
-			}
+			adjacencyMatrix[i] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+			
+			/* For each direction, checks if next cell is valid.
+			 * If so, add the next cell's index. Otherwise, -1.
+			 * 0 is up-left, 1 is up-center, and so on.
+			 */
+			adjacencyMatrix[i][0] = (i < cols || i % cols === 0) ? -1 : i-cols-1;
+			adjacencyMatrix[i][1] = (i < cols) ? -1 : i-cols;
+			adjacencyMatrix[i][2] = (i < cols || i % cols === (cols - 1)) ? -1 : i-cols+1;
+			adjacencyMatrix[i][3] = (i % cols === 0) ? -1 : i-1;
+			adjacencyMatrix[i][4] = i;
+			adjacencyMatrix[i][5] = (i % cols === (cols - 1)) ? -1 : i+1;
+			adjacencyMatrix[i][6] = ((i + cols) >= (rows * cols) || i % cols === 0) ? -1 : i+cols-1;
+			adjacencyMatrix[i][7] = ((i + cols) >= (rows * cols)) ? -1 : i+cols;
+			adjacencyMatrix[i][8] = ((i + cols) >= (rows * cols) || i % cols === (cols - 1)) ? -1 : i+cols+1;
 		}
 		return adjacencyMatrix;
 	}
