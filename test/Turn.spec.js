@@ -39,7 +39,7 @@ QUnit.test("Turn.Validate() invalidates moves for the wrong player", function(as
 	catch (err)
 	{
 		/* Move successfully invalidated */
-		assert.ok(true);
+		assert.expect(0);
 	}
 });
 
@@ -66,7 +66,7 @@ QUnit.test("Turn.Validate() invalidates movement when movement disallowed", func
 	catch (err)
 	{
 		/* Move successfully invalidated */
-		assert.ok(true);
+		assert.expect(0);
 	}
 });
 
@@ -93,7 +93,7 @@ QUnit.test("Turn.Validate() invalidates capture when capture disallowed", functi
 	catch (err)
 	{
 		/* Move successfully invalidated */
-		assert.ok(true);
+		assert.expect(0);
 	}
 });
 
@@ -113,13 +113,5 @@ QUnit.test("Turn.Validate() accepts valid moves", function(assert)
 		piece: undefined
 	};
 	const turn = new Turn(1, board, legalActions);
-	try
-	{
-		assert.ok(turn.Validate(move));
-	}
-	catch (err)
-	{
-		/* Move incorrectly invalidated */
-		assert.ok(false);
-	}
+	assert.ok(turn.Validate(move));
 });
