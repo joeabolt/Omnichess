@@ -8,7 +8,36 @@ class Realizer
 		this.isFullyUpdated = false;
 		this.moveQueue = [];
 		
+		this.activeCell = -1;
+		this.activeCellCanMove = [];
+		this.activeCellCanCapture = [];
+		
 		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
+	}
+	
+	SetActiveCell(newActiveCell)
+	{
+		this.activeCell = newActiveCell;
+		this.activeCellCanMove = [];
+		this.activeCellCanCapture = [];
+		
+		if (this.activeCell > 0 && this.board.contents[this.activeCell] !== undefined)
+		{
+			const activePiece = this.board.contents[this.activeCell];
+			
+			activePiece.moveVectors.forEach((vector) => {
+				this.activeCellCanMove = this.activeCellCanMove.concat(this.board.GetCellIndices(vector, this.activeCell, false));
+			});
+			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
+			
+			activePiece.captureVectors.forEach((vector) => {
+				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true));
+			});
+			activePiece.moveCaptureVectors.forEach((vector) => {
+				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true));
+			});
+			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
+		}
 	}
 	
 	/**
@@ -59,12 +88,8 @@ class Realizer
 				let contents = this.board.contents[index];
 				contents = contents === undefined ? "&nbsp" : contents.identifier;
 				
-				const backgroundColor = (rowIndex % 2 === 0) ^ (col % 2 === 0) ? "#000000" : "#FFFFFF";
-				let foregroundColor = (rowIndex % 2 === 0) ^ (col % 2 === 0) ? "#FFFFFF" : "#000000";
-				if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
-				{
-					foregroundColor = this.board.contents[index].player.color;
-				}
+				const backgroundColor = this.DetermineBackgroundColor(index, rowIndex, col);
+				const foregroundColor = this.DetermineForegroundColor(index, rowIndex, col);
 				
 				cell.style.backgroundColor = backgroundColor;
 				cell.style.color = foregroundColor;
@@ -80,5 +105,55 @@ class Realizer
 		}
 		
 		return board;
+	}
+	
+	DetermineBackgroundColor(index, row, column)
+	{
+		let bgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#000000" : "#FFFFFF";
+		
+		if (this.activeCell >= 0)
+		{
+			if (this.activeCell === index)
+			{
+				bgColor = "#00FF00";
+			}
+			if (this.activeCellCanMove.includes(index))
+			{
+				bgColor = "#0000FF";
+			}
+			if (this.activeCellCanCapture.includes(index))
+			{
+				bgColor = "#FF0000";
+			}
+		}
+		
+		return bgColor;
+	}
+	
+	DetermineForegroundColor(index, row, column)
+	{
+		let fgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#FFFFFF" : "#000000";
+		if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
+		{
+			fgColor = this.board.contents[index].player.color;
+		}
+
+		if (this.activeCell >= 0)
+		{
+			if (this.activeCell === index)
+			{
+				fgColor = "#000000";
+			}
+			if (this.activeCellCanMove.includes(index))
+			{
+				fgColor = "#FFFFFF";
+			}
+			if (this.activeCellCanCapture.includes(index))
+			{
+				fgColor = "#000000";
+			}
+		}
+		
+		return fgColor;
 	}
 }
