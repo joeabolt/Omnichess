@@ -69,7 +69,7 @@ class Realizer
 				cell.style.backgroundColor = backgroundColor;
 				cell.style.color = foregroundColor;
 				
-				const size = "35px"; //TODO: Make this dynamic
+				const size = "35px"; //TODO: Make this dynamic #55
 				cell.style.width = size;
 				cell.style.height = size;
 				
