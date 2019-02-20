@@ -69,7 +69,7 @@ class Realizer
 				cell.style.backgroundColor = backgroundColor;
 				cell.style.color = foregroundColor;
 				
-				const size = "35px"; //Math.max(cell.offsetHeight, cell.offsetWidth) + "px";
+				const size = "35px"; //TODO: Make this dynamic
 				cell.style.width = size;
 				cell.style.height = size;
 				

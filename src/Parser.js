@@ -19,7 +19,6 @@ class Parser
 				const game = Parser.Load();
 				resolve(game);
 			}, 10);
-
 		});
 		
 		return promise;
