@@ -22,7 +22,7 @@ class Board
 	 *  Always returns an array. Returns an empty array if no such
 	 *  locations can be found. 
 	 */
-	GetCellIndices(vector, startLocation, includeCaptureEligible = false)
+	GetCellIndices(vector, startLocation, includeCaptureEligible = false, enforceCaptureEligible = false)
 	{
 		const allCellIndices = new Set();
 		
@@ -35,8 +35,17 @@ class Board
 			const dy = y.length * Math.min(i, y.maxRep);
 			const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 			
-			if (output === -1 || (this.contents[output] !== undefined && !includeCaptureEligible))
+			if (this.contents[output] !== undefined && enforceCaptureEligible)
+			{
+				allCellIndices.add(output);
 				continue;
+			}			
+			if (output === -1 || 
+				(this.contents[output] !== undefined && !includeCaptureEligible) || 
+				(this.contents[output] === undefined && enforceCaptureEligible))
+			{
+				continue;
+			}
 			allCellIndices.add(output);
 		}
 		

@@ -31,10 +31,10 @@ class Realizer
 			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
 			
 			activePiece.captureVectors.forEach((vector) => {
-				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true));
+				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
 			});
 			activePiece.moveCaptureVectors.forEach((vector) => {
-				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true));
+				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
 			});
 			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
 		}
