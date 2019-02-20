@@ -4,5 +4,5 @@ let realizer = undefined;
 promise.then(function(parsedGame) {
 	// game = parsedGame;
 	realizer = new Realizer(parsedGame);
-	setInterval(() => {realizer.Realize();}, 500);
+	setInterval(() => {realizer.Realize();}, 150);
 });

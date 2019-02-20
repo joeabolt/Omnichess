@@ -18,7 +18,7 @@ class Parser
 			setTimeout(() => {
 				const game = Parser.Load();
 				resolve(game);
-			}, 250);
+			}, 10);
 
 		});
 		
