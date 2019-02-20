@@ -73,6 +73,8 @@ class Realizer
 				cell.style.width = size;
 				cell.style.height = size;
 				
+				cell.onclick = () => { setActiveCell(event, index); };
+				
 				cell.innerHTML = `${index}<br />${contents}`;
 			}
 		}
