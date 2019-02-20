@@ -48,17 +48,18 @@ class MockBoard
 		const adjacencyMatrix = [];
 		for (let i = 0; i < this.rows * this.cols; i++)
 		{
-			adjacencyMatrix[i] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 			const currR = Math.floor(i / this.cols);
 			const currC = i % this.cols;
 			const cellIndex = this.cellIndices[currR][currC];
 			if (cellIndex == -1)
 				continue;
+			adjacencyMatrix[cellIndex] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
 			
 			/* For each direction, checks if next cell is valid.
 			 * If so, add the next cell's index. Otherwise, -1.
 			 * 0 is up-left, 1 is up-center, and so on.
 			 */
+			console.log("Creating entry for cellIndex: " + cellIndex + " at r" + currR + " c" + currC);
 			adjacencyMatrix[cellIndex][0] = (currR === 0 || currC === 0) ? -1 : this.cellIndices[currR-1][currC-1];
 			adjacencyMatrix[cellIndex][1] = (currR === 0) ? -1 : this.cellIndices[currR-1][currC];
 			adjacencyMatrix[cellIndex][2] = (currR === 0 || currC === this.cols - 1) ? -1 : this.cellIndices[currR-1][currC+1];
@@ -76,7 +77,7 @@ class MockBoard
 	{
 		const adjMatrix = this.createAdjacencyMatrix();
 		let adjMatStr = "[";
-		for (let i = 0; i < this.rows * this.cols; i++)
+		for (let i = 0; i < adjMatrix.length; i++)
 		{
 			adjMatStr += "[" + adjMatrix[i].toString() + "],";
 		}
