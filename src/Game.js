@@ -35,8 +35,10 @@ class Game
 	{
 		if (this.gameState === 0)
 		{
-			this.DoTurn(move);
-			this.CheckGameEnd();
+			if (this.DoTurn(move))
+			{
+				this.CheckGameEnd();
+			}
 		}
 		if (this.gameState !== 0)
 		{
@@ -48,13 +50,13 @@ class Game
 	{
 		if (!this.nextTurn.Validate(move))
 		{
-			return;
+			return false;
 		}
 		if (!this.Validate(move))
 		{
 			console.log("Game invalidated the move.");
 			document.getElementById("message").innerHTML = "Illegal move.";
-			return;
+			return false;
 		}
 		
 		/* Make the move */
@@ -68,6 +70,7 @@ class Game
 			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
 			this.nextTurn = this.turnOrder[this.turnIndex];
 		}
+		return true;
 	}
 	
 	CheckGameEnd()
@@ -109,9 +112,9 @@ class Game
 			vectorList = actor.moveCaptureVectors;
 			includeCaptureEligible = true;
 		}
-
-		validity = vectorList.some((vector) => {
-			this.board.GetCellIndices(vector, move.source, includeCaptureEligible).includes(move.target);
+		
+		vectorList.forEach((vector) => {
+			validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).includes(move.target);
 		});
 		
 		return validity;

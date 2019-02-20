@@ -6,6 +6,15 @@ class Vector
 		this.components = [x, y];
 	}
 	
+	toString()
+	{
+		let stringRepresentation = "(";
+		this.components.forEach((component) => {
+			stringRepresentation += component.toString() + ", ";
+		});
+		return stringRepresentation.slice(0, -2) + ")";
+	}
+	
 	/**
 	 *  Creates one or more Vectors based on the string passed in.
 	 *  Returns an array of Vectors containing all Vectors described in the string.

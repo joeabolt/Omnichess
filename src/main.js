@@ -1,13 +1,8 @@
-let game = undefined;
+let promise = Parser.Parse("./src/config/test01.js");
 let realizer = undefined;
 
-async function startGame()
-{
-	game = await Parser.Parse("./src/config/test01.js");
-	
-	realizer = new Realizer(game);
-	
+promise.then(function(parsedGame) {
+	// game = parsedGame;
+	realizer = new Realizer(parsedGame);
 	setInterval(() => {realizer.Realize();}, 500);
-}
-
-startGame();
+});
