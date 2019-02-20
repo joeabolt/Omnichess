@@ -30,12 +30,26 @@ class Piece
 	 */
 	setDirection(direction)
 	{
-		this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
+		console.log(this.moveCaptureVectors[0].toString() + "; " + this.moveCaptureVectors[1].toString());
+		function directVector (vector) {
 			for (let i = 0; i < vector.components.length; i++)
 			{
-				vector.components[i].length *= direction[i];
+				vector.components[i].length = vector.components[i].length * direction[i];
+				console.log(vector.components[i].length);
 			}
-		});
+		}
+		
+		console.log("Move vectors");
+		this.moveVectors.forEach(directVector);
+		
+		this.captureVectors.forEach(directVector);
+		
+		console.log("MoveCapture vectors");
+		this.moveCaptureVectors.forEach(directVector);
+		
+		console.log(this.moveCaptureVectors[0].toString() + "; " + this.moveCaptureVectors[1].toString());
+		throw "Crash everything";
+		
 		return this;
 	}
 	

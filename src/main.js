@@ -9,14 +9,12 @@ promise.then(function(parsedGame) {
 function setActiveCell(event, cellIndex)
 {
 	event.stopPropagation();
-	console.log("The active cell is now " + cellIndex + ".");
 	realizer.SetActiveCell(cellIndex);
 	realizer.Realize();
 }
 
 function clickHandler()
 {
-	console.log("There is no longer an active cell.");
 	realizer.SetActiveCell(-1);
 	realizer.Realize();
 }
