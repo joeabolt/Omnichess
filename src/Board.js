@@ -99,6 +99,134 @@ class Board
 	}
 	
 	/**
+	 * Produces a two-dimensional array. Each cell represents a visible slot on the board.
+	 * Where these cells are not included in the board, they contain -1. Otherwise, they
+	 * contain the index of the cell they represent.
+	 */
+	ConvertToArray()
+	{
+		if (this.cells.length === 0)
+		{
+			return [[]];
+		}
+
+		let outputBoard = [];
+		this.InsertRowInMatrix(outputBoard, 0);
+		this.InsertColumnInMatrix(outputBoard, 0);
+		outputBoard[0][0] = 0;
+		let cellsToAdd = this.Expand(0, outputBoard, 0, 0);
+		while (cellsToAdd.length > 0)
+		{
+			const index = cellsToAdd.shift();
+			const coords = this.GetRowAndColumn(index, outputBoard);
+			cellsToAdd = cellsToAdd.concat(this.Expand(index, outputBoard, coords[0], coords[1]));
+		}
+
+		return outputBoard;
+	}
+	
+	Expand(index, matrix, r, c)
+	{
+		const neighbors = this.cells[index];
+		const cellsAdded = []
+		for (let direction = 0; direction < neighbors.length; direction++)
+		{
+			if (neighbors[direction] === -1)
+				continue;
+			if (this.GetRowAndColumn(neighbors[direction], matrix) !== undefined)
+				continue;
+			
+			// Pad the top, bottom, left, and right
+			if (direction < 3 && r === 0)
+			{
+				this.InsertRowInMatrix(matrix, 0);
+				r = 1;
+			}
+			if (direction >= 6 && r === matrix.length - 1)
+			{
+				this.InsertRowInMatrix(matrix, matrix.length);
+			}
+			if (direction % 3 === 0 && c === 0)
+			{
+				this.InsertColumnInMatrix(matrix, 0);
+				c = 1;
+			}
+			if (direction % 3 === 2 && c === matrix[0].length - 1)
+			{
+				this.InsertColumnInMatrix(matrix, matrix[0].length);
+			}
+			
+			// Insert neighbor
+			let newR = r;
+			if (direction < 3) newR--;
+			if (direction >= 6) newR++;
+			let newC = c;
+			if (direction % 3 === 0) newC--;
+			if (direction % 3 === 2) newC++;
+			
+			matrix[newR][newC] = neighbors[direction];
+			cellsAdded.push(neighbors[direction]);
+		}
+		
+		return cellsAdded;
+	}
+	
+	GetRowAndColumn(index, matrix)
+	{
+		for (let r = 0; r < matrix.length; r++)
+		{
+			if (matrix[r].includes(index))
+			{
+				return [r, matrix[r].indexOf(index)];
+			}
+		}
+		return undefined;
+	}
+	
+	/**
+	 * Inserts a new row in the matrix before the specified index.
+	 * If rIndex is 0, adds a row to the top. If rIndex is matrix.length,
+	 * adds a row to the bottom.
+	 */
+	InsertRowInMatrix(matrix, rIndex, fillValue = -1)
+	{
+		matrix.splice(rIndex, 0, []);
+		for (let i = 0; i < matrix[0].length; i++)
+		{
+			matrix[rIndex].push(fillValue);
+		}
+	}
+	
+	/**
+	 * Inserts a new column in the matrix before the specified index.
+	 * If cIndex is 0, adds a column to the left. If cIndex is
+	 * matrix[0].length, adds a row to the bottom.
+	 */
+	InsertColumnInMatrix(matrix, cIndex, fillValue = -1)
+	{
+		for (let i = 0; i < matrix.length; i++)
+		{
+			matrix[i].splice(cIndex, 0, fillValue);
+		}
+	}
+	
+	MatrixToString(matrix)
+	{
+		let output = "[";
+		for (let r = 0; r < matrix.length; r++)
+		{
+			output += (r > 0 ? " " : "") + "[";
+			for (let c = 0; c < matrix[r].length; c++)
+			{
+				output += matrix[r][c] + ", ";
+			}
+			output = output.slice(0, -2) + "]\n";
+		}
+		output = output.slice(0, -1) + "]";
+		return output;
+	}
+	
+	/**
 	 *  Generates and returns a new 2D Board with the specified
 	 *  number of rows and columns. Uses a square grid and the
 	 *  usual 2 axes.
