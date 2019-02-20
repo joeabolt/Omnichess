@@ -55,7 +55,7 @@ class Realizer
 		}
 		
 		/* They just clicked another cell, not a viable action */
-		SetActiveCell(clickedCell);
+		this.SetActiveCell(clickedCell);
 	}
 	
 	SetActiveCell(newActiveCell)
