@@ -33,7 +33,7 @@ class Piece
 		this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
 			for (let i = 0; i < vector.components.length; i++)
 			{
-				vector.components[i].length = vector.components[i].length * direction[i];
+				vector.components[i].length *= direction[i];
 			}
 		});
 
