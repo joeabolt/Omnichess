@@ -30,7 +30,6 @@ class Piece
 	 */
 	setDirection(direction)
 	{
-		console.log(this.moveCaptureVectors[0].toString() + "; " + this.moveCaptureVectors[1].toString());
 		function directVector (vector) {
 			for (let i = 0; i < vector.components.length; i++)
 			{
@@ -38,18 +37,11 @@ class Piece
 				console.log(vector.components[i].length);
 			}
 		}
-		
-		console.log("Move vectors");
+
 		this.moveVectors.forEach(directVector);
-		
 		this.captureVectors.forEach(directVector);
-		
-		console.log("MoveCapture vectors");
 		this.moveCaptureVectors.forEach(directVector);
-		
-		console.log(this.moveCaptureVectors[0].toString() + "; " + this.moveCaptureVectors[1].toString());
-		throw "Crash everything";
-		
+
 		return this;
 	}
 	

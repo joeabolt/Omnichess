@@ -61,11 +61,12 @@ class Vector
 		/* Helper function */
 		function CrossProduct(xComponents, yComponents)
 		{
+			// TODO: Make deep copies
 			const crossProduct = [];
 
 			xComponents.forEach((xComponent) => {
 				yComponents.forEach((yComponent) => {
-					crossProduct.push(new Vector(xComponent, yComponent));
+					crossProduct.push(new Vector(Component.DeepCopy(xComponent), Component.DeepCopy(yComponent)));
 				})
 			});
 

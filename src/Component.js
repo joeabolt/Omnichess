@@ -11,6 +11,11 @@ class Component
 		this.promote = promote;
 	}
 	
+	static DeepCopy(component)
+	{
+		return new Component(component.length, component.maxRep, component.jump, component.hop, component.promote);
+	}
+	
 	toString()
 	{
 		return this.length + (this.maxRep > 1 ? "{" + this.maxRep + "}" : "") + 
