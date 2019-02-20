@@ -11,33 +11,9 @@ class Realizer
 		this.activeCell = -1;
 		this.activeCellCanMove = [];
 		this.activeCellCanCapture = [];
+		this.activeCellCanMoveCapture = [];
 		
 		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
-	}
-	
-	SetActiveCell(newActiveCell)
-	{
-		this.activeCell = newActiveCell;
-		this.activeCellCanMove = [];
-		this.activeCellCanCapture = [];
-		
-		if (this.activeCell > 0 && this.board.contents[this.activeCell] !== undefined)
-		{
-			const activePiece = this.board.contents[this.activeCell];
-			
-			activePiece.moveVectors.forEach((vector) => {
-				this.activeCellCanMove = this.activeCellCanMove.concat(this.board.GetCellIndices(vector, this.activeCell, false));
-			});
-			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
-			
-			activePiece.captureVectors.forEach((vector) => {
-				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
-			});
-			activePiece.moveCaptureVectors.forEach((vector) => {
-				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
-			});
-			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
-		}
 	}
 	
 	/**
@@ -55,21 +31,82 @@ class Realizer
 		this.isFullyUpdated = true;
 	}
 	
+	ProcessClick(clickedCell)
+	{
+		if (this.activeCell == -1)
+		{
+			this.SetActiveCell(clickedCell);
+			return;
+		}
+		if (this.activeCellCanMoveCapture.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
+			return;
+		}
+		if (this.activeCellCanCapture.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(false, true, this.activeCell, clickedCell);
+			return;
+		}
+		if (this.activeCellCanMove.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(true, false, this.activeCell, clickedCell);
+			return;
+		}
+		
+		/* They just clicked another cell, not a viable action */
+		SetActiveCell(clickedCell);
+	}
+	
+	SetActiveCell(newActiveCell)
+	{
+		this.activeCell = newActiveCell;
+		this.activeCellCanMove = [];
+		this.activeCellCanCapture = [];
+		this.activeCellCanMoveCapture = [];
+		
+		if (this.activeCell > 0 && this.board.contents[this.activeCell] !== undefined)
+		{
+			const activePiece = this.board.contents[this.activeCell];
+			
+			activePiece.moveVectors.forEach((vector) => {
+				this.activeCellCanMove = this.activeCellCanMove.concat(this.board.GetCellIndices(vector, this.activeCell, false));
+			});
+			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
+			
+			activePiece.captureVectors.forEach((vector) => {
+				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
+			});
+			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
+
+			activePiece.moveCaptureVectors.forEach((vector) => {
+				this.activeCellCanMoveCapture = this.activeCellCanMoveCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
+			});
+			this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
+		}
+	}
+	
 	InputMove(move)
 	{
-		/* Parse move into object */
+		this.CreateAndProcessMove(
+			move.includes("->"),
+			move.includes("x"),
+			Number(move.match(/^\d+/)),
+			Number(move.trim().match(/\d+$/))
+		);
+	}
+	
+	CreateAndProcessMove(move, capture, source, target)
+	{
 		const moveObject = {};
-		moveObject.move = move.includes("->");
-		moveObject.capture = move.includes("x");
-		moveObject.source = Number(move.match(/^\d+/));
-		moveObject.target = Number(move.trim().match(/\d+$/));
-		
-		/* Load move */
+		moveObject.move = move;
+		moveObject.capture = capture;
+		moveObject.source = source;
+		moveObject.target = target;
+
 		this.moveQueue.push(moveObject);
-		
-		/* Fire up the game engine */
 		this.game.Step(moveObject);
-		
+		this.activeCell = -1;
 		this.Realize();
 	}
 	
@@ -98,7 +135,7 @@ class Realizer
 				cell.style.width = size;
 				cell.style.height = size;
 				
-				cell.onclick = () => { setActiveCell(event, index); };
+				cell.onclick = () => { processClick(event, index); };
 				
 				cell.innerHTML = `${index}<br />${contents}`;
 			}
@@ -121,7 +158,7 @@ class Realizer
 			{
 				bgColor = "#0000FF";
 			}
-			if (this.activeCellCanCapture.includes(index))
+			if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
 			{
 				bgColor = "#FF0000";
 			}
@@ -148,7 +185,7 @@ class Realizer
 			{
 				fgColor = "#FFFFFF";
 			}
-			if (this.activeCellCanCapture.includes(index))
+			if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
 			{
 				fgColor = "#000000";
 			}

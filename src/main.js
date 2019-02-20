@@ -6,10 +6,10 @@ promise.then(function(parsedGame) {
 	realizer.Realize();
 });
 
-function setActiveCell(event, cellIndex)
+function processClick(event, cellIndex)
 {
 	event.stopPropagation();
-	realizer.SetActiveCell(cellIndex);
+	realizer.ProcessClick(cellIndex);
 	realizer.Realize();
 }
 
