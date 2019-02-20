@@ -79,7 +79,7 @@ class Realizer
 
 				cell.style.backgroundColor = backgroundColor;
 				cell.style.color = foregroundColor;
-				cell.innerHTML = `${contents}`;
+				cell.innerHTML = `${toDisplay[r][c]}<br />${contents}`;
 			}
 		}
 		

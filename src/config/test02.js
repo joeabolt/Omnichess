@@ -79,46 +79,36 @@ var config_data = {
 		{
 			player: "White",
 			piece: "p",
-			location: 49
+			location: 59
 		},
 		{
 			player: "White",
 			piece: "p",
-			location: 50
+			location: 68
 		},
 		{
 			player: "White",
 			piece: "p",
-			location: 51
+			location: 69
 		},
 		{
 			player: "White",
 			piece: "p",
-			location: 52
+			location: 72
 		},
 		{
 			player: "White",
 			piece: "p",
-			location: 53
+			location: 73
 		},
 		{
 			player: "White",
 			piece: "p",
-			location: 54
+			location: 66
 		},
 		{
 			player: "White",
 			piece: "p",
-			location: 55
-		},
-		{
-			player: "White",
-			piece: "R",
-			location: 56
-		},
-		{
-			player: "White",
-			piece: "N",
 			location: 57
 		},
 		{
@@ -128,38 +118,71 @@ var config_data = {
 		},
 		{
 			player: "White",
-			piece: "Q",
-			location: 59
-		},
-		{
-			player: "White",
-			piece: "K",
-			location: 60
+			piece: "B",
+			location: 67
 		},
 		{
 			player: "White",
 			piece: "B",
-			location: 61
+			location: 75
 		},
 		{
 			player: "White",
-			piece: "N",
-			location: 62
+			piece: "B",
+			location: 78
 		},
 		{
 			player: "White",
 			piece: "R",
-			location: 63
+			location: 74
+		},
+		{
+			player: "White",
+			piece: "R",
+			location: 79
+		},
+		{
+			player: "White",
+			piece: "N",
+			location: 70
+		},
+		{
+			player: "White",
+			piece: "N",
+			location: 71
+		},
+		{
+			player: "White",
+			piece: "K",
+			location: 76
+		},
+		{
+			player: "White",
+			piece: "Q",
+			location: 77
+		},
+		
+		
+		
+		{
+			player: "Black",
+			piece: "p",
+			location: 22
 		},
 		{
 			player: "Black",
 			piece: "p",
-			location: 8
+			location: 13
 		},
 		{
 			player: "Black",
 			piece: "p",
-			location: 9
+			location: 6
+		},
+		{
+			player: "Black",
+			piece: "p",
+			location: 7
 		},
 		{
 			player: "Black",
@@ -174,22 +197,32 @@ var config_data = {
 		{
 			player: "Black",
 			piece: "p",
+			location: 20
+		},
+		{
+			player: "Black",
+			piece: "p",
+			location: 31
+		},
+		{
+			player: "Black",
+			piece: "B",
 			location: 12
 		},
 		{
 			player: "Black",
-			piece: "p",
-			location: 13
+			piece: "B",
+			location: 21
 		},
 		{
 			player: "Black",
-			piece: "p",
-			location: 14
+			piece: "B",
+			location: 1
 		},
 		{
 			player: "Black",
-			piece: "p",
-			location: 15
+			piece: "B",
+			location: 4
 		},
 		{
 			player: "Black",
@@ -198,38 +231,28 @@ var config_data = {
 		},
 		{
 			player: "Black",
-			piece: "N",
-			location: 1
+			piece: "R",
+			location: 5
 		},
 		{
 			player: "Black",
-			piece: "B",
+			piece: "N",
+			location: 8
+		},
+		{
+			player: "Black",
+			piece: "N",
+			location: 9
+		},
+		{
+			player: "Black",
+			piece: "K",
 			location: 2
 		},
 		{
 			player: "Black",
 			piece: "Q",
 			location: 3
-		},
-		{
-			player: "Black",
-			piece: "K",
-			location: 4
-		},
-		{
-			player: "Black",
-			piece: "B",
-			location: 5
-		},
-		{
-			player: "Black",
-			piece: "N",
-			location: 6
-		},
-		{
-			player: "Black",
-			piece: "R",
-			location: 7
 		}
 	]
 }
