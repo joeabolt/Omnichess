@@ -13,3 +13,19 @@ fileInput.onchange = () => {
 	document.getElementById("inputSpan").style.display = "none";
 	document.getElementById("mainDisplay").style.display = "block";
 };
+
+function processClick(event, cellIndex)
+{
+	event.stopPropagation();
+	realizer.ProcessClick(cellIndex);
+	realizer.Realize();
+}
+
+function clickHandler()
+{
+	if (realizer === undefined)
+		return;
+
+	realizer.SetActiveCell(-1);
+	realizer.Realize();
+}

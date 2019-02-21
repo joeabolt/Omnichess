@@ -55,7 +55,7 @@ class Realizer
 		}
 		
 		/* They just clicked another cell, not a viable action */
-		this.SetActiveCell(clickedCell);
+		SetActiveCell(clickedCell);
 	}
 	
 	SetActiveCell(newActiveCell)
@@ -84,6 +84,16 @@ class Realizer
 			});
 			this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
 		}
+	}
+	
+	InputMove(move)
+	{
+		this.CreateAndProcessMove(
+			move.includes("->"),
+			move.includes("x"),
+			Number(move.match(/^\d+/)),
+			Number(move.trim().match(/\d+$/))
+		);
 	}
 	
 	CreateAndProcessMove(move, capture, source, target)
