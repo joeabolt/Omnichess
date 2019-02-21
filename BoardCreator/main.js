@@ -48,9 +48,9 @@ class MockBoard
 		const adjacencyMatrix = [];
 		for (let i = 0; i < this.rows * this.cols; i++)
 		{
-			const currR = Math.floor(i / this.cols);
-			const currC = i % this.cols;
-			const cellIndex = this.cellIndices[currR][currC];
+			const row = Math.floor(i / this.cols);
+			const col = i % this.cols;
+			const cellIndex = this.cellIndices[row][col];
 			if (cellIndex == -1)
 				continue;
 			adjacencyMatrix[cellIndex] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
@@ -59,16 +59,16 @@ class MockBoard
 			 * If so, add the next cell's index. Otherwise, -1.
 			 * 0 is up-left, 1 is up-center, and so on.
 			 */
-			console.log("Creating entry for cellIndex: " + cellIndex + " at r" + currR + " c" + currC);
-			adjacencyMatrix[cellIndex][0] = (currR === 0 || currC === 0) ? -1 : this.cellIndices[currR-1][currC-1];
-			adjacencyMatrix[cellIndex][1] = (currR === 0) ? -1 : this.cellIndices[currR-1][currC];
-			adjacencyMatrix[cellIndex][2] = (currR === 0 || currC === this.cols - 1) ? -1 : this.cellIndices[currR-1][currC+1];
-			adjacencyMatrix[cellIndex][3] = (currC === 0) ? -1 : this.cellIndices[currR][currC-1];
+			console.log("Creating entry for cellIndex: " + cellIndex + " at r" + row + " c" + col);
+			adjacencyMatrix[cellIndex][0] = (row === 0 || col === 0) ? -1 : this.cellIndices[row-1][col-1];
+			adjacencyMatrix[cellIndex][1] = (row === 0) ? -1 : this.cellIndices[row-1][col];
+			adjacencyMatrix[cellIndex][2] = (row === 0 || col === this.cols - 1) ? -1 : this.cellIndices[row-1][col+1];
+			adjacencyMatrix[cellIndex][3] = (col === 0) ? -1 : this.cellIndices[row][col-1];
 			adjacencyMatrix[cellIndex][4] = cellIndex;
-			adjacencyMatrix[cellIndex][5] = (currC === this.cols - 1) ? -1 : this.cellIndices[currR][currC+1];
-			adjacencyMatrix[cellIndex][6] = (currR === this.rows - 1 || currC === 0) ? -1 : this.cellIndices[currR+1][currC-1];
-			adjacencyMatrix[cellIndex][7] = (currR === this.rows - 1) ? -1 : this.cellIndices[currR+1][currC];
-			adjacencyMatrix[cellIndex][8] = (currR === this.rows - 1 || currC === this.cols - 1) ? -1 : this.cellIndices[currR+1][currC+1];
+			adjacencyMatrix[cellIndex][5] = (col === this.cols - 1) ? -1 : this.cellIndices[row][col+1];
+			adjacencyMatrix[cellIndex][6] = (row === this.rows - 1 || col === 0) ? -1 : this.cellIndices[row+1][col-1];
+			adjacencyMatrix[cellIndex][7] = (row === this.rows - 1) ? -1 : this.cellIndices[row+1][col];
+			adjacencyMatrix[cellIndex][8] = (row === this.rows - 1 || col === this.cols - 1) ? -1 : this.cellIndices[row+1][col+1];
 		}
 		return adjacencyMatrix;
 	}
