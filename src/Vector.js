@@ -8,11 +8,8 @@ class Vector
 	
 	toString()
 	{
-		let stringRepresentation = "(";
-		this.components.forEach((component) => {
-			stringRepresentation += component.toString() + ", ";
-		});
-		return stringRepresentation.slice(0, -2) + ")";
+		const vectorString = this.components.map(c => c.toString()).join(", ");
+		return `(${vectorString})`;
 	}
 	
 	/**

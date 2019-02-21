@@ -1,30 +1,7 @@
 /* Class to create game resources based on a json file */
 class Parser 
 {
-	/**
-	 *  Loads a json file in the specified filepath and
-	 *  processes it to create a new game that can be run.
-	 *  Assumes that the json file has a single object called
-	 *  config_data.
-	 */
-	static Parse(filepath)
-	{
-		let script = document.createElement('script');
-        script.setAttribute("type","text/javascript");
-        script.setAttribute("src", filepath);
-		document.body.insertBefore(script, document.scripts[0]);
-		
-		const promise = new Promise(function(resolve, reject) {
-			setTimeout(() => {
-				const game = Parser.Load();
-				resolve(game);
-			}, 10);
-		});
-		
-		return promise;
-	}
-	
-	static Load()
+	static Load(config_data)
 	{
 		/* Load piece identifiers mapped to their templates */
 		const pieceTemplates = new Map();
@@ -35,7 +12,8 @@ class Parser
 		/* Build the board */
 		const boardTemplate = config_data.board;
 		let board = undefined;
-		if (boardTemplate.adjacencyMatrix !== undefined)
+		if (boardTemplate.adjacencyMatrix !== undefined &&
+			boardTemplate.adjacencyMatrix !== null)
 		{
 			board = new Board(boardTemplate.adjacencyMatrix);
 		}
