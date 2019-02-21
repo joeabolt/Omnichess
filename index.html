@@ -3,6 +3,9 @@
 	<head>
 		<title>Omnichess</title>
 		<style>
+			input {
+				margin: 5px;
+			}
 			table {
 				border-collapse: true;
 				table-layout: fixed;
@@ -13,12 +16,25 @@
 				text-align: center;
 				font-weight: bolder;
 			}
+			
+			#mainDisplay {
+				display: none;
+			}
 		</style>
 	</head>
 	<body onClick="clickHandler();">
 		<h1>Omnichess</h1>
-		<div id="output" style="font-family: monospace"></div>
-		<div id="message"></div>
+		<span id="inputSpan">
+			Load a configuration file!
+			<input id="configInput" type="file"></input>
+		</span>
+		<div id="mainDisplay">
+			<div id="output" style="font-family: monospace"></div>
+			<input type="text" id="input" value="Input a move here!" />
+			<button onclick="realizer.InputMove(document.getElementById('input').value);
+				document.getElementById('input').value = '';">Submit</button>
+			<div id="message"></div>
+		</div>
 		
 		<script src="src/Player.js"></script>
 		<script src="src/Component.js"></script>
