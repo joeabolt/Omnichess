@@ -6,6 +6,12 @@ class Vector
 		this.components = [x, y];
 	}
 	
+	toString()
+	{
+		const vectorString = this.components.map(c => c.toString()).join(", ");
+		return `(${vectorString})`;
+	}
+	
 	/**
 	 *  Creates one or more Vectors based on the string passed in.
 	 *  Returns an array of Vectors containing all Vectors described in the string.

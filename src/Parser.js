@@ -1,37 +1,7 @@
 /* Class to create game resources based on a json file */
 class Parser 
 {
-	/**
-	 *  Loads a json file in the specified filepath and
-	 *  processes it to create a new game that can be run.
-	 *  Assumes that the json file has a single object called
-	 *  config_data.
-	 */
-	static async Parse(filepath)
-	{
-		let script = document.createElement('script');
-        script.setAttribute("type","text/javascript");
-        script.setAttribute("src", filepath);
-		document.body.insertBefore(script, document.scripts[0]);
-		
-		/* Inspired by / copied from https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep */
-		function sleep(ms) {
-			return new Promise(resolve => setTimeout(resolve, ms));
-		}
-		
-		let game = undefined;
-		async function load() {
-			await sleep(100);
-			game = Parser.Load();
-		}
-		
-		await load();
-		/* End inspiration */
-		
-		return game;
-	}
-	
-	static Load()
+	static Load(config_data)
 	{
 		/* Load piece identifiers mapped to their templates */
 		const pieceTemplates = new Map();
@@ -42,7 +12,8 @@ class Parser
 		/* Build the board */
 		const boardTemplate = config_data.board;
 		let board = undefined;
-		if (boardTemplate.adjacencyMatrix !== undefined)
+		if (boardTemplate.adjacencyMatrix !== undefined &&
+			boardTemplate.adjacencyMatrix !== null)
 		{
 			board = new Board(boardTemplate.adjacencyMatrix);
 		}
