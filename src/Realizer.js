@@ -96,7 +96,7 @@ class Realizer
 
 		this.moveQueue.push(moveObject);
 		this.game.Step(moveObject);
-		this.activeCell = -1;
+		this.activeCell = undefined;
 		this.Realize();
 	}
 	
