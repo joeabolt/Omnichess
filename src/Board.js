@@ -35,7 +35,7 @@ class Board
 			const dy = y.length * Math.min(i, y.maxRep);
 			const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 
-			if (output === -1 || 
+			if (output <= 0 || 
 				(this.contents[output] !== undefined && !includeCaptureEligible) || 
 				(this.contents[output] === undefined && enforceCaptureEligible))
 			{
@@ -82,7 +82,7 @@ class Board
 				+ (stepX+1) * Math.pow(3, this.dimensions - 2);
 			previous = destination;
 			destination = this.cells[destination][direction];
-			if (destination === -1)
+			if (destination <= 0)
 			{
 				break;
 			}
@@ -94,14 +94,14 @@ class Board
 			if ((dx !== 0 || dy !== 0) && this.contents[destination] !== undefined)
 			{
 				if (stepJump || stepHop) continue;
-				return -1;
+				return 0;
 			}
 		}
 		
 		/* If hop, only output when the previous is occupied */
 		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[previous] === undefined)
 		{
-			return -1;
+			return 0;
 		}
 		
 		return destination;
@@ -127,6 +127,7 @@ class Board
 		
 		/* Use the center direction to correctly get sign of first cell */
 		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) + 1) / 2];
+		console.log(this.MatrixToString(outputBoard));
 		
 		let cellsToAdd = this.Expand(outputBoard[0][0], outputBoard, 0, 0);
 		while (cellsToAdd.length > 0)
@@ -141,7 +142,7 @@ class Board
 	
 	Expand(index, matrix, r, c)
 	{
-		const neighbors = this.cells[index];
+		const neighbors = this.cells[index - 1];
 		const cellsAdded = []
 		for (let direction = 0; direction < neighbors.length; direction++)
 		{
@@ -183,8 +184,8 @@ class Board
 			
 			matrix[newR][newC] = neighbors[direction];
 			cellsAdded.push(neighbors[direction]);
-			console.log("Inserting " + neighbors[direction] + " in direction " + direction + " from r" + r + " c" + c);
-			console.log(this.MatrixToString(matrix));
+			// console.log("Inserting " + neighbors[direction] + " in direction " + direction + " from " + index + " at r" + r + " c" + c);
+			// console.log(this.MatrixToString(matrix));
 		}
 		
 		return cellsAdded;
@@ -207,7 +208,7 @@ class Board
 	 * If rIndex is 0, adds a row to the top. If rIndex is matrix.length,
 	 * adds a row to the bottom.
 	 */
-	InsertRowInMatrix(matrix, rIndex, fillValue = -1)
+	InsertRowInMatrix(matrix, rIndex, fillValue = 0)
 	{
 		matrix.splice(rIndex, 0, []);
 		for (let i = 0; i < matrix[0].length; i++)
@@ -221,7 +222,7 @@ class Board
 	 * If cIndex is 0, adds a column to the left. If cIndex is
 	 * matrix[0].length, adds a row to the bottom.
 	 */
-	InsertColumnInMatrix(matrix, cIndex, fillValue = -1)
+	InsertColumnInMatrix(matrix, cIndex, fillValue = 0)
 	{
 		for (let i = 0; i < matrix.length; i++)
 		{
@@ -267,7 +268,7 @@ class Board
 			 * If so, add the next cell's index. Otherwise, -1.
 			 * 0 is up-left, 1 is up-center, and so on.
 			 */
-			const upInvalid = i < cols;
+			const upInvalid = i <= cols;
 			const downInvalid = (i + cols) > (rows * cols);
 			const leftInvalid = i % cols === 1;
 			const rightInvalid = i % cols === 0;

@@ -62,15 +62,15 @@ class MockBoard
 			 * If so, add the next cell's index. Otherwise, 0.
 			 * 0 is up-left, 1 is up-center, and so on.
 			 */
-			adjacencyMatrix[cellIndex][0] = (row === 0 || col === 0) ? -1 : this.cellIndices[row-1][col-1];
-			adjacencyMatrix[cellIndex][1] = (row === 0) ? -1 : this.cellIndices[row-1][col];
-			adjacencyMatrix[cellIndex][2] = (row === 0 || col === this.cols - 1) ? -1 : this.cellIndices[row-1][col+1];
-			adjacencyMatrix[cellIndex][3] = (col === 0) ? -1 : this.cellIndices[row][col-1];
+			adjacencyMatrix[cellIndex][0] = (row === 0 || col === 0) ? 0 : this.cellIndices[row-1][col-1];
+			adjacencyMatrix[cellIndex][1] = (row === 0) ? 0 : this.cellIndices[row-1][col];
+			adjacencyMatrix[cellIndex][2] = (row === 0 || col === this.cols - 1) ? 0 : this.cellIndices[row-1][col+1];
+			adjacencyMatrix[cellIndex][3] = (col === 0) ? 0 : this.cellIndices[row][col-1];
 			adjacencyMatrix[cellIndex][4] = this.cellIndices[row][col];
-			adjacencyMatrix[cellIndex][5] = (col === this.cols - 1) ? -1 : this.cellIndices[row][col+1];
-			adjacencyMatrix[cellIndex][6] = (row === this.rows - 1 || col === 0) ? -1 : this.cellIndices[row+1][col-1];
-			adjacencyMatrix[cellIndex][7] = (row === this.rows - 1) ? -1 : this.cellIndices[row+1][col];
-			adjacencyMatrix[cellIndex][8] = (row === this.rows - 1 || col === this.cols - 1) ? -1 : this.cellIndices[row+1][col+1];
+			adjacencyMatrix[cellIndex][5] = (col === this.cols - 1) ? 0 : this.cellIndices[row][col+1];
+			adjacencyMatrix[cellIndex][6] = (row === this.rows - 1 || col === 0) ? 0 : this.cellIndices[row+1][col-1];
+			adjacencyMatrix[cellIndex][7] = (row === this.rows - 1) ? 0 : this.cellIndices[row+1][col];
+			adjacencyMatrix[cellIndex][8] = (row === this.rows - 1 || col === this.cols - 1) ? 0 : this.cellIndices[row+1][col+1];
 		}
 		return adjacencyMatrix;
 	}
