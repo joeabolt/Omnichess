@@ -29,14 +29,17 @@ class MockBoard
 	updateCellIndexList()
 	{
 		this.cellIndices = [];
-		let currIndex = 0;
+		/* Starts at 1 so 0 can be used as a flag value */
+		let currIndex = 1;
 		for (let r = 0; r < this.rows; r++)
 		{
 			this.cellIndices[r] = [];
 			for (let c = 0; c < this.cols; c++)
 			{
-				this.cellIndices[r][c] = -1;
-				if (this.cells[r][c]) this.cellIndices[r][c] = currIndex++;
+				this.cellIndices[r][c] = currIndex++;
+				
+				/* Invert out-of-bounds cells */
+				if (!this.cells[r][c]) this.cellIndices[r][c] *= -1;
 			}
 		}
 	}
@@ -50,21 +53,20 @@ class MockBoard
 		{
 			const row = Math.floor(i / this.cols);
 			const col = i % this.cols;
-			const cellIndex = this.cellIndices[row][col];
-			if (cellIndex == -1)
-				continue;
-			adjacencyMatrix[cellIndex] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+			const cellIndex = Math.abs(this.cellIndices[row][col]) - 1;
+			// if (cellIndex == -1)
+				// continue;
+			adjacencyMatrix[cellIndex] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 			
 			/* For each direction, checks if next cell is valid.
-			 * If so, add the next cell's index. Otherwise, -1.
+			 * If so, add the next cell's index. Otherwise, 0.
 			 * 0 is up-left, 1 is up-center, and so on.
 			 */
-			console.log("Creating entry for cellIndex: " + cellIndex + " at r" + row + " c" + col);
 			adjacencyMatrix[cellIndex][0] = (row === 0 || col === 0) ? -1 : this.cellIndices[row-1][col-1];
 			adjacencyMatrix[cellIndex][1] = (row === 0) ? -1 : this.cellIndices[row-1][col];
 			adjacencyMatrix[cellIndex][2] = (row === 0 || col === this.cols - 1) ? -1 : this.cellIndices[row-1][col+1];
 			adjacencyMatrix[cellIndex][3] = (col === 0) ? -1 : this.cellIndices[row][col-1];
-			adjacencyMatrix[cellIndex][4] = cellIndex;
+			adjacencyMatrix[cellIndex][4] = this.cellIndices[row][col];
 			adjacencyMatrix[cellIndex][5] = (col === this.cols - 1) ? -1 : this.cellIndices[row][col+1];
 			adjacencyMatrix[cellIndex][6] = (row === this.rows - 1 || col === 0) ? -1 : this.cellIndices[row+1][col-1];
 			adjacencyMatrix[cellIndex][7] = (row === this.rows - 1) ? -1 : this.cellIndices[row+1][col];
