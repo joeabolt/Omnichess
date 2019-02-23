@@ -61,9 +61,8 @@ class Board
 	GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
 	{
 		/* Keep track of array indices separate from cell indices */
-		let destArrIndex = start - 1;
 		let destCellIndex = start;
-		let prevArrIndex = start - 1;
+		let prevCellIndex = start;
 		let stepX = 0;
 		let stepY = 0;
 			
@@ -82,9 +81,8 @@ class Board
 			// TODO: Adapt this for N-dimensional boards, eventually
 			const direction = (stepY+1) * Math.pow(3, this.dimensions - 1) 
 				+ (stepX+1) * Math.pow(3, this.dimensions - 2);
-			prevArrIndex = destArrIndex;
-			destCellIndex = this.cells[destArrIndex][direction];
-			destArrIndex = destCellIndex - 1;
+			prevCellIndex = destCellIndex;
+			destCellIndex = this.cells[destCellIndex - 1][direction];
 			if (destCellIndex <= 0)
 			{
 				break;
@@ -102,7 +100,7 @@ class Board
 		}
 		
 		/* If hop, only output when the previous is occupied */
-		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[prevArrIndex] === undefined)
+		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[prevCellIndex - 1] === undefined)
 		{
 			return 0;
 		}

@@ -43,13 +43,15 @@
 	],
 	"players": [{
 			"identifier": "White",
-			"direction": [1, 1],
+			"direction": [1, -1],
+			"color": "#0088FF",
 			"dropablePieces": "",
 			"capturedPieces": ""
 		},
 		{
 			"identifier": "Black",
-			"direction": [1, -1],
+			"direction": [1, 1],
+			"color": "#FF0000",
 			"dropablePieces": "",
 			"capturedPieces": ""
 		}
@@ -57,12 +59,12 @@
 	"endConditions": [{
 			"player": "White",
 			"win": false,
-			"config": "count K = 0 @ end Black"
+			"config": "count K < 2 @ end Black"
 		},
 		{
 			"player": "Black",
 			"win": false,
-			"config": "count K = 0 @ end White"
+			"config": "count K < 2 @ end White"
 		}
 	],
 	"boardState": [{
@@ -224,6 +226,166 @@
 			"player": "Black",
 			"piece": "R",
 			"location": 8
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 112
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 113
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 114
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 115
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 116
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 117
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 118
+		},
+		{
+			"player": "White",
+			"piece": "p",
+			"location": 119
+		},
+		{
+			"player": "White",
+			"piece": "R",
+			"location": 129
+		},
+		{
+			"player": "White",
+			"piece": "N",
+			"location": 130
+		},
+		{
+			"player": "White",
+			"piece": "B",
+			"location": 131
+		},
+		{
+			"player": "White",
+			"piece": "Q",
+			"location": 132
+		},
+		{
+			"player": "White",
+			"piece": "K",
+			"location": 133
+		},
+		{
+			"player": "White",
+			"piece": "B",
+			"location": 134
+		},
+		{
+			"player": "White",
+			"piece": "N",
+			"location": 135
+		},
+		{
+			"player": "White",
+			"piece": "R",
+			"location": 136
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 27
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 28
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 29
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 30
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 31
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 32
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 33
+		},
+		{
+			"player": "Black",
+			"piece": "p",
+			"location": 34
+		},
+		{
+			"player": "Black",
+			"piece": "R",
+			"location": 10
+		},
+		{
+			"player": "Black",
+			"piece": "N",
+			"location": 11
+		},
+		{
+			"player": "Black",
+			"piece": "B",
+			"location": 12
+		},
+		{
+			"player": "Black",
+			"piece": "Q",
+			"location": 13
+		},
+		{
+			"player": "Black",
+			"piece": "K",
+			"location": 14
+		},
+		{
+			"player": "Black",
+			"piece": "B",
+			"location": 15
+		},
+		{
+			"player": "Black",
+			"piece": "N",
+			"location": 16
+		},
+		{
+			"player": "Black",
+			"piece": "R",
+			"location": 17
 		}
 	]
 }
