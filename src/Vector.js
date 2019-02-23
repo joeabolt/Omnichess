@@ -62,7 +62,7 @@ class Vector
 
 			xComponents.forEach((xComponent) => {
 				yComponents.forEach((yComponent) => {
-					crossProduct.push(new Vector(xComponent, yComponent));
+					crossProduct.push(new Vector(Component.DeepCopy(xComponent), Component.DeepCopy(yComponent)));
 				})
 			});
 

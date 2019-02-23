@@ -7,6 +7,11 @@ class Realizer
 		this.board = game.board;
 		this.isFullyUpdated = false;
 		this.moveQueue = [];
+		
+		this.activeCell = undefined;
+		this.activeCellCanMove = [];
+		this.activeCellCanCapture = [];
+		this.activeCellCanMoveCapture = [];
 	}
 	
 	/**
@@ -24,21 +29,72 @@ class Realizer
 		this.isFullyUpdated = true;
 	}
 	
-	InputMove(move)
+	ProcessClick(clickedCell)
 	{
-		/* Parse move into object */
+		if (this.activeCell == -1)
+		{
+			this.SetActiveCell(clickedCell);
+			return;
+		}
+		if (this.activeCellCanMoveCapture.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
+			return;
+		}
+		if (this.activeCellCanCapture.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(false, true, this.activeCell, clickedCell);
+			return;
+		}
+		if (this.activeCellCanMove.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(true, false, this.activeCell, clickedCell);
+			return;
+		}
+		
+		/* They just clicked another cell, not a viable action */
+		this.SetActiveCell(clickedCell);
+	}
+	
+	SetActiveCell(newActiveCell)
+	{
+		this.activeCell = newActiveCell;
+		this.activeCellCanMove = [];
+		this.activeCellCanCapture = [];
+		this.activeCellCanMoveCapture = [];
+		
+		if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
+		{
+			const activePiece = this.board.contents[this.activeCell];
+			
+			activePiece.moveVectors.forEach((vector) => {
+				this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
+			});
+			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
+			
+			activePiece.captureVectors.forEach((vector) => {
+				this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+			});
+			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
+
+			activePiece.moveCaptureVectors.forEach((vector) => {
+				this.activeCellCanMoveCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+			});
+			this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
+		}
+	}
+	
+	CreateAndProcessMove(move, capture, source, target)
+	{
 		const moveObject = {};
-		moveObject.move = move.includes("->");
-		moveObject.capture = move.includes("x");
-		moveObject.source = Number(move.match(/^\d+/));
-		moveObject.target = Number(move.trim().match(/\d+$/));
-		
-		/* Load move */
+		moveObject.move = move;
+		moveObject.capture = capture;
+		moveObject.source = source;
+		moveObject.target = target;
+
 		this.moveQueue.push(moveObject);
-		
-		/* Fire up the game engine */
 		this.game.Step(moveObject);
-		
+		this.activeCell = undefined;
 		this.Realize();
 	}
 	
@@ -71,12 +127,8 @@ class Realizer
 						contents = this.board.contents[toDisplay[r][c]].identifier;
 					}
 					
-					backgroundColor = (r % 2 === 0) ^ (c % 2 === 0) ? "#000000" : "#FFFFFF";
-					foregroundColor = (r % 2 === 0) ^ (c % 2 === 0) ? "#FFFFFF" : "#000000";
-					if (this.board.contents[toDisplay[r][c]] !== undefined && this.board.contents[toDisplay[r][c]].player.color !== undefined)
-					{
-						foregroundColor = this.board.contents[toDisplay[r][c]].player.color;
-					}
+					backgroundColor = this.DetermineBackgroundColor(toDisplay[r][c], r, c);
+					foregroundColor = this.DetermineForegroundColor(toDisplay[r][c], r, c);
 				}
 
 				cell.style.backgroundColor = backgroundColor;
@@ -87,9 +139,61 @@ class Realizer
 				cell.style.height = size;
 				
 				cell.innerHTML = `${toDisplay[r][c]}<br />${contents}`;
+				cell.onclick = () => { processClick(event, toDisplay[r][c]); };
+
 			}
 		}
 		
 		return board;
+	}
+	
+	DetermineBackgroundColor(index, row, column)
+	{
+		let bgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#000000" : "#FFFFFF";
+		
+		if (this.activeCell !== undefined)
+		{
+			if (this.activeCell === index)
+			{
+				bgColor = "#00FF00";
+			}
+			if (this.activeCellCanMove.includes(index))
+			{
+				bgColor = "#0000FF";
+			}
+			if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
+			{
+				bgColor = "#FF0000";
+			}
+		}
+		
+		return bgColor;
+	}
+	
+	DetermineForegroundColor(index, row, column)
+	{
+		let fgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#FFFFFF" : "#000000";
+		if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
+		{
+			fgColor = this.board.contents[index].player.color;
+		}
+
+		if (this.activeCell !== undefined)
+		{
+			if (this.activeCell === index)
+			{
+				fgColor = "#000000";
+			}
+			if (this.activeCellCanMove.includes(index))
+			{
+				fgColor = "#FFFFFF";
+			}
+			if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
+			{
+				fgColor = "#000000";
+			}
+		}
+		
+		return fgColor;
 	}
 }
