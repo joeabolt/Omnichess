@@ -16,6 +16,9 @@ fileInput.onchange = () => {
 
 function processClick(event, cellIndex)
 {
+	if (realizer === undefined)
+		return;
+	
 	event.stopPropagation();
 	realizer.ProcessClick(cellIndex);
 	realizer.Realize();
@@ -25,7 +28,7 @@ function clickHandler()
 {
 	if (realizer === undefined)
 		return;
-
-	realizer.SetActiveCell(-1);
+	
+	realizer.SetActiveCell(undefined);
 	realizer.Realize();
 }
