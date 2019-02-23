@@ -55,13 +55,15 @@ class Board
 	
 	/**
 	 *  Returns the index of the cell dx and dy units
-	 *  away from start. Returns -1 if no such 
+	 *  away from start. Returns 0 if no such 
 	 *  destination exists. 
 	 */
 	GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
 	{
-		let destination = start;
-		let previous = start;
+		/* Keep track of array indices separate from cell indices */
+		let destArrIndex = start - 1;
+		let destCellIndex = start;
+		let prevArrIndex = start - 1;
 		let stepX = 0;
 		let stepY = 0;
 			
@@ -80,9 +82,10 @@ class Board
 			// TODO: Adapt this for N-dimensional boards, eventually
 			const direction = (stepY+1) * Math.pow(3, this.dimensions - 1) 
 				+ (stepX+1) * Math.pow(3, this.dimensions - 2);
-			previous = destination;
-			destination = this.cells[destination][direction];
-			if (destination <= 0)
+			prevArrIndex = destArrIndex;
+			destCellIndex = this.cells[destArrIndex][direction];
+			destArrIndex = destCellIndex - 1;
+			if (destCellIndex <= 0)
 			{
 				break;
 			}
@@ -91,7 +94,7 @@ class Board
 			const stepJump = (xJump && stepX !== 0) || (yJump && stepY !== 0);
 			const stepHop = (xHop && stepX !== 0) || (yHop && stepY !== 0);
 			
-			if ((dx !== 0 || dy !== 0) && this.contents[destination] !== undefined)
+			if ((dx !== 0 || dy !== 0) && this.contents[destArrIndex] !== undefined)
 			{
 				if (stepJump || stepHop) continue;
 				return 0;
@@ -99,12 +102,12 @@ class Board
 		}
 		
 		/* If hop, only output when the previous is occupied */
-		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[previous] === undefined)
+		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[prevArrIndex] === undefined)
 		{
 			return 0;
 		}
 		
-		return destination;
+		return destArrIndex + 1;
 	}
 	
 	/**
@@ -127,7 +130,6 @@ class Board
 		
 		/* Use the center direction to correctly get sign of first cell */
 		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) + 1) / 2];
-		console.log(this.MatrixToString(outputBoard));
 		
 		let cellsToAdd = this.Expand(outputBoard[0][0], outputBoard, 0, 0);
 		while (cellsToAdd.length > 0)
@@ -259,6 +261,7 @@ class Board
 	{
 		/* UL, U, UR, L, 0, R, DL, D, DR */
 		const adjacencyMatrix = [];
+		
 		for (let i = 1; i <= rows * cols; i++)
 		{
 			const matrixIndex = i - 1;
