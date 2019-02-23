@@ -8,7 +8,7 @@ class Realizer
 		this.isFullyUpdated = false;
 		this.moveQueue = [];
 		
-		this.activeCell = -1;
+		this.activeCell = undefined;
 		this.activeCellCanMove = [];
 		this.activeCellCanCapture = [];
 		
@@ -21,7 +21,7 @@ class Realizer
 		this.activeCellCanMove = [];
 		this.activeCellCanCapture = [];
 		
-		if (this.activeCell > 0 && this.board.contents[this.activeCell] !== undefined)
+		if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
 		{
 			const activePiece = this.board.contents[this.activeCell];
 			
@@ -111,7 +111,7 @@ class Realizer
 	{
 		let bgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#000000" : "#FFFFFF";
 		
-		if (this.activeCell >= 0)
+		if (this.activeCell !== undefined)
 		{
 			if (this.activeCell === index)
 			{
@@ -138,7 +138,7 @@ class Realizer
 			fgColor = this.board.contents[index].player.color;
 		}
 
-		if (this.activeCell >= 0)
+		if (this.activeCell !== undefined)
 		{
 			if (this.activeCell === index)
 			{
