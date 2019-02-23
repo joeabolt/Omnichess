@@ -7,7 +7,7 @@ class Board
 		/* The below works because we insist on a square/cubic grid */
 		this.dimensions = Math.round(Math.log(adjacencyMatrix[0].length) / Math.log(3));
 		this.contents = [];
-		for (let i = 0; i < this.cells.length; i++)
+		for (let i = 1; i < this.cells.length; i++)
 		{
 			this.contents.push(undefined);
 		}
@@ -94,7 +94,7 @@ class Board
 			const stepJump = (xJump && stepX !== 0) || (yJump && stepY !== 0);
 			const stepHop = (xHop && stepX !== 0) || (yHop && stepY !== 0);
 			
-			if ((dx !== 0 || dy !== 0) && this.contents[destArrIndex] !== undefined)
+			if ((dx !== 0 || dy !== 0) && this.contents[destCellIndex] !== undefined)
 			{
 				if (stepJump || stepHop) continue;
 				return 0;
@@ -107,7 +107,7 @@ class Board
 			return 0;
 		}
 		
-		return destArrIndex + 1;
+		return destCellIndex;
 	}
 	
 	/**
