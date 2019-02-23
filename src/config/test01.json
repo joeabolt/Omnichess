@@ -43,13 +43,15 @@
 	],
 	"players": [{
 			"identifier": "White",
-			"direction": [1, 1],
+			"color": "#0088FF",
+			"direction": [1, -1],
 			"dropablePieces": "",
 			"capturedPieces": ""
 		},
 		{
 			"identifier": "Black",
-			"direction": [1, -1],
+			"color": "#FF0000",
+			"direction": [1, 1],
 			"dropablePieces": "",
 			"capturedPieces": ""
 		}

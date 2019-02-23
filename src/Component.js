@@ -10,6 +10,12 @@ class Component
 		this.hop = hop;
 		this.promote = promote;
 	}
+	
+	toString()
+	{
+		return this.length + (this.maxRep > 1 ? "{" + this.maxRep + "}" : "") + 
+			(this.jump ? "j" : "") + (this.hop ? "h" : "") + (this.promote ? "p" : "")
+	}
 
 	static Create(localFlags, globalFlags)
 	{

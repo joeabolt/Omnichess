@@ -1,13 +1,15 @@
-let game = undefined;
 let realizer = undefined;
+const fileInput = document.getElementById("configInput")
 
-async function startGame()
-{
-	game = await Parser.Parse("./src/config/testDualBoard.json");
+fileInput.onchange = () => {
+	const reader = new FileReader();
+	reader.onload = () => {
+		const game = Parser.Load(JSON.parse(reader.result));
+		realizer = new Realizer(game);
+		realizer.Realize();
+	};
+	reader.readAsText(fileInput.files[0]);
 	
-	realizer = new Realizer(game);
-	
-	setInterval(() => {realizer.Realize();}, 500);
-}
-
-startGame();
+	document.getElementById("inputSpan").style.display = "none";
+	document.getElementById("mainDisplay").style.display = "block";
+};

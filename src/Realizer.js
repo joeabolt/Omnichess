@@ -38,6 +38,8 @@ class Realizer
 		
 		/* Fire up the game engine */
 		this.game.Step(moveObject);
+		
+		this.Realize();
 	}
 	
 	CreateDisplayBoard()
@@ -79,6 +81,11 @@ class Realizer
 
 				cell.style.backgroundColor = backgroundColor;
 				cell.style.color = foregroundColor;
+				
+				const size = "35px"; //TODO: Make this dynamic #55
+				cell.style.width = size;
+				cell.style.height = size;
+				
 				cell.innerHTML = `${toDisplay[r][c]}<br />${contents}`;
 			}
 		}
