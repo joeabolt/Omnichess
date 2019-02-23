@@ -111,24 +111,12 @@ class Realizer
 				let cell = row.insertCell(c);
 				
 				let contents = "&nbsp";
-				let backgroundColor = "#000000";
-				let foregroundColor = "#FFFFFF";
+				const backgroundColor = this.DetermineBackgroundColor(toDisplay[r][c], r, c);
+				const foregroundColor = this.DetermineForegroundColor(toDisplay[r][c], r, c);
 				
-				if (toDisplay[r][c] === -1)
+				if (this.board.contents[toDisplay[r][c]] !== undefined)
 				{
-					contents = "&nbsp";
-					backgroundColor = "#AAAAAA";
-					foregroundColor = "#FFFFFF";
-				}
-				else
-				{
-					if (this.board.contents[toDisplay[r][c]] !== undefined)
-					{
-						contents = this.board.contents[toDisplay[r][c]].identifier;
-					}
-					
-					backgroundColor = this.DetermineBackgroundColor(toDisplay[r][c], r, c);
-					foregroundColor = this.DetermineForegroundColor(toDisplay[r][c], r, c);
+					contents = this.board.contents[toDisplay[r][c]].identifier;
 				}
 
 				cell.style.backgroundColor = backgroundColor;
@@ -149,6 +137,11 @@ class Realizer
 	
 	DetermineBackgroundColor(index, row, column)
 	{
+		if (index < 0)
+		{
+			return "#AAAAAA";
+		}
+		
 		let bgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#000000" : "#FFFFFF";
 		
 		if (this.activeCell !== undefined)
@@ -172,7 +165,13 @@ class Realizer
 	
 	DetermineForegroundColor(index, row, column)
 	{
+		if (index < 0)
+		{
+			return "#FFFFFF";
+		}
+		
 		let fgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#FFFFFF" : "#000000";
+		
 		if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
 		{
 			fgColor = this.board.contents[index].player.color;

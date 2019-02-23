@@ -120,15 +120,20 @@ class Board
 		}
 
 		let outputBoard = [];
+		
+		/* Create space for first cell, from which to create the rest of the board */
 		this.InsertRowInMatrix(outputBoard, 0);
 		this.InsertColumnInMatrix(outputBoard, 0);
-		outputBoard[0][0] = 0;
-		let cellsToAdd = this.Expand(0, outputBoard, 0, 0);
+		
+		/* Use the center direction to correctly get sign of first cell */
+		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) + 1) / 2];
+		
+		let cellsToAdd = this.Expand(outputBoard[0][0], outputBoard, 0, 0);
 		while (cellsToAdd.length > 0)
 		{
 			const index = cellsToAdd.shift();
 			const coords = this.GetRowAndColumn(index, outputBoard);
-			cellsToAdd = cellsToAdd.concat(this.Expand(index, outputBoard, coords[0], coords[1]));
+			cellsToAdd = cellsToAdd.concat(this.Expand(Math.abs(index), outputBoard, coords[0], coords[1]));
 		}
 
 		return outputBoard;
@@ -140,12 +145,15 @@ class Board
 		const cellsAdded = []
 		for (let direction = 0; direction < neighbors.length; direction++)
 		{
-			if (neighbors[direction] === -1)
+			if (neighbors[direction] === 0) /* Flag value for out of bounds */
 				continue;
+				
+			/* Skip over cells we have already inserted */
 			if (this.GetRowAndColumn(neighbors[direction], matrix) !== undefined)
 				continue;
 			
-			// Pad the top, bottom, left, and right
+			/* Pad the top, bottom, left, and right */
+			// TODO: Update for n-dimensionality
 			if (direction < 3 && r === 0)
 			{
 				this.InsertRowInMatrix(matrix, 0);
@@ -175,6 +183,8 @@ class Board
 			
 			matrix[newR][newC] = neighbors[direction];
 			cellsAdded.push(neighbors[direction]);
+			console.log("Inserting " + neighbors[direction] + " in direction " + direction + " from r" + r + " c" + c);
+			console.log(this.MatrixToString(matrix));
 		}
 		
 		return cellsAdded;
@@ -219,6 +229,10 @@ class Board
 		}
 	}
 	
+	/**
+	 * Convenience method for debugging. Outputs a matrix in a
+	 * human-readable format. 
+	 */
 	MatrixToString(matrix)
 	{
 		let output = "[";
@@ -244,23 +258,28 @@ class Board
 	{
 		/* UL, U, UR, L, 0, R, DL, D, DR */
 		const adjacencyMatrix = [];
-		for (let i = 0; i < rows * cols; i++)
+		for (let i = 1; i <= rows * cols; i++)
 		{
-			adjacencyMatrix[i] = [-1, -1, -1, -1, -1, -1, -1, -1, -1];
+			const matrixIndex = i - 1;
+			adjacencyMatrix[matrixIndex] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 			
 			/* For each direction, checks if next cell is valid.
 			 * If so, add the next cell's index. Otherwise, -1.
 			 * 0 is up-left, 1 is up-center, and so on.
 			 */
-			adjacencyMatrix[i][0] = (i < cols || i % cols === 0) ? -1 : i-cols-1;
-			adjacencyMatrix[i][1] = (i < cols) ? -1 : i-cols;
-			adjacencyMatrix[i][2] = (i < cols || i % cols === (cols - 1)) ? -1 : i-cols+1;
-			adjacencyMatrix[i][3] = (i % cols === 0) ? -1 : i-1;
-			adjacencyMatrix[i][4] = i;
-			adjacencyMatrix[i][5] = (i % cols === (cols - 1)) ? -1 : i+1;
-			adjacencyMatrix[i][6] = ((i + cols) >= (rows * cols) || i % cols === 0) ? -1 : i+cols-1;
-			adjacencyMatrix[i][7] = ((i + cols) >= (rows * cols)) ? -1 : i+cols;
-			adjacencyMatrix[i][8] = ((i + cols) >= (rows * cols) || i % cols === (cols - 1)) ? -1 : i+cols+1;
+			const upInvalid = i < cols;
+			const downInvalid = (i + cols) > (rows * cols);
+			const leftInvalid = i % cols === 1;
+			const rightInvalid = i % cols === 0;
+			adjacencyMatrix[matrixIndex][0] = (upInvalid || leftInvalid) ? 0 : i-cols-1;
+			adjacencyMatrix[matrixIndex][1] = (upInvalid) ? 0 : i-cols;
+			adjacencyMatrix[matrixIndex][2] = (upInvalid || rightInvalid) ? 0 : i-cols+1;
+			adjacencyMatrix[matrixIndex][3] = (leftInvalid) ? 0 : i-1;
+			adjacencyMatrix[matrixIndex][4] = i;
+			adjacencyMatrix[matrixIndex][5] = (rightInvalid) ? 0 : i+1;
+			adjacencyMatrix[matrixIndex][6] = (downInvalid || leftInvalid) ? 0 : i+cols-1;
+			adjacencyMatrix[matrixIndex][7] = (downInvalid) ? 0 : i+cols;
+			adjacencyMatrix[matrixIndex][8] = (downInvalid || rightInvalid) ? 0 : i+cols+1;
 		}
 		return adjacencyMatrix;
 	}
