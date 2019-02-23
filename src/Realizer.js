@@ -26,15 +26,15 @@ class Realizer
 			const activePiece = this.board.contents[this.activeCell];
 			
 			activePiece.moveVectors.forEach((vector) => {
-				this.activeCellCanMove = this.activeCellCanMove.concat(this.board.GetCellIndices(vector, this.activeCell, false));
+				this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
 			});
 			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
 			
 			activePiece.captureVectors.forEach((vector) => {
-				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
+				this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
 			});
 			activePiece.moveCaptureVectors.forEach((vector) => {
-				this.activeCellCanCapture = this.activeCellCanCapture.concat(this.board.GetCellIndices(vector, this.activeCell, true, true));
+				this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
 			});
 			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
 		}
