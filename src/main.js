@@ -3,7 +3,7 @@ let realizer = undefined;
 
 async function startGame()
 {
-	game = await Parser.Parse("./src/config/test02.js");
+	game = await Parser.Parse("./src/config/testDualBoard.json");
 	
 	realizer = new Realizer(game);
 	
