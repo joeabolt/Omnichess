@@ -41,10 +41,14 @@ class Turn
 			approved = false;
 			throw "Tried to capture when capture disallowed.";
 		}
-		if (!approved)
+		if (this.board.contents[move.target] !== undefined && this.board.contents[move.target].player === this.player)
 		{
-			console.log("Did not approve!");
+			document.getElementById("message").innerHTML = "Invalid action: cannot capture allied piece.";
+			approved = false;
+			throw "Tried to capture allied piece.";
 		}
+		
+		document.getElementById("message").innerHTML = "";
 		
 		return approved;
 	}
