@@ -35,7 +35,7 @@ class Board
 			const dy = y.length * Math.min(i, y.maxRep);
 			const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 
-			if (output <= 0 || 
+			if (output === null || output <= 0 || 
 				(this.contents[output] !== undefined && !includeCaptureEligible) || 
 				(this.contents[output] === undefined && enforceCaptureEligible))
 			{
@@ -83,7 +83,7 @@ class Board
 				+ (stepX+1) * Math.pow(3, this.dimensions - 2);
 			prevCellIndex = destCellIndex;
 			destCellIndex = this.cells[destCellIndex - 1][direction];
-			if (destCellIndex <= 0)
+			if (destCellIndex === null || destCellIndex <= 0)
 			{
 				break;
 			}
@@ -95,14 +95,14 @@ class Board
 			if ((dx !== 0 || dy !== 0) && this.contents[destCellIndex] !== undefined)
 			{
 				if (stepJump || stepHop) continue;
-				return 0;
+				return null;
 			}
 		}
 		
 		/* If hop, only output when the previous is occupied */
 		if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[prevCellIndex - 1] === undefined)
 		{
-			return 0;
+			return null;
 		}
 		
 		return destCellIndex;
@@ -130,12 +130,12 @@ class Board
 		/* Use the center direction to correctly get sign of first cell */
 		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) + 1) / 2];
 		
-		cellsToAdd.push(this.Expand(outputBoard[0][0], outputBoard, 0, 0));
+		cellsToAdd.push(...this.Expand(outputBoard[0][0], outputBoard, 0, 0));
 		while (cellsToAdd.length > 0)
 		{
 			const index = cellsToAdd.shift();
 			const coords = this.GetRowAndColumn(index, outputBoard);
-			cellsToAdd.push(this.Expand(Math.abs(index), outputBoard, coords[0], coords[1]));
+			cellsToAdd.push(...this.Expand(Math.abs(index), outputBoard, coords[0], coords[1]));
 		}
 
 		return outputBoard;
@@ -147,7 +147,7 @@ class Board
 		const cellsAdded = []
 		for (let direction = 0; direction < neighbors.length; direction++)
 		{
-			if (neighbors[direction] === 0) /* Flag value for out of bounds */
+			if (neighbors[direction] === null) /* Flag value for out of bounds */
 				continue;
 				
 			/* Skip over cells we have already inserted */
@@ -262,7 +262,7 @@ class Board
 		for (let i = 1; i <= rows * cols; i++)
 		{
 			const matrixIndex = i - 1;
-			adjacencyMatrix[matrixIndex] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+			adjacencyMatrix[matrixIndex] = [null, null, null, null, null, null, null, null, null];
 			
 			/* For each direction, checks if next cell is valid.
 			 * If so, add the next cell's index. Otherwise, -1.
@@ -272,15 +272,15 @@ class Board
 			const downInvalid = (i + cols) > (rows * cols);
 			const leftInvalid = i % cols === 1;
 			const rightInvalid = i % cols === 0;
-			adjacencyMatrix[matrixIndex][0] = (upInvalid || leftInvalid) ? 0 : i-cols-1;
-			adjacencyMatrix[matrixIndex][1] = (upInvalid) ? 0 : i-cols;
-			adjacencyMatrix[matrixIndex][2] = (upInvalid || rightInvalid) ? 0 : i-cols+1;
-			adjacencyMatrix[matrixIndex][3] = (leftInvalid) ? 0 : i-1;
+			adjacencyMatrix[matrixIndex][0] = (upInvalid || leftInvalid) ? null : i-cols-1;
+			adjacencyMatrix[matrixIndex][1] = (upInvalid) ? null : i-cols;
+			adjacencyMatrix[matrixIndex][2] = (upInvalid || rightInvalid) ? null : i-cols+1;
+			adjacencyMatrix[matrixIndex][3] = (leftInvalid) ? null : i-1;
 			adjacencyMatrix[matrixIndex][4] = i;
-			adjacencyMatrix[matrixIndex][5] = (rightInvalid) ? 0 : i+1;
-			adjacencyMatrix[matrixIndex][6] = (downInvalid || leftInvalid) ? 0 : i+cols-1;
-			adjacencyMatrix[matrixIndex][7] = (downInvalid) ? 0 : i+cols;
-			adjacencyMatrix[matrixIndex][8] = (downInvalid || rightInvalid) ? 0 : i+cols+1;
+			adjacencyMatrix[matrixIndex][5] = (rightInvalid) ? null : i+1;
+			adjacencyMatrix[matrixIndex][6] = (downInvalid || leftInvalid) ? null : i+cols-1;
+			adjacencyMatrix[matrixIndex][7] = (downInvalid) ? null : i+cols;
+			adjacencyMatrix[matrixIndex][8] = (downInvalid || rightInvalid) ? null : i+cols+1;
 		}
 		return adjacencyMatrix;
 	}
