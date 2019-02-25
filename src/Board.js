@@ -120,7 +120,8 @@ class Board
 			return [[]];
 		}
 
-		let outputBoard = [];
+		const outputBoard = [];
+		const cellsToAdd = [];
 		
 		/* Create space for first cell, from which to create the rest of the board */
 		this.InsertRowInMatrix(outputBoard, 0);
@@ -129,7 +130,7 @@ class Board
 		/* Use the center direction to correctly get sign of first cell */
 		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) + 1) / 2];
 		
-		let cellsToAdd = this.Expand(outputBoard[0][0], outputBoard, 0, 0);
+		cellsToAdd.push(this.Expand(outputBoard[0][0], outputBoard, 0, 0));
 		while (cellsToAdd.length > 0)
 		{
 			const index = cellsToAdd.shift();
@@ -140,7 +141,7 @@ class Board
 		return outputBoard;
 	}
 	
-	Expand(index, matrix, r, c)
+	Expand(index, matrix, row, col)
 	{
 		const neighbors = this.cells[index - 1];
 		const cellsAdded = []
@@ -155,37 +156,35 @@ class Board
 			
 			/* Pad the top, bottom, left, and right */
 			// TODO: Update for n-dimensionality
-			if (direction < 3 && r === 0)
+			if (direction < 3 && row === 0)
 			{
 				this.InsertRowInMatrix(matrix, 0);
-				r = 1;
+				row = 1;
 			}
-			if (direction >= 6 && r === matrix.length - 1)
+			if (direction >= 6 && row === matrix.length - 1)
 			{
 				this.InsertRowInMatrix(matrix, matrix.length);
 			}
-			if (direction % 3 === 0 && c === 0)
+			if (direction % 3 === 0 && col === 0)
 			{
 				this.InsertColumnInMatrix(matrix, 0);
-				c = 1;
+				col = 1;
 			}
-			if (direction % 3 === 2 && c === matrix[0].length - 1)
+			if (direction % 3 === 2 && col === matrix[0].length - 1)
 			{
 				this.InsertColumnInMatrix(matrix, matrix[0].length);
 			}
 			
 			// Insert neighbor
-			let newR = r;
+			let newR = row;
 			if (direction < 3) newR--;
 			if (direction >= 6) newR++;
-			let newC = c;
+			let newC = col;
 			if (direction % 3 === 0) newC--;
 			if (direction % 3 === 2) newC++;
 			
 			matrix[newR][newC] = neighbors[direction];
 			cellsAdded.push(neighbors[direction]);
-			// console.log("Inserting " + neighbors[direction] + " in direction " + direction + " from " + index + " at r" + r + " c" + c);
-			// console.log(this.MatrixToString(matrix));
 		}
 		
 		return cellsAdded;
@@ -193,11 +192,11 @@ class Board
 	
 	GetRowAndColumn(index, matrix)
 	{
-		for (let r = 0; r < matrix.length; r++)
+		for (let row = 0; row < matrix.length; row++)
 		{
-			if (matrix[r].includes(index))
+			if (matrix[row].includes(index))
 			{
-				return [r, matrix[r].indexOf(index)];
+				return [row, matrix[row].indexOf(index)];
 			}
 		}
 		return undefined;
@@ -208,12 +207,12 @@ class Board
 	 * If rIndex is 0, adds a row to the top. If rIndex is matrix.length,
 	 * adds a row to the bottom.
 	 */
-	InsertRowInMatrix(matrix, rIndex, fillValue = 0)
+	InsertRowInMatrix(matrix, rowIndex, fillValue = 0)
 	{
-		matrix.splice(rIndex, 0, []);
+		matrix.splice(rowIndex, 0, []);
 		for (let i = 0; i < matrix[0].length; i++)
 		{
-			matrix[rIndex].push(fillValue);
+			matrix[rowIndex].push(fillValue);
 		}
 	}
 	
@@ -222,11 +221,11 @@ class Board
 	 * If cIndex is 0, adds a column to the left. If cIndex is
 	 * matrix[0].length, adds a row to the bottom.
 	 */
-	InsertColumnInMatrix(matrix, cIndex, fillValue = 0)
+	InsertColumnInMatrix(matrix, colIndex, fillValue = 0)
 	{
 		for (let i = 0; i < matrix.length; i++)
 		{
-			matrix[i].splice(cIndex, 0, fillValue);
+			matrix[i].splice(colIndex, 0, fillValue);
 		}
 	}
 	
@@ -237,12 +236,12 @@ class Board
 	MatrixToString(matrix)
 	{
 		let output = "[";
-		for (let r = 0; r < matrix.length; r++)
+		for (let row = 0; row < matrix.length; row++)
 		{
-			output += (r > 0 ? " " : "") + "[";
-			for (let c = 0; c < matrix[r].length; c++)
+			output += (row > 0 ? " " : "") + "[";
+			for (let col = 0; col < matrix[row].length; col++)
 			{
-				output += matrix[r][c] + ", ";
+				output += matrix[row][col] + ", ";
 			}
 			output = output.slice(0, -2) + "]\n";
 		}
