@@ -135,7 +135,7 @@ class Board
 		{
 			const index = cellsToAdd.shift();
 			const coords = this.GetRowAndColumn(index, outputBoard);
-			cellsToAdd = cellsToAdd.concat(this.Expand(Math.abs(index), outputBoard, coords[0], coords[1]));
+			cellsToAdd.push(this.Expand(Math.abs(index), outputBoard, coords[0], coords[1]));
 		}
 
 		return outputBoard;
