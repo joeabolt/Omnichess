@@ -11,33 +11,7 @@ class Realizer
 		this.activeCell = undefined;
 		this.activeCellCanMove = [];
 		this.activeCellCanCapture = [];
-		
-		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
-	}
-	
-	SetActiveCell(newActiveCell)
-	{
-		this.activeCell = newActiveCell;
-		this.activeCellCanMove = [];
-		this.activeCellCanCapture = [];
-		
-		if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
-		{
-			const activePiece = this.board.contents[this.activeCell];
-			
-			activePiece.moveVectors.forEach((vector) => {
-				this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
-			});
-			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
-			
-			activePiece.captureVectors.forEach((vector) => {
-				this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
-			});
-			activePiece.moveCaptureVectors.forEach((vector) => {
-				this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
-			});
-			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
-		}
+		this.activeCellCanMoveCapture = [];
 	}
 	
 	/**
@@ -55,42 +29,96 @@ class Realizer
 		this.isFullyUpdated = true;
 	}
 	
-	InputMove(move)
+	ProcessClick(clickedCell)
 	{
-		/* Parse move into object */
+		if (this.activeCell == -1)
+		{
+			this.SetActiveCell(clickedCell);
+			return;
+		}
+		if (this.activeCellCanMoveCapture.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
+			return;
+		}
+		if (this.activeCellCanCapture.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(false, true, this.activeCell, clickedCell);
+			return;
+		}
+		if (this.activeCellCanMove.includes(clickedCell))
+		{
+			this.CreateAndProcessMove(true, false, this.activeCell, clickedCell);
+			return;
+		}
+		
+		/* They just clicked another cell, not a viable action */
+		this.SetActiveCell(clickedCell);
+	}
+	
+	SetActiveCell(newActiveCell)
+	{
+		this.activeCell = newActiveCell;
+		this.activeCellCanMove = [];
+		this.activeCellCanCapture = [];
+		this.activeCellCanMoveCapture = [];
+		
+		if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
+		{
+			const activePiece = this.board.contents[this.activeCell];
+			
+			activePiece.moveVectors.forEach((vector) => {
+				this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
+			});
+			this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
+			
+			activePiece.captureVectors.forEach((vector) => {
+				this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+			});
+			this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
+
+			activePiece.moveCaptureVectors.forEach((vector) => {
+				this.activeCellCanMoveCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+			});
+			this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
+		}
+	}
+	
+	CreateAndProcessMove(move, capture, source, target)
+	{
 		const moveObject = {};
-		moveObject.move = move.includes("->");
-		moveObject.capture = move.includes("x");
-		moveObject.source = Number(move.match(/^\d+/));
-		moveObject.target = Number(move.trim().match(/\d+$/));
-		
-		/* Load move */
+		moveObject.move = move;
+		moveObject.capture = capture;
+		moveObject.source = source;
+		moveObject.target = target;
+
 		this.moveQueue.push(moveObject);
-		
-		/* Fire up the game engine */
 		this.game.Step(moveObject);
-		
+		this.activeCell = undefined;
 		this.Realize();
 	}
 	
 	CreateDisplayBoard()
 	{
 		let board = document.createElement("table");
-		for (let rowIndex = 0; rowIndex < this.cellsPerRow; rowIndex++)
+		let toDisplay = this.board.ConvertToArray();
+		
+		for (let r = 0; r < toDisplay.length; r++)
 		{
-			let row = board.insertRow(rowIndex);
-			for (let col = 0; col < this.cellsPerRow; col++)
+			let row = board.insertRow(r);
+			for (let c = 0; c < toDisplay[r].length; c++)
 			{
-				let cell = row.insertCell(col);
-				const index = rowIndex * this.cellsPerRow + col;
+				let cell = row.insertCell(c);
 				
-				/* Obtain the contents of this cell, as a string */
-				let contents = this.board.contents[index];
-				contents = contents === undefined ? "&nbsp" : contents.identifier;
+				let contents = "&nbsp";
+				const backgroundColor = this.DetermineBackgroundColor(toDisplay[r][c], r, c);
+				const foregroundColor = this.DetermineForegroundColor(toDisplay[r][c], r, c);
 				
-				const backgroundColor = this.DetermineBackgroundColor(index, rowIndex, col);
-				const foregroundColor = this.DetermineForegroundColor(index, rowIndex, col);
-				
+				if (this.board.contents[toDisplay[r][c]] !== undefined)
+				{
+					contents = this.board.contents[toDisplay[r][c]].identifier;
+				}
+
 				cell.style.backgroundColor = backgroundColor;
 				cell.style.color = foregroundColor;
 				
@@ -98,9 +126,9 @@ class Realizer
 				cell.style.width = size;
 				cell.style.height = size;
 				
-				cell.onclick = () => { setActiveCell(event, index); };
-				
-				cell.innerHTML = `${index}<br />${contents}`;
+				cell.innerHTML = `${toDisplay[r][c]}<br />${contents}`;
+				cell.onclick = () => { processClick(event, toDisplay[r][c]); };
+
 			}
 		}
 		
@@ -109,6 +137,11 @@ class Realizer
 	
 	DetermineBackgroundColor(index, row, column)
 	{
+		if (index < 0)
+		{
+			return "#AAAAAA";
+		}
+		
 		let bgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#000000" : "#FFFFFF";
 		
 		if (this.activeCell !== undefined)
@@ -121,7 +154,7 @@ class Realizer
 			{
 				bgColor = "#0000FF";
 			}
-			if (this.activeCellCanCapture.includes(index))
+			if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
 			{
 				bgColor = "#FF0000";
 			}
@@ -132,7 +165,13 @@ class Realizer
 	
 	DetermineForegroundColor(index, row, column)
 	{
+		if (index < 0)
+		{
+			return "#FFFFFF";
+		}
+		
 		let fgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#FFFFFF" : "#000000";
+		
 		if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
 		{
 			fgColor = this.board.contents[index].player.color;
@@ -148,7 +187,7 @@ class Realizer
 			{
 				fgColor = "#FFFFFF";
 			}
-			if (this.activeCellCanCapture.includes(index))
+			if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
 			{
 				fgColor = "#000000";
 			}

@@ -70,11 +70,6 @@
 	"boardState": [{
 			"player": "White",
 			"piece": "p",
-			"location": 48
-		},
-		{
-			"player": "White",
-			"piece": "p",
 			"location": 49
 		},
 		{
@@ -109,48 +104,48 @@
 		},
 		{
 			"player": "White",
-			"piece": "R",
+			"piece": "p",
 			"location": 56
 		},
 		{
 			"player": "White",
-			"piece": "N",
+			"piece": "R",
 			"location": 57
 		},
 		{
 			"player": "White",
-			"piece": "B",
+			"piece": "N",
 			"location": 58
 		},
 		{
 			"player": "White",
-			"piece": "Q",
+			"piece": "B",
 			"location": 59
 		},
 		{
 			"player": "White",
-			"piece": "K",
+			"piece": "Q",
 			"location": 60
 		},
 		{
 			"player": "White",
-			"piece": "B",
+			"piece": "K",
 			"location": 61
 		},
 		{
 			"player": "White",
-			"piece": "N",
+			"piece": "B",
 			"location": 62
 		},
 		{
 			"player": "White",
-			"piece": "R",
+			"piece": "N",
 			"location": 63
 		},
 		{
-			"player": "Black",
-			"piece": "p",
-			"location": 8
+			"player": "White",
+			"piece": "R",
+			"location": 64
 		},
 		{
 			"player": "Black",
@@ -189,43 +184,48 @@
 		},
 		{
 			"player": "Black",
-			"piece": "R",
-			"location": 0
+			"piece": "p",
+			"location": 16
 		},
 		{
 			"player": "Black",
-			"piece": "N",
+			"piece": "R",
 			"location": 1
 		},
 		{
 			"player": "Black",
-			"piece": "B",
+			"piece": "N",
 			"location": 2
 		},
 		{
 			"player": "Black",
-			"piece": "Q",
+			"piece": "B",
 			"location": 3
 		},
 		{
 			"player": "Black",
-			"piece": "K",
+			"piece": "Q",
 			"location": 4
 		},
 		{
 			"player": "Black",
-			"piece": "B",
+			"piece": "K",
 			"location": 5
 		},
 		{
 			"player": "Black",
-			"piece": "N",
+			"piece": "B",
 			"location": 6
 		},
 		{
 			"player": "Black",
-			"piece": "R",
+			"piece": "N",
 			"location": 7
+		},
+		{
+			"player": "Black",
+			"piece": "R",
+			"location": 8
 		}
 	]
 }

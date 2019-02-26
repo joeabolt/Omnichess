@@ -14,13 +14,13 @@ fileInput.onchange = () => {
 	document.getElementById("mainDisplay").style.display = "block";
 };
 
-function setActiveCell(event, cellIndex)
+function processClick(event, cellIndex)
 {
 	if (realizer === undefined)
 		return;
 	
 	event.stopPropagation();
-	realizer.SetActiveCell(cellIndex);
+	realizer.ProcessClick(cellIndex);
 	realizer.Realize();
 }
 
