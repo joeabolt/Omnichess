@@ -17,6 +17,71 @@ class MatrixUtilities
 		}
 		return directions;
 	}
+	
+	static GetCoordinates(value, matrix, dimensions)
+	{
+		if (dimensions === 1)
+		{
+			if (matrix.includes(value))
+			{
+				return [matrix.indexOf(value)];
+			}
+			return undefined;
+		}
+		for (let i = 0; i < matrix.length; i++)
+		{
+			const coords = MatrixUtilities.GetCoordinates(value, matrix[i], dimensions - 1);
+			if (coords !== undefined)
+			{
+				coords.unshift(i);
+				return coords;
+			}
+		}
+		return undefined;
+	}
+	
+	/**
+	 * Inserts a new row in the matrix before the specified index.
+	 * If rIndex is 0, adds a row to the top. If rIndex is matrix.length,
+	 * adds a row to the bottom.
+	 */
+	static InsertRowInMatrix(matrix, rowIndex, fillValue = 0)
+	{
+		matrix.splice(rowIndex, 0, []);
+		for (let i = 0; i < matrix[0].length; i++)
+		{
+			matrix[rowIndex].push(fillValue);
+		}
+	}
+	
+	/**
+	 * Inserts a new column in the matrix before the specified index.
+	 * If cIndex is 0, adds a column to the left. If cIndex is
+	 * matrix[0].length, adds a row to the bottom.
+	 */
+	static InsertColumnInMatrix(matrix, colIndex, fillValue = 0)
+	{
+		for (let i = 0; i < matrix.length; i++)
+		{
+			matrix[i].splice(colIndex, 0, fillValue);
+		}
+	}
+	
+	static MatrixToString(matrix, dimensions)
+	{
+		if (dimensions === 1)
+		{
+			return "[" + matrix.toString() + "]";
+		}
+		
+		let output = "[";
+		for (let i = 0; i < matrix.length; i++)
+		{
+			output += MatrixUtilities.MatrixToString(matrix[i], dimensions - 1) + ",";
+		}
+		output = output.slice(0, -1) + "]";
+		return output;
+	}
 }
 
 class ArrayUtilities
