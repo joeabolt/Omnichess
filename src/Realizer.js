@@ -31,7 +31,7 @@ class Realizer
 	
 	ProcessClick(clickedCell)
 	{
-		if (this.activeCell == -1)
+		if (this.activeCell === undefined)
 		{
 			this.SetActiveCell(clickedCell);
 			return;
