@@ -40,6 +40,18 @@ class MatrixUtilities
 		return undefined;
 	}
 	
+	static GetLengths(matrix, dimensions)
+	{
+		const lengths = [];
+		let root = matrix;
+		for (let axis = 0; axis < dimensions; axis++)
+		{
+			lengths.push(root.length);
+			root = root[0];
+		}
+		return lengths;
+	}
+	
 	static InsertHyperplaneInMatrix(axis, sign, matrix, dimensions)
 	{
 		if (dimensions === 1)
@@ -120,6 +132,35 @@ class MatrixUtilities
 		}
 		output = output.slice(0, -1) + "]";
 		return output;
+	}
+	
+	/**
+	 * Converts a numerical vector consisting of -1s, 0s, and 1s to
+	 * a numerical vector (0 thru 3^n - 1). Assumes the "small" dimensions
+	 * come first.
+	 */
+	static VectorToDirection(vector)
+	{
+		let output = vector.reduce(
+			((direction, currentValue, currentIndex)) => {
+				direction += Math.pow(3, currentIndex) * (currentValue + 1);
+			},
+			0
+		);
+	}
+	
+	/**
+	 * Converts a direction index to a vector consisting of -1s, 
+	 * 0s, and 1s. Assumes the "small" dimensions come first.
+	 */
+	static DirectionToVector(direction, dimensions)
+	{
+		let output = [];
+		while (currentDimension = 0; currentDimension < dimensions; currentDimension++)
+		{
+			output.push((direction % 3) - 1);
+			direction = Math.floor(direction / 3);
+		}
 	}
 }
 

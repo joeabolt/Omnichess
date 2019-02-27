@@ -140,6 +140,41 @@ class Board
 		return outputBoard;
 	}
 	
+	Expand(index, matrix, coordinates)
+	{
+		const neighbors = this.cells[index - 1];
+		for (let direction = 0; direction < neighbors.length; direction++)
+		{
+			if (neighbors[direction] === null) /* No neighbor in this direction */
+				continue;
+
+			/* Skip over cells that have already been inserted */
+			if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix, this.dimensions) !== undefined)
+				continue;
+
+			const directionVector = MatrixUtilities.DirectionToVector(direction, this.dimensions);
+			const lengths = MatrixUtilities.GetLengths(matrix, this.dimensions);
+
+			/* Widen matrix to make room, if necessary */
+			for (let axis = 0; axis < directionVector.length; axis++)
+			{
+				if (directionVector[axis] === -1 && coordinates[axis] === 0)
+				{
+					MatrixUtilities.InsertHyperplaneInMatrix(axis, -1, matrix, this.dimensions);
+				}
+				if (directionVector[axis] === 1 && coordinates[axis] === lengths[axis])
+				{
+					MatrixUtilities.InsertHyperplaneInMatrix(axis, 1, matrix, this.dimensions);
+				}
+			}
+			
+			const newCoordinates = directionVector.map((currentValue, currentIndex) => {
+				return currentValue + coordinates[currentIndex];
+			});
+			
+		}
+	}
+	
 	Expand(index, matrix, row, col)
 	{
 		const neighbors = this.cells[index - 1];
