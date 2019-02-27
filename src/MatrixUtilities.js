@@ -40,30 +40,69 @@ class MatrixUtilities
 		return undefined;
 	}
 	
-	/**
-	 * Inserts a new row in the matrix before the specified index.
-	 * If rIndex is 0, adds a row to the top. If rIndex is matrix.length,
-	 * adds a row to the bottom.
-	 */
-	static InsertRowInMatrix(matrix, rowIndex, fillValue = 0)
+	static InsertHyperplaneInMatrix(axis, sign, matrix, dimensions)
 	{
-		matrix.splice(rowIndex, 0, []);
-		for (let i = 0; i < matrix[0].length; i++)
+		if (dimensions === 1)
 		{
-			matrix[rowIndex].push(fillValue);
+			if (sign < 0)
+			{
+				matrix.splice(0, 0, null);
+			}
+			if (sign > 0)
+			{
+				matrix.splice(matrix.length, 0, null);
+			}
+			return;
+		}
+		if (dimensions === (axis + 1))
+		{
+			/* Do the insertion */
+			let root = undefined;
+			if (sign < 0)
+			{
+				matrix.splice(0, 0, []);
+				root = matrix[0];
+			}
+			if (sign > 0)
+			{
+				matrix.splice(matrix.length, 0, []);
+				root = matrix[-1];
+			}
+
+			/* Assemble list of dimension lengths */
+			const dimensionalLengths = [];
+			let currentDimension = root;
+			while (Array.isArray(currentDimension))
+			{
+				dimensionalLengths.push(currentDimension.length);
+				currentDimension = currentDimension[0];
+			}
+
+			/* Fill in any gaps */
+			MatrixUtilities.FillHyperPlaneInMatrix(root, dimensionalLengths);
+
+			return;
+		}
+		for (let i = 0; i < matrix.length; i++)
+		{
+			MatrixUtilities.InsertHyperplaneInMatrix(axis, sign, matrix[i], dimensions - 1);
 		}
 	}
 	
-	/**
-	 * Inserts a new column in the matrix before the specified index.
-	 * If cIndex is 0, adds a column to the left. If cIndex is
-	 * matrix[0].length, adds a row to the bottom.
-	 */
-	static InsertColumnInMatrix(matrix, colIndex, fillValue = 0)
+	static FillHyperPlaneInMatrix(root, dimensionalLengths)
 	{
-		for (let i = 0; i < matrix.length; i++)
+		if (dimensionalLengths.length === 1)
 		{
-			matrix[i].splice(colIndex, 0, fillValue);
+			for (let i = 0; i < dimensionalLengths[0]; i++)
+			{
+				root.push(null);
+			}
+			return;
+		}
+		for (let i = 0; i < dimensionalLengths[0]; i++)
+		{
+			root.push([]);
+			MatrixUtilities.FillHyperPlaneInMatrix(root[i], dimensionalLengths.slice(1, dimensionalLengths.length));
 		}
 	}
 	

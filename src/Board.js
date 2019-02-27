@@ -120,12 +120,11 @@ class Board
 			return [[]];
 		}
 
-		const outputBoard = [];
+		const outputBoard = [[]];
 		const cellsToAdd = [];
 		
 		/* Create space for first cell, from which to create the rest of the board */
-		MatrixUtilities.InsertRowInMatrix(outputBoard, 0);
-		MatrixUtilities.InsertColumnInMatrix(outputBoard, 0);
+		MatrixUtilities.InsertHyperplaneInMatrix(0, -1, outputBoard, 2);
 		
 		/* Use the center direction to correctly get sign of first cell */
 		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2];
@@ -158,21 +157,21 @@ class Board
 			// TODO: Update for n-dimensionality
 			if (direction < 3 && row === 0)
 			{
-				MatrixUtilities.InsertRowInMatrix(matrix, 0);
+				MatrixUtilities.InsertHyperplaneInMatrix(1, -1, matrix, 2);
 				row = 1;
 			}
 			if (direction >= 6 && row === matrix.length - 1)
 			{
-				MatrixUtilities.InsertRowInMatrix(matrix, matrix.length);
+				MatrixUtilities.InsertHyperplaneInMatrix(1, 1, matrix, 2);
 			}
 			if (direction % 3 === 0 && col === 0)
 			{
-				MatrixUtilities.InsertColumnInMatrix(matrix, 0);
+				MatrixUtilities.InsertHyperplaneInMatrix(0, -1, matrix, 2);
 				col = 1;
 			}
 			if (direction % 3 === 2 && col === matrix[0].length - 1)
 			{
-				MatrixUtilities.InsertColumnInMatrix(matrix, matrix[0].length);
+				MatrixUtilities.InsertHyperplaneInMatrix(0, 1, matrix, 2);
 			}
 			
 			// Insert neighbor
