@@ -78,7 +78,7 @@ class MatrixUtilities
 			if (sign > 0)
 			{
 				matrix.splice(matrix.length, 0, []);
-				root = matrix[-1];
+				root = matrix[matrix.length - 1];
 			}
 
 			/* Assemble list of dimension lengths */
@@ -141,8 +141,8 @@ class MatrixUtilities
 	 */
 	static VectorToDirection(vector)
 	{
-		let output = vector.reduce(
-			((direction, currentValue, currentIndex)) => {
+		return vector.reduce(
+			(direction, currentValue, currentIndex) => {
 				direction += Math.pow(3, currentIndex) * (currentValue + 1);
 			},
 			0
@@ -156,11 +156,12 @@ class MatrixUtilities
 	static DirectionToVector(direction, dimensions)
 	{
 		let output = [];
-		while (currentDimension = 0; currentDimension < dimensions; currentDimension++)
+		for (let currentDimension = 0; currentDimension < dimensions; currentDimension++)
 		{
 			output.push((direction % 3) - 1);
 			direction = Math.floor(direction / 3);
 		}
+		return output;
 	}
 }
 

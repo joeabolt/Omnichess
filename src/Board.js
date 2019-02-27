@@ -129,12 +129,12 @@ class Board
 		/* Use the center direction to correctly get sign of first cell */
 		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2];
 		
-		cellsToAdd.push(...this.Expand(outputBoard[0][0], outputBoard, 0, 0));
+		cellsToAdd.push(...this.Expand(outputBoard[0][0], outputBoard, [0, 0]));
 		while (cellsToAdd.length > 0)
 		{
 			const index = cellsToAdd.shift();
 			const coords = MatrixUtilities.GetCoordinates(index, outputBoard, this.dimensions);
-			cellsToAdd.push(...this.Expand(Math.abs(index), outputBoard, coords[0], coords[1]));
+			cellsToAdd.push(...this.Expand(Math.abs(index), outputBoard, coords));
 		}
 
 		return outputBoard;
@@ -143,6 +143,7 @@ class Board
 	Expand(index, matrix, coordinates)
 	{
 		const neighbors = this.cells[index - 1];
+		const cellsAdded = [];
 		for (let direction = 0; direction < neighbors.length; direction++)
 		{
 			if (neighbors[direction] === null) /* No neighbor in this direction */
@@ -151,9 +152,9 @@ class Board
 			/* Skip over cells that have already been inserted */
 			if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix, this.dimensions) !== undefined)
 				continue;
-
+			
 			const directionVector = MatrixUtilities.DirectionToVector(direction, this.dimensions);
-			const lengths = MatrixUtilities.GetLengths(matrix, this.dimensions);
+			const lengths = MatrixUtilities.GetLengths(matrix, this.dimensions).reverse();
 
 			/* Widen matrix to make room, if necessary */
 			for (let axis = 0; axis < directionVector.length; axis++)
@@ -161,63 +162,24 @@ class Board
 				if (directionVector[axis] === -1 && coordinates[axis] === 0)
 				{
 					MatrixUtilities.InsertHyperplaneInMatrix(axis, -1, matrix, this.dimensions);
+					coordinates[axis] = 1
 				}
-				if (directionVector[axis] === 1 && coordinates[axis] === lengths[axis])
+				if (directionVector[axis] === 1 && coordinates[axis] === lengths[axis] - 1)
 				{
 					MatrixUtilities.InsertHyperplaneInMatrix(axis, 1, matrix, this.dimensions);
 				}
 			}
-			
-			const newCoordinates = directionVector.map((currentValue, currentIndex) => {
+						
+			const newCoordinates = directionVector.reverse().map((currentValue, currentIndex) => {
 				return currentValue + coordinates[currentIndex];
 			});
-			
-		}
-	}
-	
-	Expand(index, matrix, row, col)
-	{
-		const neighbors = this.cells[index - 1];
-		const cellsAdded = []
-		for (let direction = 0; direction < neighbors.length; direction++)
-		{
-			if (neighbors[direction] === null) /* Flag value for out of bounds */
-				continue;
-				
-			/* Skip over cells we have already inserted */
-			if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix, this.dimensions) !== undefined)
-				continue;
-			
-			/* Pad the top, bottom, left, and right */
-			// TODO: Update for n-dimensionality
-			if (direction < 3 && row === 0)
+						
+			let insertionPoint = matrix;
+			for (let axis = 0; axis < this.dimensions - 1; axis++)
 			{
-				MatrixUtilities.InsertHyperplaneInMatrix(1, -1, matrix, 2);
-				row = 1;
+				insertionPoint = insertionPoint[newCoordinates[axis]];
 			}
-			if (direction >= 6 && row === matrix.length - 1)
-			{
-				MatrixUtilities.InsertHyperplaneInMatrix(1, 1, matrix, 2);
-			}
-			if (direction % 3 === 0 && col === 0)
-			{
-				MatrixUtilities.InsertHyperplaneInMatrix(0, -1, matrix, 2);
-				col = 1;
-			}
-			if (direction % 3 === 2 && col === matrix[0].length - 1)
-			{
-				MatrixUtilities.InsertHyperplaneInMatrix(0, 1, matrix, 2);
-			}
-			
-			// Insert neighbor
-			let newR = row;
-			if (direction < 3) newR--;
-			if (direction >= 6) newR++;
-			let newC = col;
-			if (direction % 3 === 0) newC--;
-			if (direction % 3 === 2) newC++;
-			
-			matrix[newR][newC] = neighbors[direction];
+			insertionPoint[newCoordinates[newCoordinates.length - 1]] = neighbors[direction];
 			cellsAdded.push(neighbors[direction]);
 		}
 		
