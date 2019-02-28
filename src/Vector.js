@@ -1,9 +1,9 @@
 /* Convenience class to store a vector and its associated flags */
 class Vector
 {
-	constructor(x, y)
+	constructor(components)
 	{
-		this.components = [x, y];
+		this.components = components;
 	}
 	
 	toString()
@@ -33,7 +33,7 @@ class Vector
 				return;
 			}
 			
-			const checkValid = vectorString.match(/\(\ *-?\d+[\d{}+jhpmd]*\ *,\ *-?\d+[\d{}+jhpmd]*\ *\)[\d{}+jhpmd]*/g);
+			const checkValid = vectorString.match(/\((\ *-?\d+[\d{}+jhd]*\ *,)+\ *-?\d+[\d{}+jhd]*\ *\)[\d{}+jhd]*/g);
 			if (checkValid === null || checkValid.length <= 0)
 			{
 				console.error(`Improperly formatted vector: ${vectorString}`);
@@ -45,28 +45,35 @@ class Vector
 			const componentStrings = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
 			
 			/* Build x and y components */
-			const xComponents = Component.Create(componentStrings[0], globalFlags);
-			const yComponents = Component.Create(componentStrings[1], globalFlags);
+			const components = [];
+			componentStrings.forEach((string) => {
+				components.push(Component.Create(string, globalFlags));
+			});
 			
 			/* Cross product all components to produce directional vectors */
-			// TODO: rewrite when updating to N-dimensions
-			vectors.push(...CrossProduct(xComponents, yComponents));
+			Vector.CrossProduct(components).forEach((crossProduct) => {
+				vectors.push(new Vector(crossProduct));
+			});
 		});
 
 		return vectors;
+	}
+	
+	static CrossProduct(components)
+	{
+		if (components.length === 1)
+			return components;
+
+		const crossProduct = [];
 		
-		/* Helper function */
-		function CrossProduct(xComponents, yComponents)
-		{
-			const crossProduct = [];
-
-			xComponents.forEach((xComponent) => {
-				yComponents.forEach((yComponent) => {
-					crossProduct.push(new Vector(Component.DeepCopy(xComponent), Component.DeepCopy(yComponent)));
-				})
+		components[0].forEach((component) => {
+			const subProducts = Vector.CrossProduct(components.slice(1, components.length));
+			subProducts.forEach((subProduct) => {
+				subProduct.splice(0, 0, component);
+				crossProduct.push(subProduct);
 			});
-
-			return crossProduct;
-		}
+		});
+		
+		return crossProduct;
 	}
 }
