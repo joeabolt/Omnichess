@@ -65,7 +65,7 @@ class Board
 			deltas.push(component.length * Math.min(iterations, component.maxRep));
 		});
 
-		while (deltas.reduce((total, current) => total + Math.abs(current)) !== 0)
+		while (deltas.reduce((total, current) => total + Math.abs(current), 0) !== 0)
 		{
 			const steps = deltas.map((element) => Math.sign(element));
 			deltas.forEach((delta, index) => {
@@ -95,13 +95,13 @@ class Board
 		}
 		
 		/* If hop, only output when previous cell is occupied */
-		if (this.contents[prevCell] !== undefined)
+		let hop = false;
+		components.forEach((component) => {
+			if (component.hop) hop = true;
+		});
+		if (hop && this.contents[prevCell] === undefined)
 		{
-			let mustHop = false;
-			components.forEach((component) => {
-				if (component.hop) mustHop = true;
-			});
-			if (mustHop) return null;
+			return null;
 		}
 		
 		return destCell;

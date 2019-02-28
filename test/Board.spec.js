@@ -1,14 +1,14 @@
 /* For everyone's sanity...
 3x3
-0  1  2
-3  4  5
-6  7  8
+1  2  3
+4  5  6
+7  8  9
 
 4x4
-0  1  2  3
-4  5  6  7
-8  9  10 11
-12 13 14 15
+1  2  3  4
+5  6  7  8
+9  10 11 12
+13 14 15 16
 */
 
 QUnit.test("Board.Generate creates a correct adjacency matrix", function (assert) {
@@ -85,52 +85,63 @@ QUnit.test("Board.GetPathOutput behaves the same for uninterrupted paths with an
 
 QUnit.test("Board.GetPathOutput returns null for uninterrupted paths with any hop flag combination", function (assert) {
 	const board = new Board(Board.Generate([3, 3]));
-	const oneComp = new Component(0, 4, false, false, false);
-	const oneHopComp = new Component(0, 4, false, true, false);
+	const oneComp = new Component(1, 4, false, false, false);
+	const oneHopComp = new Component(1, 4, false, true, false);
 	const negOneComp = new Component(-1, 4, false, false, false);
 	const negOneHopComp = new Component(-1, 4, false, true, false);
-	assert.deepEqual(board.GetPathOutput(6, [oneComp, negOneComp], 2), 2);
-	assert.deepEqual(board.GetPathOutput(6, [oneComp, negOneHopComp], 2), null);
-	assert.deepEqual(board.GetPathOutput(6, [oneHopComp, negOneComp], 2), null);
-	assert.deepEqual(board.GetPathOutput(6, [oneHopComp, negOneHopComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(7, [oneComp, negOneComp], 2), 3);
+	assert.deepEqual(board.GetPathOutput(7, [oneComp, negOneHopComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(7, [oneHopComp, negOneComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(7, [oneHopComp, negOneHopComp], 2), null);
 });
 
 QUnit.test("Board.GetPathOutput blocked by occupied square without jump or hop", function (assert) {
 	const board = new Board(Board.Generate([3, 3]));
-	board.contents[4] = 1;
-	assert.deepEqual(board.GetPathOutput(0, 2, 2, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(1, 0, 2, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(2, -2, 2, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(3, 2, 0, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(5, -2, 0, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(6, 2, -2, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(7, 0, -2, false, false, false, false), null);
-	assert.deepEqual(board.GetPathOutput(8, -2, -2, false, false, false, false), null);
+	board.contents[5] = 1;
+	const zeroComp = new Component(0, 4, false, false, false);
+	const oneComp = new Component(1, 4, false, false, false);
+	const negOneComp = new Component(-1, 4, false, false, false);
+	assert.deepEqual(board.GetPathOutput(1, [oneComp, oneComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(2, [zeroComp, oneComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(3, [negOneComp, oneComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(4, [oneComp, zeroComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(6, [negOneComp, zeroComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(7, [oneComp, negOneComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(8, [zeroComp, negOneComp], 2), null);
+	assert.deepEqual(board.GetPathOutput(9, [negOneComp, negOneComp], 2), null);
 });
 
 QUnit.test("Board.GetPathOutput not blocked by occupied square with jump", function (assert) {
 	const board = new Board(Board.Generate([4, 4]));
-	board.contents[9] = 1;
-	assert.deepEqual(board.GetPathOutput(13, 0, -2, false, false, true, true), 5);
-	assert.deepEqual(board.GetPathOutput(13, 0, -3, false, false, true, true), 1);
+	board.contents[10] = 1;
+	const zeroJumpComp = new Component(0, 4, true, false, false);
+	const negOneJumpComp = new Component(-1, 4, true, false, false);
+	assert.deepEqual(board.GetPathOutput(13, [zeroJumpComp, negOneJumpComp], 2), 5);
+	assert.deepEqual(board.GetPathOutput(13, [zeroJumpComp, negOneJumpComp], 3), 1);
 });
 
 QUnit.test("Board.GetPathOutput with hop stops just past occupied square", function (assert) {
 	const board = new Board(Board.Generate([4, 4]));
 	board.contents[9] = 1;
-	assert.deepEqual(board.GetPathOutput(13, 0, -2, true, true, false, false), 5);
-	assert.deepEqual(board.GetPathOutput(13, 0, -3, true, true, false, false), null);
+	const zeroHopComp = new Component(0, 4, false, true, false);
+	const negOneHopComp = new Component(-1, 4, false, true, false);
+	assert.deepEqual(board.GetPathOutput(13, [zeroHopComp, negOneHopComp], 2), 5);
+	assert.deepEqual(board.GetPathOutput(13, [zeroHopComp, negOneHopComp], 3), null);
 });
 
 QUnit.test("Board.GetPathOutput attempts to move diagonally as long as possible", function (assert) {
 	const board = new Board(Board.Generate([4, 4]));
 	/* Creates a diagonal corridor so the test will fail if the "walls" are intersected */
-	board.contents[5] = 1;
-	board.contents[10] = 1;
-	board.contents[8] = 1;
-	board.contents[13] = 1;
-	assert.deepEqual(board.GetPathOutput(12, 3, -2, false, false, false, false), 7);
-	assert.deepEqual(board.GetPathOutput(12, 2, -3, false, false, false, false), 2);
+	board.contents[6] = 1;
+	board.contents[11] = 1;
+	board.contents[9] = 1;
+	board.contents[14] = 1;
+	const threeComp = new Component(3, 1, false, false, false);
+	const negThreeComp = new Component(-3, 1, false, false, false);
+	const twoComp = new Component(2, 1, false, false, false);
+	const negTwoComp = new Component(-2, 1, false, false, false);
+	assert.deepEqual(board.GetPathOutput(13, [threeComp, negTwoComp], 1), 8);
+	assert.deepEqual(board.GetPathOutput(13, [twoComp, negThreeComp], 1), 3);
 });
 
 QUnit.test("Board.GetPathOutput correctly applies different x and y flags", function (assert) {
