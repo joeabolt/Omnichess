@@ -7,7 +7,7 @@ class Board
 		/* The below works because we insist on a square/cubic grid */
 		this.dimensions = Math.round(Math.log(adjacencyMatrix[0].length) / Math.log(3));
 		this.contents = [];
-		for (let i = 1; i < this.cells.length; i++)
+		for (let i = 1; i <= this.cells.length; i++)
 		{
 			this.contents.push(undefined);
 		}

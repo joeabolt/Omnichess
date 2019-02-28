@@ -44,11 +44,14 @@ class Vector
 			const globalFlags = vectorString.slice(vectorString.indexOf(")")+1);
 			const componentStrings = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
 			
-			/* Build x and y components */
+			/* Build components */
 			const components = [];
 			componentStrings.forEach((string) => {
 				components.push(Component.Create(string, globalFlags));
 			});
+			
+			/* Sort them with "large" axes in front */
+			components.reverse();
 			
 			/* Cross product all components to produce directional vectors */
 			Vector.CrossProduct(components).forEach((crossProduct) => {
@@ -61,19 +64,27 @@ class Vector
 	
 	static CrossProduct(components)
 	{
-		if (components.length === 1)
-			return components;
-
-		const crossProduct = [];
-		
-		components[0].forEach((component) => {
-			const subProducts = Vector.CrossProduct(components.slice(1, components.length));
-			subProducts.forEach((subProduct) => {
-				subProduct.splice(0, 0, component);
-				crossProduct.push(subProduct);
-			});
-		});
-		
-		return crossProduct;
+		let crossProducts = [];
+		let newRound = [];
+		for (let i = 0; i < components.length; i++)
+		{
+			for (let j = 0; j < components[i].length; j++)
+			{
+				if (i === 0)
+				{
+					newRound.push(Component.DeepCopy(components[i][j]));
+					continue;
+				}
+				for (let k = 0; k < crossProducts.length; k++)
+				{
+					const updatedVersion = [Component.DeepCopy(components[i][j])]
+					updatedVersion.push(crossProducts[k]);
+					newRound.push(updatedVersion);
+				}
+			}
+			crossProducts = newRound;
+			newRound = [];
+		}
+		return crossProducts;
 	}
 }
