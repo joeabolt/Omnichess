@@ -40,6 +40,18 @@ class MatrixUtilities
 		return undefined;
 	}
 	
+	static GetEmptyMatrix(dimensions)
+	{
+		const output = [];
+		let pointer = output;
+		for (let i = 1; i < dimensions; i++)
+		{
+			pointer.push([]);
+			pointer = pointer[0];
+		}
+		return output;
+	}
+	
 	static GetLengths(matrix, dimensions)
 	{
 		const lengths = [];

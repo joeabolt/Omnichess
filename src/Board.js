@@ -117,19 +117,25 @@ class Board
 	{
 		if (this.cells.length === 0)
 		{
-			return [[]];
+			return MatrixUtilities.GetEmptyMatrix(this.dimensions);
 		}
 
-		const outputBoard = [[]];
+		const outputBoard = MatrixUtilities.GetEmptyMatrix(this.dimensions);
 		const cellsToAdd = [];
 		
 		/* Create space for first cell, from which to create the rest of the board */
 		MatrixUtilities.InsertHyperplaneInMatrix(0, -1, outputBoard, 2);
 		
 		/* Use the center direction to correctly get sign of first cell */
-		outputBoard[0][0] = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2];
+		const firstCell = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2]
+		let root = outputBoard;
+		for (let i = 1; i < this.dimensions; i++)
+		{
+			root = root[0];
+		}
+		root[0] = firstCell;
 		
-		cellsToAdd.push(...this.Expand(outputBoard[0][0], outputBoard, [0, 0]));
+		cellsToAdd.push(...this.Expand(firstCell, outputBoard, MatrixUtilities.GetCoordinates(firstCell, outputBoard, this.dimensions)));
 		while (cellsToAdd.length > 0)
 		{
 			const index = cellsToAdd.shift();
