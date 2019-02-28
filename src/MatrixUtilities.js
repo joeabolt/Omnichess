@@ -156,6 +156,7 @@ class MatrixUtilities
 		return vector.reduce(
 			(direction, currentValue, currentIndex) => {
 				direction += Math.pow(3, currentIndex) * (currentValue + 1);
+				return direction;
 			},
 			0
 		);

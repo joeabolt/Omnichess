@@ -38,7 +38,7 @@ QUnit.test("Board initializes correctly when given an adjacency matrix", functio
 	const testBoard = new Board(adjMatrix);
 	assert.deepEqual(testBoard.cells, adjMatrix);
 	assert.deepEqual(testBoard.dimensions, 2);
-	assert.deepEqual(testBoard.contents.length, 9);
+	assert.deepEqual(testBoard.contents.length, 10); /* Include unused 0 cell */
 	for (let i = 0; i < 9; i++)
 	{
 		assert.deepEqual(testBoard.contents[i], undefined);
@@ -49,15 +49,19 @@ QUnit.test("Board initializes correctly when given an adjacency matrix", functio
 // Begin test Board.GetPathOutput() //
 //////////////////////////////////////
 
-QUnit.test("Board.GetPathOutput returns -1 when directed off the board", function(assert) {
+QUnit.test("Board.GetPathOutput returns null when directed off the board", function(assert) {
 	const board = new Board(Board.Generate([3, 3]));
-	assert.deepEqual(board.GetPathOutput(7, 2, 0, false, false, false, false), -1);
+	const xComp = new Component(1, 4, false, false, false);
+	const yComp = new Component(0, 4, false, false, false);
+	assert.deepEqual(board.GetPathOutput(7, [xComp, yComp], 3), null);
 });
 
 QUnit.test("Board.GetPathOutput returns the destination even when directed into an occupied square", function(assert) {
 	const board = new Board(Board.Generate([3, 3]));
 	board.contents[2] = 1;
-	assert.deepEqual(board.GetPathOutput(7, 0, -2, false, false, false, false), 1);
+	const xComp = new Component(0, 4, false, false, false);
+	const yComp = new Component(-1, 4, false, false, false);
+	assert.deepEqual(board.GetPathOutput(7, [xComp, yComp], 2), 1);
 });
 
 QUnit.test("Board.GetPathOutput returns the destination when directed along the board", function (assert) {
@@ -74,25 +78,25 @@ QUnit.test("Board.GetPathOutput behaves the same for uninterrupted paths with an
 	}
 });
 
-QUnit.test("Board.GetPathOutput returns -1 for uninterrupted paths with any hop flag combination", function (assert) {
+QUnit.test("Board.GetPathOutput returns null for uninterrupted paths with any hop flag combination", function (assert) {
 	const board = new Board(Board.Generate([3, 3]));
 	assert.deepEqual(board.GetPathOutput(6, 2, -2, false, false, false, false), 2);
-	assert.deepEqual(board.GetPathOutput(6, 2, -2, true, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(6, 2, -2, false, true, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(6, 2, -2, true, true, false, false), -1);
+	assert.deepEqual(board.GetPathOutput(6, 2, -2, true, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(6, 2, -2, false, true, false, false), null);
+	assert.deepEqual(board.GetPathOutput(6, 2, -2, true, true, false, false), null);
 });
 
 QUnit.test("Board.GetPathOutput blocked by occupied square without jump or hop", function (assert) {
 	const board = new Board(Board.Generate([3, 3]));
 	board.contents[4] = 1;
-	assert.deepEqual(board.GetPathOutput(0, 2, 2, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(1, 0, 2, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(2, -2, 2, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(3, 2, 0, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(5, -2, 0, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(6, 2, -2, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(7, 0, -2, false, false, false, false), -1);
-	assert.deepEqual(board.GetPathOutput(8, -2, -2, false, false, false, false), -1);
+	assert.deepEqual(board.GetPathOutput(0, 2, 2, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(1, 0, 2, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(2, -2, 2, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(3, 2, 0, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(5, -2, 0, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(6, 2, -2, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(7, 0, -2, false, false, false, false), null);
+	assert.deepEqual(board.GetPathOutput(8, -2, -2, false, false, false, false), null);
 });
 
 QUnit.test("Board.GetPathOutput not blocked by occupied square with jump", function (assert) {
@@ -106,7 +110,7 @@ QUnit.test("Board.GetPathOutput with hop stops just past occupied square", funct
 	const board = new Board(Board.Generate([4, 4]));
 	board.contents[9] = 1;
 	assert.deepEqual(board.GetPathOutput(13, 0, -2, true, true, false, false), 5);
-	assert.deepEqual(board.GetPathOutput(13, 0, -3, true, true, false, false), -1);
+	assert.deepEqual(board.GetPathOutput(13, 0, -3, true, true, false, false), null);
 });
 
 QUnit.test("Board.GetPathOutput attempts to move diagonally as long as possible", function (assert) {
@@ -124,7 +128,7 @@ QUnit.test("Board.GetPathOutput correctly applies different x and y flags", func
 	const board = new Board(Board.Generate([4, 4]));
 	board.contents[10] = 1;
 	assert.deepEqual(board.GetPathOutput(8, 3, 0, false, false, true, false), 11);
-	assert.deepEqual(board.GetPathOutput(14, 0, -3, false, false, true, false), -1);
+	assert.deepEqual(board.GetPathOutput(14, 0, -3, false, false, true, false), null);
 	assert.deepEqual(board.GetPathOutput(15, -2, -3, false, false, true, false), 1);
 });
 
