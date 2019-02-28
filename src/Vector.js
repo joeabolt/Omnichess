@@ -50,7 +50,7 @@ class Vector
 				components.push(Component.Create(string, globalFlags));
 			});
 			
-			/* Sort them with "large" axes in front */
+			/* Sort them with "large" axis in front */
 			components.reverse();
 			
 			/* Cross product all components to produce directional vectors */
@@ -78,7 +78,7 @@ class Vector
 				for (let k = 0; k < crossProducts.length; k++)
 				{
 					const updatedVersion = [Component.DeepCopy(components[i][j])]
-					updatedVersion.push(crossProducts[k]);
+					updatedVersion.push(JSON.parse(JSON.stringify(crossProducts[k])));
 					newRound.push(updatedVersion);
 				}
 			}
