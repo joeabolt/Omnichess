@@ -28,14 +28,12 @@ class Board
 	{
 		const allCellIndices = new Set();
 		
-		const x = vector.components[0];
-		const y = vector.components[1];
+		const maxRepetitions = vector.components.reduce((maximum, currComp) => {
+			return Math.max(maximum, currComp.maxRep);
+		}, 1);
 		
-		for (let i = 1; i <= Math.max(x.maxRep, y.maxRep); i++)
+		for (let i = 1; i <= maxRepetitions; i++)
 		{
-			const dx = x.length * Math.min(i, x.maxRep);
-			const dy = y.length * Math.min(i, y.maxRep);
-			// const output = this.GetPathOutput(startLocation, dx, dy, x.hop, y.hop, x.jump, y.jump);
 			const output = this.GetPathOutput(startLocation, vector.components, i);
 
 			if (output === null || output <= 0 || 
@@ -56,6 +54,12 @@ class Board
 		return [...allCellIndices];
 	}
 	
+	/**
+	 *  Returns the index of the cell found by following
+	 *  the components for the passed number of iterations.
+	 *  Returns null if it goes off the board, or cannot find
+	 *  a valid path (such as being obstructed).
+	 */
 	GetPathOutput(start, components, iterations)
 	{
 		let destCell = start;
@@ -78,7 +82,7 @@ class Board
 			destCell = this.cells[destCell - 1][direction];
 			if (destCell === null || destCell <= 0)
 			{
-				return null;
+				break;
 			}
 			
 			/* Stop iterating when we hit an occupied square, unless jump or hop */
@@ -90,7 +94,7 @@ class Board
 						canHopObstacle = true;
 				});
 				if (canHopObstacle) continue;
-				return null;
+				break;
 			}
 		}
 		
@@ -106,61 +110,6 @@ class Board
 		
 		return destCell;
 	}
-	
-	// /**
-	 // *  Returns the index of the cell dx and dy units
-	 // *  away from start. Returns 0 if no such 
-	 // *  destination exists. 
-	 // */
-	// GetPathOutput(start, dx, dy, xHop, yHop, xJump, yJump)
-	// {
-		// /* Keep track of array indices separate from cell indices */
-		// let destCellIndex = start;
-		// let prevCellIndex = start;
-		// let stepX = 0;
-		// let stepY = 0;
-			
-		// while (dx !== 0 || dy !== 0)
-		// {
-			// stepX = Math.sign(dx);
-			// stepY = Math.sign(dy);
-			// dx -= Math.sign(dx);
-			// dy -= Math.sign(dy);
-			
-			// /*
-			 // * Add 1 because arrays cannot have negative indices
-			 // * Use powers of 3 because there are always three options in a direction
-			 // * (e.g., top-left, top-center, top-right).
-			 // */
-			// // TODO: Adapt this for N-dimensional boards, eventually
-			// const direction = (stepY+1) * Math.pow(3, this.dimensions - 1) 
-				// + (stepX+1) * Math.pow(3, this.dimensions - 2);
-			// prevCellIndex = destCellIndex;
-			// destCellIndex = this.cells[destCellIndex - 1][direction];
-			// if (destCellIndex === null || destCellIndex <= 0)
-			// {
-				// break;
-			// }
-			
-			// /* Stop iterating when we hit an occupied square, unless jump or hop */
-			// const stepJump = (xJump && stepX !== 0) || (yJump && stepY !== 0);
-			// const stepHop = (xHop && stepX !== 0) || (yHop && stepY !== 0);
-			
-			// if ((dx !== 0 || dy !== 0) && this.contents[destCellIndex] !== undefined)
-			// {
-				// if (stepJump || stepHop) continue;
-				// return null;
-			// }
-		// }
-		
-		// /* If hop, only output when the previous is occupied */
-		// if (((xHop && stepX !== 0) || (yHop && stepY !== 0)) && this.contents[prevCellIndex - 1] === undefined)
-		// {
-			// return null;
-		// }
-		
-		// return destCellIndex;
-	// }
 	
 	/**
 	 * Produces a two-dimensional array. Each cell represents a visible slot on the board.
