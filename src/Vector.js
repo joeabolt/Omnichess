@@ -78,7 +78,14 @@ class Vector
 				for (let k = 0; k < crossProducts.length; k++)
 				{
 					const updatedVersion = [Component.DeepCopy(components[i][j])]
-					updatedVersion.push(JSON.parse(JSON.stringify(crossProducts[k])));
+					if (crossProducts[k] instanceof Component)
+					{
+						updatedVersion.push(Component.DeepCopy(crossProducts[k]));
+					}
+					else
+					{
+						updatedVersion.push(...crossProducts[k]);
+					}
 					newRound.push(updatedVersion);
 				}
 			}

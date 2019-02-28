@@ -4,7 +4,9 @@ QUnit.test("Vector parses notation with a single element", function (assert)
     const inverse = new Component(-1, 1, false, false, false);
     const expected = [new Vector([unit, unit]), new Vector([unit, inverse]), new Vector([inverse, unit]), new Vector([inverse, inverse])];
     const actual = Vector.Create("(1, 1)");
-    assert.deepEqual(actual, expected);
+	console.log(actual[0]);
+	console.log(expected[0]);
+    assert.deepEqual(actual[0], expected[0]);
 });
 
 QUnit.test("Vector parses notation with a single element and ignores semicolons", function (assert)
