@@ -163,9 +163,10 @@ class Board
 				continue;
 			
 			const directionVector = MatrixUtilities.DirectionToVector(direction, this.dimensions);
-			const lengths = MatrixUtilities.GetLengths(matrix, this.dimensions).reverse();
+			const lengths = MatrixUtilities.GetLengths(matrix);
 
 			/* Widen matrix to make room, if necessary */
+			lengths.reverse();
 			for (let axis = 0; axis < directionVector.length; axis++)
 			{
 				if (directionVector[axis] === -1 && coordinates[axis] === 0)
@@ -179,9 +180,9 @@ class Board
 				}
 			}
 						
-			const newCoordinates = directionVector.reverse().map((currentValue, currentIndex) => {
+			const newCoordinates = directionVector.map((currentValue, currentIndex) => {
 				return currentValue + coordinates[currentIndex];
-			});
+			}).reverse();
 						
 			let insertionPoint = matrix;
 			for (let axis = 0; axis < this.dimensions - 1; axis++)

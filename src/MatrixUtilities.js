@@ -33,7 +33,7 @@ class MatrixUtilities
 			const coords = MatrixUtilities.GetCoordinates(value, matrix[i], dimensions - 1);
 			if (coords !== undefined)
 			{
-				coords.unshift(i);
+				coords.push(i);
 				return coords;
 			}
 		}
@@ -52,16 +52,16 @@ class MatrixUtilities
 		return output;
 	}
 	
-	static GetLengths(matrix, dimensions)
+	static GetLengths(matrix)
 	{
-		const lengths = [];
-		let root = matrix;
-		for (let axis = 0; axis < dimensions; axis++)
+		const dimensionalLengths = [];
+		let currentDimension = matrix;
+		while (Array.isArray(currentDimension))
 		{
-			lengths.push(root.length);
-			root = root[0];
+			dimensionalLengths.push(currentDimension.length);
+			currentDimension = currentDimension[0];
 		}
-		return lengths;
+		return dimensionalLengths;
 	}
 	
 	static InsertHyperplaneInMatrix(axis, sign, matrix, dimensions)
