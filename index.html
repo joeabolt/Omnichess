@@ -6,15 +6,21 @@
 			input {
 				margin: 5px;
 			}
-			table {
-				border-collapse: true;
-				table-layout: fixed;
-			}
 			
-			table, th, td {
+			.cell {
 				border: 1px solid black;
 				text-align: center;
 				font-weight: bolder;
+			}
+			
+			.hdimension {
+				display: flex;
+				flex-direction: row;
+			}
+			
+			.vdimension {
+				display: flex;
+				flex-direction: column;
 			}
 			
 			#mainDisplay {

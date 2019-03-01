@@ -36,6 +36,11 @@ class Realizer
 			this.SetActiveCell(clickedCell);
 			return;
 		}
+		if (clickedCell === this.activeCell)
+		{
+			this.SetActiveCell(undefined);
+			return;
+		}
 		if (this.activeCellCanMoveCapture.includes(clickedCell))
 		{
 			this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
@@ -100,15 +105,20 @@ class Realizer
 	
 	CreateDisplayBoard()
 	{
-		let board = document.createElement("table");
+		let board = document.createElement("div");
+		board.className = "vdimension";
 		let toDisplay = this.board.ConvertToArray();
 		
 		for (let r = 0; r < toDisplay.length; r++)
 		{
-			let row = board.insertRow(r);
+			let row = document.createElement("div");
+			row.className = "hdimension";
+			board.appendChild(row);
 			for (let c = 0; c < toDisplay[r].length; c++)
 			{
-				let cell = row.insertCell(c);
+				let cell = document.createElement("div");
+				cell.className = "cell";
+				row.appendChild(cell);
 				
 				let contents = "&nbsp";
 				const backgroundColor = this.DetermineBackgroundColor(toDisplay[r][c], r, c);
