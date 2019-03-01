@@ -127,7 +127,7 @@ class Board
 		const cellsToAdd = [];
 		
 		/* Create space for first cell, from which to create the rest of the board */
-		MatrixUtilities.InsertHyperplaneInMatrix(0, -1, outputBoard, 2);
+		MatrixUtilities.InsertHyperplaneInMatrix(0, -1, outputBoard, this.dimensions);
 		
 		/* Use the center direction to correctly get sign of first cell */
 		const firstCell = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2]
@@ -162,6 +162,7 @@ class Board
 			if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix, this.dimensions) !== undefined)
 				continue;
 			
+			
 			const directionVector = MatrixUtilities.DirectionToVector(direction, this.dimensions);
 			const lengths = MatrixUtilities.GetLengths(matrix);
 
@@ -183,7 +184,7 @@ class Board
 			const newCoordinates = directionVector.map((currentValue, currentIndex) => {
 				return currentValue + coordinates[currentIndex];
 			}).reverse();
-						
+									
 			let insertionPoint = matrix;
 			for (let axis = 0; axis < this.dimensions - 1; axis++)
 			{

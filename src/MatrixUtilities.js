@@ -46,7 +46,7 @@ class MatrixUtilities
 		let pointer = output;
 		for (let i = 1; i < dimensions; i++)
 		{
-			pointer.push([]);
+			pointer[0] = [];
 			pointer = pointer[0];
 		}
 		return output;
@@ -94,13 +94,7 @@ class MatrixUtilities
 			}
 
 			/* Assemble list of dimension lengths */
-			const dimensionalLengths = [];
-			let currentDimension = root;
-			while (Array.isArray(currentDimension))
-			{
-				dimensionalLengths.push(currentDimension.length);
-				currentDimension = currentDimension[0];
-			}
+			const dimensionalLengths = MatrixUtilities.GetLengths(matrix);
 
 			/* Fill in any gaps */
 			MatrixUtilities.FillHyperPlaneInMatrix(root, dimensionalLengths);

@@ -148,7 +148,8 @@ class Realizer
 		}
 		
 		let aggregateElement = document.createElement("div");
-		aggregateElement.className = (dimensions % 2 === 0) ? "vdimension" : "hdimension";
+		aggregateElement.className = ((dimensions % 2 === 0) ? "vdimension" : "hdimension");
+		aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
 		for (let i = 0; i < matrix.length; i++)
 		{
 			aggregateElement.appendChild(
