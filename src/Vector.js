@@ -84,7 +84,7 @@ class Vector
 					}
 					else
 					{
-						updatedVersion.push(...crossProducts[k]);
+						updatedVersion.push(...crossProducts[k].map(x => Component.DeepCopy(x)));
 					}
 					newRound.push(updatedVersion);
 				}
