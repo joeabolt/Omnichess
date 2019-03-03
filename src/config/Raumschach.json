@@ -165,12 +165,12 @@
 		},
 		{
 			"player": "Black",
-			"piece": "B",
+			"piece": "U",
 			"location": 29
 		},
 		{
 			"player": "Black",
-			"piece": "U",
+			"piece": "B",
 			"location": 30
 		},
 		
@@ -254,12 +254,12 @@
 		},
 		{
 			"player": "White",
-			"piece": "U",
+			"piece": "B",
 			"location": 96
 		},
 		{
 			"player": "White",
-			"piece": "B",
+			"piece": "U",
 			"location": 97
 		},
 		{
