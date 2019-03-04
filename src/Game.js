@@ -9,7 +9,7 @@ class Game
 		
 		/* Default turn order is alternating, any legal move goes */
 		const legalActions = {};
-		legalActions.piece = undefined; // flag for any
+		legalActions.piece = undefined; // undefined is flag for any
 		legalActions.move = true;
 		legalActions.capture = true;
 		this.turnOrder = [

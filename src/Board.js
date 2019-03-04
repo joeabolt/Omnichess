@@ -17,11 +17,13 @@ class Board
 	
 	/**
 	 *  Returns a Set of all locations (as indices) described
-	 *  by the vector relative to startLocation. Does not account
-	 *  for a blocked destination, since this could be used for
-	 *  capture, but it will not continue down a blocked path.
+	 *  by the vector relative to startLocation. Will not continue
+	 *  down blocked paths, but will include an occupied cell if
+	 *  includeCaptureEligible is true (defaults to false). If
+	 *  enforceCaptureEligible is true (defaults to false), only such
+	 *  cells will be returned.
 	 *  
-	 *  Always returns an array. Returns an empty array if no such
+	 *  Always returns an array. Returns an empty array if no
 	 *  locations can be found. 
 	 */
 	GetCellIndices(vector, startLocation, includeCaptureEligible = false, enforceCaptureEligible = false)
@@ -42,11 +44,6 @@ class Board
 			{
 				continue;
 			}
-			if (this.contents[output] !== undefined && enforceCaptureEligible)
-			{
-				allCellIndices.add(output);
-				continue;
-			}
 			allCellIndices.add(output);
 		}
 		
@@ -64,6 +61,8 @@ class Board
 	{
 		let destCell = start;
 		let prevCell = start;
+		
+		/* Track total direction to go along each axis */
 		const deltas = [];
 		components.forEach((component, index) => {
 			deltas.push(component.length * Math.min(iterations, component.maxRep));
@@ -71,15 +70,18 @@ class Board
 
 		while (deltas.reduce((total, current) => total + Math.abs(current), 0) !== 0)
 		{
+			/* Identify +1, -1, or no movement along each axis and convert to direction */
 			const steps = deltas.map((element) => Math.sign(element));
 			deltas.forEach((delta, index) => {
 				deltas[index] -= steps[index];
 			});
-			
-			// Note: this might need to use steps.reverse() to get dimensionality ordered
 			const direction = MatrixUtilities.VectorToDirection(steps);
+			
+			/* Take the step */
 			prevCell = destCell;
 			destCell = this.cells[destCell - 1][direction];
+			
+			/* Do not include OoB */
 			if (destCell === null || destCell <= 0)
 			{
 				break;
@@ -88,12 +90,17 @@ class Board
 			/* Stop iterating when we hit an occupied square, unless jump or hop */
 			if (this.contents[destCell] !== undefined)
 			{
+				/* Only jump/hop when moving with that component */
 				let canHopObstacle = false;
 				components.forEach((component, index) => {
 					if ((component.jump || component.hop) && deltas[index] !== 0)
 						canHopObstacle = true;
 				});
-				if (canHopObstacle) continue;
+				
+				if (canHopObstacle)
+				{
+					continue;
+				}
 				break;
 			}
 		}
@@ -101,7 +108,10 @@ class Board
 		/* If hop, only output when previous cell is occupied */
 		let hop = false;
 		components.forEach((component) => {
-			if (component.hop) hop = true;
+			if (component.hop)
+			{
+				hop = true;
+			}
 		});
 		if (hop && this.contents[prevCell] === undefined)
 		{
@@ -112,9 +122,9 @@ class Board
 	}
 	
 	/**
-	 * Produces a two-dimensional array. Each cell represents a visible slot on the board.
-	 * Where these cells are not included in the board, they contain -1. Otherwise, they
-	 * contain the index of the cell they represent.
+	 * Produces a matrix. Each cell represents a visible slot on the board.
+	 * Where these cells are not included in the board, they contain negative values. Otherwise, 
+	 * they contain the index of the cell they represent.
 	 */
 	ConvertToArray()
 	{
@@ -129,8 +139,10 @@ class Board
 		/* Create space for first cell, from which to create the rest of the board */
 		MatrixUtilities.InsertHyperplaneInMatrix(0, -1, outputBoard, this.dimensions);
 		
-		/* Use the center direction to correctly get sign of first cell */
+		/* Use the center direction to correctly get the index of the first cell */
 		const firstCell = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2]
+		
+		/* Navigate in to the location for the first cell, and place it there */
 		let root = outputBoard;
 		for (let i = 1; i < this.dimensions; i++)
 		{
@@ -138,58 +150,76 @@ class Board
 		}
 		root[0] = firstCell;
 		
+		/* Manually perform first expansion */
 		cellsToAdd.push(...this.Expand(firstCell, outputBoard, MatrixUtilities.GetCoordinates(firstCell, outputBoard, this.dimensions)));
+		
+		/* Breadth-first expand */
 		while (cellsToAdd.length > 0)
 		{
 			const index = cellsToAdd.shift();
-			const coords = MatrixUtilities.GetCoordinates(index, outputBoard, this.dimensions);
-			cellsToAdd.push(...this.Expand(Math.abs(index), outputBoard, coords));
+			cellsToAdd.push(...this.Expand(Math.abs(index), outputBoard));
 		}
 
 		return outputBoard;
 	}
 	
-	Expand(index, matrix, coordinates)
+	/**
+	 * Expands the passed-in matrix at the index. Adds hyperplanes (in 2D, rows or
+	 * columns) to make room if necessary. Returns a list of indices for any cells added.
+	 */
+	Expand(index, matrix)
 	{
+		const coordinates = MatrixUtilities.GetCoordinates(index, matrix, this.dimensions);
 		const neighbors = this.cells[index - 1];
 		const cellsAdded = [];
+
 		for (let direction = 0; direction < neighbors.length; direction++)
 		{
-			if (neighbors[direction] === null) /* No neighbor in this direction */
+			/* Skip if no neighbor in this direction */
+			if (neighbors[direction] === null)
+			{
 				continue;
+			}
 
 			/* Skip over cells that have already been inserted */
 			if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix, this.dimensions) !== undefined)
+			{
 				continue;
-			
+			}
 			
 			const directionVector = MatrixUtilities.DirectionToVector(direction, this.dimensions);
-			const lengths = MatrixUtilities.GetLengths(matrix);
+			const lengths = MatrixUtilities.GetLengths(matrix).reverse();
 
 			/* Widen matrix to make room, if necessary */
-			lengths.reverse();
 			for (let axis = 0; axis < directionVector.length; axis++)
 			{
+				/* If at low-value edge of axis and need to insert before, do negative expansion */
 				if (directionVector[axis] === -1 && coordinates[axis] === 0)
 				{
 					MatrixUtilities.InsertHyperplaneInMatrix(axis, -1, matrix, this.dimensions);
 					coordinates[axis] = 1
 				}
+				
+				/* If at high-value edge of axis and need to insert after, do positive expansion */
 				if (directionVector[axis] === 1 && coordinates[axis] === lengths[axis] - 1)
 				{
 					MatrixUtilities.InsertHyperplaneInMatrix(axis, 1, matrix, this.dimensions);
 				}
 			}
-						
+			
+			/* Coordinates for neighbor cell. Reversed to align axis order */
 			const newCoordinates = directionVector.map((currentValue, currentIndex) => {
 				return currentValue + coordinates[currentIndex];
 			}).reverse();
-									
+			
+			/* Navigate to one dimension above the insertion point */
 			let insertionPoint = matrix;
 			for (let axis = 0; axis < this.dimensions - 1; axis++)
 			{
 				insertionPoint = insertionPoint[newCoordinates[axis]];
 			}
+			
+			/* Perform insertion */
 			insertionPoint[newCoordinates[newCoordinates.length - 1]] = neighbors[direction];
 			cellsAdded.push(neighbors[direction]);
 		}
@@ -208,10 +238,9 @@ class Board
 		const directions = Math.pow(3, dimensions.length);
 		const centerDirection = (directions - 1) / 2;
 		
-		/* This loop assumes validity and initalizes the adjacency matrix */
+		/* This loop assumes validity of all directions and initalizes the adjacency matrix */
 		for (let i = 1; i <= cellCount; i++)
 		{
-			const matrixIndex = i-1;
 			adjacencyMatrix.push([]);
 			for (let direction = 0; direction < directions; direction++)
 			{
@@ -236,8 +265,7 @@ class Board
 						totalOffset += increment;
 					}
 				}
-				// console.log("Pushed " + (i + totalOffset) + " in direction " + direction + " of cell " + (i));
-				adjacencyMatrix[matrixIndex].push(i + totalOffset);
+				adjacencyMatrix[i - 1].push(i + totalOffset);
 			}
 		}
 		

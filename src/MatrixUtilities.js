@@ -1,5 +1,11 @@
 class MatrixUtilities
 {
+	/** 
+	 *  Returns a list of directions (in numeric form) that point in a direction
+	 *  along a certain axis. vectorSign should be 0 or 2 for each direction, 1
+	 *  for centered. vectorAxis indicates which axis to be used, with 0 meaning
+	 *  the smallest.
+	 */
 	static GetDirectionsByVector(vectorAxis, vectorSign, dimensions)
 	{
 		const directions = [];
