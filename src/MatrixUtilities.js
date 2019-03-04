@@ -1,5 +1,68 @@
 class MatrixUtilities
 {
+	/**
+	 * Converts a direction index to a vector consisting of -1s, 
+	 * 0s, and 1s. Assumes the "small" dimensions come first.
+	 */
+	static DirectionToVector(direction, dimensions)
+	{
+		let output = [];
+		for (let currentDimension = 0; currentDimension < dimensions; currentDimension++)
+		{
+			output.push((direction % 3) - 1);
+			direction = Math.floor(direction / 3);
+		}
+		return output;
+	}
+
+	/**
+	 * Given the root of a matrix (which could be the root of a submatrix),
+	 * and the lengths of the dimensions it contains, fills all such cells
+	 * with null.
+	 */
+	static FillHyperPlaneInMatrix(root, dimensionalLengths)
+	{
+		if (dimensionalLengths.length === 1)
+		{
+			for (let i = 0; i < dimensionalLengths[0]; i++)
+			{
+				root.push(null);
+			}
+			return;
+		}
+		for (let i = 0; i < dimensionalLengths[0]; i++)
+		{
+			root.push([]);
+			MatrixUtilities.FillHyperPlaneInMatrix(root[i], dimensionalLengths.slice(1, dimensionalLengths.length));
+		}
+	}
+	
+	/**
+	 * Returns the coordinates of value within matrix, as an array, smallest
+	 * axis first. Returns undefined if value could not be found. 
+	 */
+	static GetCoordinates(value, matrix, dimensions)
+	{
+		if (dimensions === 1)
+		{
+			if (matrix.includes(value))
+			{
+				return [matrix.indexOf(value)];
+			}
+			return undefined;
+		}
+		for (let i = 0; i < matrix.length; i++)
+		{
+			const coords = MatrixUtilities.GetCoordinates(value, matrix[i], dimensions - 1);
+			if (coords !== undefined)
+			{
+				coords.push(i);
+				return coords;
+			}
+		}
+		return undefined;
+	}
+	
 	/** 
 	 *  Returns a list of directions (in numeric form) that point in a direction
 	 *  along a certain axis. vectorSign should be 0 or 2 for each direction, 1
@@ -24,28 +87,11 @@ class MatrixUtilities
 		return directions;
 	}
 	
-	static GetCoordinates(value, matrix, dimensions)
-	{
-		if (dimensions === 1)
-		{
-			if (matrix.includes(value))
-			{
-				return [matrix.indexOf(value)];
-			}
-			return undefined;
-		}
-		for (let i = 0; i < matrix.length; i++)
-		{
-			const coords = MatrixUtilities.GetCoordinates(value, matrix[i], dimensions - 1);
-			if (coords !== undefined)
-			{
-				coords.push(i);
-				return coords;
-			}
-		}
-		return undefined;
-	}
-	
+	/**
+	 * Creates and returns an empty matrix that has the
+	 * specified number of dimensions. E.g., [[[]]] is an
+	 * empty 3D matrix.
+	 */
 	static GetEmptyMatrix(dimensions)
 	{
 		const output = [];
@@ -58,6 +104,9 @@ class MatrixUtilities
 		return output;
 	}
 	
+	/**
+	 * Returns an array of the lengths of a matrix. Largest dimensions first.
+	 */
 	static GetLengths(matrix)
 	{
 		const dimensionalLengths = [];
@@ -70,6 +119,12 @@ class MatrixUtilities
 		return dimensionalLengths;
 	}
 	
+	/**
+	 * Inserts a hyperplane into matrix, orthogonal to the axis and on one side of the
+	 * matrix, either low-value (sign = -1) or high-value (sign = 1). Also fills this
+	 * new hyperplane with null. Hyperplanes have dimensions = dimensions - 1, so in a
+	 * square matrix, they create a row or column (in a cube, they make a face).
+	 */
 	static InsertHyperplaneInMatrix(axis, sign, matrix, dimensions)
 	{
 		if (dimensions === 1)
@@ -113,23 +168,9 @@ class MatrixUtilities
 		}
 	}
 	
-	static FillHyperPlaneInMatrix(root, dimensionalLengths)
-	{
-		if (dimensionalLengths.length === 1)
-		{
-			for (let i = 0; i < dimensionalLengths[0]; i++)
-			{
-				root.push(null);
-			}
-			return;
-		}
-		for (let i = 0; i < dimensionalLengths[0]; i++)
-		{
-			root.push([]);
-			MatrixUtilities.FillHyperPlaneInMatrix(root[i], dimensionalLengths.slice(1, dimensionalLengths.length));
-		}
-	}
-	
+	/**
+	 * Converts a matrix to a slightly more understandable string
+	 */
 	static MatrixToString(matrix, dimensions)
 	{
 		if (dimensions === 1)
@@ -160,21 +201,6 @@ class MatrixUtilities
 			},
 			0
 		);
-	}
-	
-	/**
-	 * Converts a direction index to a vector consisting of -1s, 
-	 * 0s, and 1s. Assumes the "small" dimensions come first.
-	 */
-	static DirectionToVector(direction, dimensions)
-	{
-		let output = [];
-		for (let currentDimension = 0; currentDimension < dimensions; currentDimension++)
-		{
-			output.push((direction % 3) - 1);
-			direction = Math.floor(direction / 3);
-		}
-		return output;
 	}
 }
 

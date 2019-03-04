@@ -151,7 +151,7 @@ class Board
 		root[0] = firstCell;
 		
 		/* Manually perform first expansion */
-		cellsToAdd.push(...this.Expand(firstCell, outputBoard, MatrixUtilities.GetCoordinates(firstCell, outputBoard, this.dimensions)));
+		cellsToAdd.push(...this.Expand(firstCell, outputBoard));
 		
 		/* Breadth-first expand */
 		while (cellsToAdd.length > 0)
