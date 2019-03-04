@@ -169,7 +169,15 @@ class Board
 	 */
 	Expand(index, matrix)
 	{
-		const coordinates = MatrixUtilities.GetCoordinates(index, matrix, this.dimensions);
+		let coordinates = MatrixUtilities.GetCoordinates(index, matrix, this.dimensions);
+		if (coordinates === undefined)
+		{
+			coordinates = MatrixUtilities.GetCoordinates(-1 * index, matrix, this.dimensions);
+			if (coordinates === undefined) 
+			{
+				throw "No such element in matrix!";
+			}
+		}
 		const neighbors = this.cells[index - 1];
 		const cellsAdded = [];
 
