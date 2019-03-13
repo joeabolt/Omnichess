@@ -178,7 +178,7 @@ class Board
 				throw "No such element in matrix!";
 			}
 		}
-		const neighbors = this.cells[index - 1];
+		const neighbors = this.cells[Math.abs(index) - 1];
 		const cellsAdded = [];
 
 		for (let direction = 0; direction < neighbors.length; direction++)

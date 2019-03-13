@@ -20,20 +20,23 @@ class MatrixUtilities
 	 * and the lengths of the dimensions it contains, fills all such cells
 	 * with null.
 	 */
-	static FillHyperPlaneInMatrix(root, dimensionalLengths)
+	static FillHyperPlaneInMatrix(root, desiredLengths)
 	{
-		if (dimensionalLengths.length === 1)
+		if (desiredLengths.length === 1)
 		{
-			for (let i = 0; i < dimensionalLengths[0]; i++)
+			for (let i = root.length; i < desiredLengths[0]; i++)
 			{
 				root.push(null);
 			}
 			return;
 		}
-		for (let i = 0; i < dimensionalLengths[0]; i++)
+		for (let i = 0; i < desiredLengths[0]; i++)
 		{
-			root.push([]);
-			MatrixUtilities.FillHyperPlaneInMatrix(root[i], dimensionalLengths.slice(1, dimensionalLengths.length));
+			if (i >= root.length)
+			{
+				root.push([]);
+			}
+			MatrixUtilities.FillHyperPlaneInMatrix(root[i], desiredLengths.slice(1, desiredLengths.length));
 		}
 	}
 	
