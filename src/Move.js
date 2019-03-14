@@ -5,7 +5,6 @@ class Move
 	{
 		this.move = move;
 		this.capture = capture;
-		this.srcPiece = srcPiece;
 		this.srcLocation = srcLocation;
 		this.targetLocation = targetLocation;
 		this.capturedPiece = capturedPiece
