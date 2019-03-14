@@ -47,7 +47,7 @@ class Game
 		{
 			document.getElementById("message").innerHTML = "The game is now over!";
 		}
-		if (this.nextTurn.player.isCPU)
+		if (this.gameState === 0 && this.nextTurn.player.isCPU)
 		{
 			this.Step(this.nextTurn.player.GetNextMove(this.board, this));
 		}
