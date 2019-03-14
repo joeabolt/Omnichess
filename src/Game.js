@@ -38,6 +38,9 @@ class Game
 	{
 		if (this.gameState === 0)
 		{
+			console.log("Stepping with move/player:");
+			console.log(move);
+			console.log(this.nextTurn.player);
 			if (this.DoTurn(move))
 			{
 				this.CheckGameEnd();
@@ -49,7 +52,7 @@ class Game
 		}
 		if (this.nextTurn.player.isCPU)
 		{
-			this.Step(this.nextTurn.player.GetNextMove(this.board));
+			this.Step(this.nextTurn.player.GetNextMove(this.board, this));
 		}
 	}
 
@@ -175,6 +178,8 @@ class Game
 	Redo(showOutput = true)
 	{
 		this.CommitMove(this.redoStack.pop(), showOutput);
+		this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+		this.nextTurn = this.turnOrder[this.turnIndex];
 	}
 
 	UpdateUndoRedoVisibility()
