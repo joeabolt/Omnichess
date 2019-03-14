@@ -25,9 +25,17 @@ class Parser
 		/* Build the players */
 		const players = new Map();
 		config_data.players.forEach((template) => {
-			// TODO: Magically parse the lists of dropable and captured pieces
-			const newPlayer = new Player(template.identifier, template.direction, [], [], template.color);
-			players.set(template.identifier, newPlayer);
+			if (template.isCPU === undefined || template.isCPU === null || template.isCPU === false)
+			{
+				// TODO: Magically parse the lists of dropable and captured pieces
+				const newPlayer = new Player(template.identifier, template.direction, [], [], template.color);
+				players.set(template.identifier, newPlayer);
+			}
+			else
+			{
+				const newCPU = new CPU(template.identifier, template.direction, [], [], template.color);
+				players.set(template.identifier, newCPU);
+			}
 		});
 		
 		/* Build end conditions */
