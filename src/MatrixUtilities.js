@@ -158,7 +158,7 @@ class MatrixUtilities
 			}
 
 			/* Assemble list of dimension lengths */
-			const dimensionalLengths = MatrixUtilities.GetLengths(matrix);
+			const dimensionalLengths = MatrixUtilities.GetLengths(matrix).slice(dimensions - axis , dimensions);
 
 			/* Fill in any gaps */
 			MatrixUtilities.FillHyperPlaneInMatrix(root, dimensionalLengths);
@@ -176,6 +176,10 @@ class MatrixUtilities
 	 */
 	static MatrixToString(matrix, dimensions)
 	{
+		if (dimensions <= 0 || dimensions === undefined || dimensions === null)
+		{
+			throw "Dimensions not specified for MatrixToString()!";
+		}
 		if (dimensions === 1)
 		{
 			return "[" + matrix.toString() + "]";
