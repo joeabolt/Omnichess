@@ -1,10 +1,11 @@
 let realizer = undefined;
+let game = undefined;
 const fileInput = document.getElementById("configInput")
 
 fileInput.onchange = () => {
 	const reader = new FileReader();
 	reader.onload = () => {
-		const game = Parser.Load(JSON.parse(reader.result));
+		game = Parser.Load(JSON.parse(reader.result));
 		realizer = new Realizer(game);
 		realizer.Realize();
 	};

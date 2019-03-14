@@ -24,7 +24,7 @@
 				flex-direction: column;
 			}
 			
-			#mainDisplay {
+			#mainDisplay, #undo, #redo {
 				display: none;
 			}
 		</style>
@@ -38,6 +38,8 @@
 		<div id="mainDisplay">
 			<div id="output" style="font-family: monospace"></div>
 			<div id="message"></div>
+			<button id="undo" onclick="game.Undo();">Undo</button>
+			<button id="redo" onclick="game.Redo();">Redo</button>
 		</div>
 		
 		<script src="src/MatrixUtilities.js"></script>

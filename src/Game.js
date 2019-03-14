@@ -145,20 +145,50 @@ class Game
 		{
 			document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
 		}
+		this.UpdateUndoRedoVisibility();
 		// TODO: Add support for promote, drop
 	}
 
-	Undo()
+	Undo(showOutput = true)
 	{
 		const moveToUndo = this.moveStack.pop();
 		if (moveToUndo.move)
 		{
-			this.board.contents[move.srcLocation] = this.board.contents[move.targetLocation];
-			this.board.contents[move.targetLocation] = undefined;
+			this.board.contents[moveToUndo.srcLocation] = this.board.contents[moveToUndo.targetLocation];
+			this.board.contents[moveToUndo.targetLocation] = undefined;
 		}
 		if (moveToUndo.capture)
 		{
-			this.board.contents[move.targetLocation] = moveToUndo.capturedPiece;
+			this.board.contents[moveToUndo.targetLocation] = moveToUndo.capturedPiece;
+		}
+		this.redoStack.push(moveToUndo);
+		this.UpdateUndoRedoVisibility();
+	}
+
+	Redo(showOutput = true)
+	{
+		this.CommitMove(this.redoStack.pop(), showOutput);
+	}
+
+	UpdateUndoRedoVisibility()
+	{
+		if (game.moveStack.length > 0)
+		{
+			console.log(game.moveStack);
+			document.getElementById("undo").style.display = "inline";
+		}
+		else
+		{
+			document.getElementById("undo").style.display = "none";
+		}
+
+		if (game.redoStack.length > 0)
+		{
+			document.getElementById("redo").style.display = "inline";
+		}
+		else
+		{
+			document.getElementById("redo").style.display = "none";
 		}
 	}
 }
