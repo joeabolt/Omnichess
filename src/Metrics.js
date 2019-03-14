@@ -43,9 +43,12 @@ class Metrics
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, false, false));
+                return returnSet.concat(board.GetCellIndices(vector, pieceLocation));
             }, []))].forEach((destination) => {
-                moves.push(new Move(true, false, pieceLocation, destination));
+                if (board.contents[destination] === undefined)
+                {
+                    moves.push(new Move(true, false, pieceLocation, destination));
+                }
             });
         });
         return moves;

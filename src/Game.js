@@ -61,7 +61,7 @@ class Game
 		}
 		if (!this.Validate(move))
 		{
-			console.log("Game invalidated the move.");
+			console.warn("Game invalidated the move.");
 			document.getElementById("message").innerHTML = "Illegal move.";
 			return false;
 		}
@@ -132,7 +132,6 @@ class Game
 	 */
 	CommitMove(move, showOutput = true)
 	{
-		console.log(move);
 		let capturedPiece = "";
 		if (move.capture)
 		{
