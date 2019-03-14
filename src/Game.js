@@ -38,9 +38,6 @@ class Game
 	{
 		if (this.gameState === 0)
 		{
-			console.log("Stepping with move/player:");
-			console.log(move);
-			console.log(this.nextTurn.player);
 			if (this.DoTurn(move))
 			{
 				this.CheckGameEnd();
@@ -69,17 +66,9 @@ class Game
 			return false;
 		}
 		
-		/* Make the move */
+		this.lastTurn = this.nextTurn;
 		this.CommitMove(move);
 		
-		/* Get the next move */
-		this.lastTurn = this.nextTurn;
-		this.nextTurn = this.nextTurn.EndTurn();
-		if (this.nextTurn === undefined)
-		{
-			this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
-			this.nextTurn = this.turnOrder[this.turnIndex];
-		}
 		return true;
 	}
 	
@@ -152,6 +141,9 @@ class Game
 		{
 			document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
 		}
+		
+		this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+		this.nextTurn = this.turnOrder[this.turnIndex];
 		this.UpdateUndoRedoVisibility();
 		// TODO: Add support for promote, drop
 	}
@@ -178,8 +170,6 @@ class Game
 	Redo(showOutput = true)
 	{
 		this.CommitMove(this.redoStack.pop(), showOutput);
-		this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
-		this.nextTurn = this.turnOrder[this.turnIndex];
 	}
 
 	UpdateUndoRedoVisibility()

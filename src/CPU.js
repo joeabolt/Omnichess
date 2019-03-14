@@ -25,7 +25,6 @@ class CPU
         {
             /* find best capture action */
             const bestAction = this.GetBestOption(possibleCaptures, game);
-            console.log(bestAction);
             return bestAction;
         }
         else
