@@ -90,7 +90,7 @@ class Realizer
 	
 	CreateAndProcessMove(move, capture, source, target)
 	{
-		const moveObj = new Move(move, capture, this.board.contents[source], source, target, this.board.contents[target]);
+		const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
 
 		this.game.Step(moveObj);
 		this.activeCell = undefined;

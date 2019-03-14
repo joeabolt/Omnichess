@@ -41,7 +41,7 @@ class Turn
 			approved = false;
 			throw "Tried to capture when capture disallowed.";
 		}
-		if (this.board.contents[move.destLocation] !== undefined && this.board.contents[move.destLocation].player === this.player)
+		if (this.board.contents[move.targetLocation] !== undefined && this.board.contents[move.targetLocation].player === this.player)
 		{
 			document.getElementById("message").innerHTML = "Invalid action: cannot capture allied piece.";
 			approved = false;

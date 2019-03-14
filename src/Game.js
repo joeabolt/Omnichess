@@ -114,7 +114,7 @@ class Game
 		}
 
 		vectorList.forEach((vector) => {
-			validity = validity || this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.destLocation);
+			validity = validity || this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.targetLocation);
 		});
 		
 		return validity;
@@ -128,16 +128,16 @@ class Game
 		let capturedPiece = "";
 		if (move.capture)
 		{
-			capturedPiece = this.board.contents[move.destLocation].identifier;
-			this.nextTurn.player.capturedPieces.push(this.board.contents[move.destLocation]);
-			this.board.contents[move.destLocation] = undefined;
+			capturedPiece = this.board.contents[move.targetLocation].identifier;
+			this.nextTurn.player.capturedPieces.push(this.board.contents[move.targetLocation]);
+			this.board.contents[move.targetLocation] = undefined;
 		}
 		if (move.move)
 		{
-			this.board.contents[move.destLocation] = this.board.contents[move.srcLocation];
+			this.board.contents[move.targetLocation] = this.board.contents[move.srcLocation];
 			this.board.contents[move.srcLocation] = undefined;
 		}
-		document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.destLocation].identifier + " from " + move.srcLocation + " to " + move.destLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
+		document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
 		// TODO: Add support for promote, drop
 	}
 }

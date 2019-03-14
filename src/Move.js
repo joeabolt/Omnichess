@@ -1,13 +1,13 @@
 /* Represents a single action in the game */
 class Move
 {
-	constructor(move = false, capture = false, srcPiece = undefined, srcLocation = 0, destLocation = 0, capturedPiece = undefined)
+	constructor(move = false, capture = false, srcLocation = 0, targetLocation = 0, capturedPiece = undefined)
 	{
 		this.move = move;
 		this.capture = capture;
 		this.srcPiece = srcPiece;
 		this.srcLocation = srcLocation;
-		this.destLocation = destLocation;
+		this.targetLocation = targetLocation;
 		this.capturedPiece = capturedPiece
 	}
 	
@@ -23,21 +23,15 @@ class Move
 		return this;
 	}
 	
-	setSourcePiece(srcPiece)
-	{
-		this.srcPiece = srcPiece;
-		return this;
-	}
-	
 	setSourceLocation(srcLocation)
 	{
 		this.srcLocation = srcLocation;
 		return this;
 	}
 	
-	setDestinationLocation(destLocation)
+	setDestinationLocation(targetLocation)
 	{
-		this.destLocation = destLocation;
+		this.targetLocation = targetLocation;
 		return this;
 	}
 	
