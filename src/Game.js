@@ -93,7 +93,7 @@ class Game
 	Validate(move)
 	{
 		let validity = false;
-		const actor = this.board.contents[move.source];
+		const actor = this.board.contents[move.srcLocation];
 		
 		let vectorList = [];
 		let includeCaptureEligible = false;
@@ -114,7 +114,7 @@ class Game
 		}
 
 		vectorList.forEach((vector) => {
-			validity = validity || this.board.GetCellIndices(vector, move.source, includeCaptureEligible).includes(move.target);
+			validity = validity || this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.destLocation);
 		});
 		
 		return validity;
@@ -122,29 +122,22 @@ class Game
 	
 	/**
 	 *  Commits a move to the board.
-	 *  Move should be an object with the following properties:
-	 *    move.move => true if moving, false otherwise
-	 *    move.capture => true if capturing, false otherwise
-	 *    move.drop => true if dropping, false otherwise
-	 *    move.promote => true if promoting, false otherwise
-	 *    move.source => where this action originates from, a number
-	 *    move.target => the target of this move, either a number (location) or string (piece type)
 	 */
 	CommitMove(move)
 	{
 		let capturedPiece = "";
 		if (move.capture)
 		{
-			capturedPiece = this.board.contents[move.target].identifier;
-			this.nextTurn.player.capturedPieces.push(this.board.contents[move.target]);
-			this.board.contents[move.target] = undefined;
+			capturedPiece = this.board.contents[move.destLocation].identifier;
+			this.nextTurn.player.capturedPieces.push(this.board.contents[move.destLocation]);
+			this.board.contents[move.destLocation] = undefined;
 		}
 		if (move.move)
 		{
-			this.board.contents[move.target] = this.board.contents[move.source];
-			this.board.contents[move.source] = undefined;
+			this.board.contents[move.destLocation] = this.board.contents[move.srcLocation];
+			this.board.contents[move.srcLocation] = undefined;
 		}
-		document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.target].identifier + " from " + move.source + " to " + move.target + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
+		document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.destLocation].identifier + " from " + move.srcLocation + " to " + move.destLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
 		// TODO: Add support for promote, drop
 	}
 }
