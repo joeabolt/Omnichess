@@ -10,29 +10,20 @@ class CPU
 		this.color = color;
         this.isCPU = isCPU;
         
-        this.weightCaptures = 0.7;
-        this.weightMoves = 0.3;
+        this.caution = 0.667;
 
-        this.weightControl = 0.3;
-        this.weightInfluence = 0.7;
+        this.weightCaptures = 0.8;
+        this.weightMoves = 0.2;
+
+        this.weightControl = 0.7;
+        this.weightInfluence = 0.3;
     }
 
     GetNextMove(board, game)
     {
-        const possibleCaptures = Metrics.getAllCaptures(board, this);
-        const possibleMoves = Metrics.getAllMoves(board, this);
-        if (possibleCaptures.length > 0 && Math.random() < this.weightCaptures)
-        {
-            /* find best capture action */
-            const bestAction = this.GetBestOption(possibleCaptures, game);
-            return bestAction;
-        }
-        else
-        {
-            /* find best move action */
-            const bestAction = this.GetBestOption(possibleMoves, game);
-            return bestAction;
-        }
+        const possibleActions = Metrics.getAllCaptures(board, this).concat(Metrics.getAllMoves(board, this));
+        const bestAction = this.GetBestOption(possibleActions, game);
+        return bestAction;
     }
 
     GetBestOption(possibleMoves, game)
@@ -41,8 +32,20 @@ class CPU
         let bestMoveScore = 0;
         possibleMoves.forEach((move) => {
             game.CommitMove(move);
-            const score = Metrics.getPercentBoardControlled(game.board, this) * this.weightControl + 
-                Metrics.getPercentBoardInfluenced(game.board, this) * this.weightInfluence;
+            let score = 100 * (Metrics.getPercentBoardControlled(game.board, this) * this.weightControl + 
+                Metrics.getPercentBoardInfluenced(game.board, this) * this.weightInfluence);
+            if (move.move && !move.capture)
+            {
+                score *= this.weightMoves;
+            }
+            if (move.capture)
+            {
+                score *= this.weightCaptures;
+            }
+            if (Metrics.isChecked(game.board, move.targetLocation))
+            {
+                score *= (1 - this.caution);
+            }
             if (score > bestMoveScore)
             {
                 bestMoveScore = score;
