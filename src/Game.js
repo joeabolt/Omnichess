@@ -9,7 +9,7 @@ class Game
 		
 		/* Default turn order is alternating, any legal move goes */
 		const legalActions = {};
-		legalActions.piece = undefined; // undefined is flag for any
+		legalActions.piece = undefined; /* undefined is flag for any */
 		legalActions.move = true;
 		legalActions.capture = true;
 		this.turnOrder = [
@@ -17,6 +17,9 @@ class Game
 			new Turn(this.players[1], this.board, legalActions)
 		];
 		this.turnIndex = 0;
+
+		this.moveStack = []; /* also the undo stack */
+		this.redoStack = [];
 		
 		// For checking win/loss conditions at the right time
 		this.nextTurn = this.turnOrder[this.turnIndex];
@@ -121,9 +124,9 @@ class Game
 	}
 	
 	/**
-	 *  Commits a move to the board.
+	 *  Commits a move to the board, and pushes it to the move stack
 	 */
-	CommitMove(move)
+	CommitMove(move, showOutput = true)
 	{
 		let capturedPiece = "";
 		if (move.capture)
@@ -137,7 +140,25 @@ class Game
 			this.board.contents[move.targetLocation] = this.board.contents[move.srcLocation];
 			this.board.contents[move.srcLocation] = undefined;
 		}
-		document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
+		this.moveStack.push(move);
+		if (showOutput)
+		{
+			document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
+		}
 		// TODO: Add support for promote, drop
+	}
+
+	Undo()
+	{
+		const moveToUndo = this.moveStack.pop();
+		if (moveToUndo.move)
+		{
+			this.board.contents[move.srcLocation] = this.board.contents[move.targetLocation];
+			this.board.contents[move.targetLocation] = undefined;
+		}
+		if (moveToUndo.capture)
+		{
+			this.board.contents[move.targetLocation] = moveToUndo.capturedPiece;
+		}
 	}
 }
