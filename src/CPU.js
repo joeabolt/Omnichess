@@ -10,13 +10,13 @@ class CPU
 		this.color = color;
         this.isCPU = isCPU;
         
-        this.caution = 0.667;
+        this.caution = 0.75;
 
         this.weightCaptures = 0.8;
         this.weightMoves = 0.2;
 
-        this.weightControl = 0.7;
-        this.weightInfluence = 0.3;
+        this.weightControl = 0.8;
+        this.weightInfluence = 0.2;
     }
 
     GetNextMove(board, game)
