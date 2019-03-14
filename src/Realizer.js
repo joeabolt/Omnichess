@@ -6,7 +6,6 @@ class Realizer
 		this.game = game;
 		this.board = game.board;
 		this.isFullyUpdated = false;
-		this.moveQueue = [];
 		
 		this.activeCell = undefined;
 		this.activeCellCanMove = [];
@@ -91,14 +90,9 @@ class Realizer
 	
 	CreateAndProcessMove(move, capture, source, target)
 	{
-		const moveObject = {};
-		moveObject.move = move;
-		moveObject.capture = capture;
-		moveObject.source = source;
-		moveObject.target = target;
+		const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
 
-		this.moveQueue.push(moveObject);
-		this.game.Step(moveObject);
+		this.game.Step(moveObj);
 		this.activeCell = undefined;
 		this.Realize();
 	}
