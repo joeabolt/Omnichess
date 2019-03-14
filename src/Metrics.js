@@ -3,8 +3,6 @@ class Metrics
 {
     static countPossibleActions(board, player)
     {
-        console.log(Metrics.getAllCaptures(board, player));
-        console.log(Metrics.getAllMoves(board, player));
         return Metrics.getAllCaptures(board, player).length + Metrics.getAllMoves(board, player).length;
     }
 
