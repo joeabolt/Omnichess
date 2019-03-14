@@ -163,6 +163,9 @@ class Game
 		}
 		this.redoStack.push(moveToUndo);
 		this.UpdateUndoRedoVisibility();
+
+		this.turnIndex = (this.turnIndex - 1 + this.turnOrder.length) % this.turnOrder.length;
+		this.nextTurn = this.turnOrder[this.turnIndex];
 	}
 
 	Redo(showOutput = true)
@@ -174,7 +177,6 @@ class Game
 	{
 		if (game.moveStack.length > 0)
 		{
-			console.log(game.moveStack);
 			document.getElementById("undo").style.display = "inline";
 		}
 		else
