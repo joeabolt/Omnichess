@@ -3,6 +3,8 @@ class Metrics
 {
     static countPossibleActions(board, player)
     {
+        console.log(Metrics.getAllCaptures(board, player));
+        console.log(Metrics.getAllMoves(board, player));
         return Metrics.getAllCaptures(board, player).length + Metrics.getAllMoves(board, player).length;
     }
 
@@ -43,7 +45,7 @@ class Metrics
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
+                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, false, false));
             }, []))].forEach((destination) => {
                 moves.push(new Move(true, true, pieceLocation, destination));
             });
@@ -78,7 +80,7 @@ class Metrics
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
+                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, false, false));
             }, []))].forEach((destination) => {
                 if (moveLocations.indexOf(destination) === -1)
                 {
