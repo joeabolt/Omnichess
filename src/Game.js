@@ -132,6 +132,7 @@ class Game
 	 */
 	CommitMove(move, showOutput = true)
 	{
+		console.log(move);
 		let capturedPiece = "";
 		if (move.capture)
 		{

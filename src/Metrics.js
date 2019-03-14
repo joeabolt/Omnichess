@@ -45,7 +45,7 @@ class Metrics
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
                 return returnSet.concat(board.GetCellIndices(vector, pieceLocation, false, false));
             }, []))].forEach((destination) => {
-                moves.push(new Move(true, true, pieceLocation, destination));
+                moves.push(new Move(true, false, pieceLocation, destination));
             });
         });
         return moves;
