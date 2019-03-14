@@ -9,7 +9,7 @@ class Game
 		
 		/* Default turn order is alternating, any legal move goes */
 		const legalActions = {};
-		legalActions.piece = undefined; // flag for any
+		legalActions.piece = undefined; // undefined is flag for any
 		legalActions.move = true;
 		legalActions.capture = true;
 		this.turnOrder = [
@@ -132,8 +132,10 @@ class Game
 	 */
 	CommitMove(move)
 	{
+		let capturedPiece = "";
 		if (move.capture)
 		{
+			capturedPiece = this.board.contents[move.target].identifier;
 			this.nextTurn.player.capturedPieces.push(this.board.contents[move.target]);
 			this.board.contents[move.target] = undefined;
 		}
@@ -141,8 +143,8 @@ class Game
 		{
 			this.board.contents[move.target] = this.board.contents[move.source];
 			this.board.contents[move.source] = undefined;
-			return;
 		}
+		document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.target].identifier + " from " + move.source + " to " + move.target + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
 		// TODO: Add support for promote, drop
 	}
 }

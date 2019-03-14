@@ -1,9 +1,9 @@
 /* Convenience class to store a vector and its associated flags */
 class Vector
 {
-	constructor(x, y)
+	constructor(components)
 	{
-		this.components = [x, y];
+		this.components = components;
 	}
 	
 	toString()
@@ -33,7 +33,7 @@ class Vector
 				return;
 			}
 			
-			const checkValid = vectorString.match(/\(\ *-?\d+[\d{}+jhpmd]*\ *,\ *-?\d+[\d{}+jhpmd]*\ *\)[\d{}+jhpmd]*/g);
+			const checkValid = vectorString.match(/\((\ *-?\d+[\d{}+jhd]*\ *,)+\ *-?\d+[\d{}+jhd]*\ *\)[\d{}+jhd]*/g);
 			if (checkValid === null || checkValid.length <= 0)
 			{
 				console.error(`Improperly formatted vector: ${vectorString}`);
@@ -44,29 +44,54 @@ class Vector
 			const globalFlags = vectorString.slice(vectorString.indexOf(")")+1);
 			const componentStrings = vectorString.slice(vectorString.indexOf("(")+1, vectorString.indexOf(")")).split(",");
 			
-			/* Build x and y components */
-			const xComponents = Component.Create(componentStrings[0], globalFlags);
-			const yComponents = Component.Create(componentStrings[1], globalFlags);
+			/* Build components */
+			const components = [];
+			componentStrings.forEach((string) => {
+				components.push(Component.Create(string, globalFlags));
+			});
+			
+			/* Sort them with "large" axis in front */
+			components.reverse();
 			
 			/* Cross product all components to produce directional vectors */
-			// TODO: rewrite when updating to N-dimensions
-			vectors.push(...CrossProduct(xComponents, yComponents));
+			Vector.CrossProduct(components).forEach((crossProduct) => {
+				vectors.push(new Vector(crossProduct));
+			});
 		});
 
 		return vectors;
-		
-		/* Helper function */
-		function CrossProduct(xComponents, yComponents)
+	}
+	
+	static CrossProduct(components)
+	{
+		let crossProducts = [];
+		let newRound = [];
+		for (let i = 0; i < components.length; i++)
 		{
-			const crossProduct = [];
-
-			xComponents.forEach((xComponent) => {
-				yComponents.forEach((yComponent) => {
-					crossProduct.push(new Vector(Component.DeepCopy(xComponent), Component.DeepCopy(yComponent)));
-				})
-			});
-
-			return crossProduct;
+			for (let j = 0; j < components[i].length; j++)
+			{
+				if (i === 0)
+				{
+					newRound.push(Component.DeepCopy(components[i][j]));
+					continue;
+				}
+				for (let k = 0; k < crossProducts.length; k++)
+				{
+					const updatedVersion = [Component.DeepCopy(components[i][j])]
+					if (crossProducts[k] instanceof Component)
+					{
+						updatedVersion.push(Component.DeepCopy(crossProducts[k]));
+					}
+					else
+					{
+						updatedVersion.push(...crossProducts[k].map(x => Component.DeepCopy(x)));
+					}
+					newRound.push(updatedVersion);
+				}
+			}
+			crossProducts = newRound;
+			newRound = [];
 		}
+		return crossProducts;
 	}
 }

@@ -1,0 +1,66 @@
+{
+	"board": {
+		"dimensions": 2,
+		"lengths": [8, 4],
+		"adjacencyMatrix": null
+	},
+	"pieces": [{
+			"move": "(1d, 0)",
+			"capture": "",
+			"moveCapture": "(1d, 1)",
+			"identifier": "p"
+		},
+		{
+			"move": "(1+, 0); (0, 1+):",
+			"capture": "",
+			"moveCapture": "(1+, 0); (0, 1+)",
+			"identifier": "R"
+		},
+		{
+			"move": "(1, 2)j; (2, 1)j",
+			"capture": "",
+			"moveCapture": "(1, 2)j; (2, 1)j",
+			"identifier": "N"
+		},
+		{
+			"move": "(1, 1)+",
+			"capture": "",
+			"moveCapture": "(1, 1)+",
+			"identifier": "B"
+		},
+		{
+			"move": "(1, 0); (0, 1); (1, 1)",
+			"capture": "",
+			"moveCapture": "(1, 0); (0, 1); (1, 1)",
+			"identifier": "K"
+		}
+	],
+	"players": [{
+			"identifier": "White",
+			"color": "#0088FF",
+			"direction": [1, 1],
+			"dropablePieces": "",
+			"capturedPieces": ""
+		},
+		{
+			"identifier": "Black",
+			"color": "#FF0000",
+			"direction": [-1, 1],
+			"dropablePieces": "",
+			"capturedPieces": ""
+		}
+	],
+	"endConditions": [{
+			"player": "White",
+			"win": false,
+			"config": "count K = 0 @ end Black"
+		},
+		{
+			"player": "Black",
+			"win": false,
+			"config": "count K = 0 @ end White"
+		}
+	],
+	"boardState": [
+	]
+}

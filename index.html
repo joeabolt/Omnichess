@@ -6,15 +6,22 @@
 			input {
 				margin: 5px;
 			}
-			table {
-				border-collapse: true;
-				table-layout: fixed;
-			}
 			
-			table, th, td {
+			.cell {
 				border: 1px solid black;
 				text-align: center;
 				font-weight: bolder;
+				margin: 1px;
+			}
+			
+			.hdimension {
+				display: flex;
+				flex-direction: row;
+			}
+			
+			.vdimension {
+				display: flex;
+				flex-direction: column;
 			}
 			
 			#mainDisplay {
@@ -33,6 +40,7 @@
 			<div id="message"></div>
 		</div>
 		
+		<script src="src/MatrixUtilities.js"></script>
 		<script src="src/Player.js"></script>
 		<script src="src/Component.js"></script>
 		<script src="src/Vector.js"></script>

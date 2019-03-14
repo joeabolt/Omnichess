@@ -19,7 +19,7 @@ class Parser
 		}
 		else
 		{
-			board = new Board(Board.Generate2D(boardTemplate.lengths[0], boardTemplate.lengths[1]));
+			board = new Board(Board.Generate(boardTemplate.lengths));
 		}
 				
 		/* Build the players */

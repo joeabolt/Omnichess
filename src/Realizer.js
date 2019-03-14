@@ -31,9 +31,14 @@ class Realizer
 	
 	ProcessClick(clickedCell)
 	{
-		if (this.activeCell == -1)
+		if (this.activeCell === undefined)
 		{
 			this.SetActiveCell(clickedCell);
+			return;
+		}
+		if (clickedCell === this.activeCell)
+		{
+			this.SetActiveCell(undefined);
 			return;
 		}
 		if (this.activeCellCanMoveCapture.includes(clickedCell))
@@ -100,49 +105,72 @@ class Realizer
 	
 	CreateDisplayBoard()
 	{
-		let board = document.createElement("table");
 		let toDisplay = this.board.ConvertToArray();
+		let dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
+		let dimensionCount = dimensionLengths.length;
 		
-		for (let r = 0; r < toDisplay.length; r++)
-		{
-			let row = board.insertRow(r);
-			for (let c = 0; c < toDisplay[r].length; c++)
-			{
-				let cell = row.insertCell(c);
-				
-				let contents = "&nbsp";
-				const backgroundColor = this.DetermineBackgroundColor(toDisplay[r][c], r, c);
-				const foregroundColor = this.DetermineForegroundColor(toDisplay[r][c], r, c);
-				
-				if (this.board.contents[toDisplay[r][c]] !== undefined)
-				{
-					contents = this.board.contents[toDisplay[r][c]].identifier;
-				}
-
-				cell.style.backgroundColor = backgroundColor;
-				cell.style.color = foregroundColor;
-				
-				const size = "35px"; //TODO: Make this dynamic #55
-				cell.style.width = size;
-				cell.style.height = size;
-				
-				cell.innerHTML = `${toDisplay[r][c]}<br />${contents}`;
-				cell.onclick = () => { processClick(event, toDisplay[r][c]); };
-
-			}
-		}
+		let countOddDimensions = dimensionLengths.reduce((count, current) => {
+			return count + (current % 2 === 0) ? 0 : 1;
+		}, 0);
+		
+		const board = this.AssembleChild(toDisplay, dimensionCount, countOddDimensions % 2 === 0);
 		
 		return board;
 	}
 	
-	DetermineBackgroundColor(index, row, column)
+	AssembleChild(matrix, dimensions, offsetColoring)
+	{
+		if (dimensions === 0)
+		{
+			/* It's a single cell; make it and return */
+			const cellIndex = matrix; /* Rename for clarity */
+			
+			const cell = document.createElement("div");
+			cell.className = "cell";
+			let contents = "&nbsp";
+			const backgroundColor = this.DetermineBackgroundColor(cellIndex, offsetColoring);
+			const foregroundColor = this.DetermineForegroundColor(cellIndex, offsetColoring);
+			
+			if (this.board.contents[cellIndex] !== undefined)
+				contents = this.board.contents[cellIndex].identifier;
+			
+			cell.style.backgroundColor = backgroundColor;
+			cell.style.color = foregroundColor;
+				
+			const size = "35px"; //TODO: Make this dynamic #55
+			cell.style.width = size;
+			cell.style.height = size;
+			
+			cell.innerHTML = `${cellIndex}<br />${contents}`;
+			cell.onclick = () => { processClick(event, cellIndex); };
+			
+			return cell;
+		}
+		
+		let aggregateElement = document.createElement("div");
+		aggregateElement.className = ((dimensions % 2 === 0) ? "vdimension" : "hdimension");
+		aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
+		for (let i = 0; i < matrix.length; i++)
+		{
+			aggregateElement.appendChild(
+				this.AssembleChild(matrix[i],
+				dimensions - 1,
+				(matrix[i].length % 2 === 0 && i % 2 === 0) ? !offsetColoring : offsetColoring)
+			);
+		}
+		
+		return aggregateElement;
+	}
+	
+	DetermineBackgroundColor(index, offsetColor)
 	{
 		if (index < 0)
 		{
 			return "#AAAAAA";
 		}
 		
-		let bgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#000000" : "#FFFFFF";
+		let colorIndex = offsetColor ? (index + 1) : (index);
+		let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
 		
 		if (this.activeCell !== undefined)
 		{
@@ -163,14 +191,15 @@ class Realizer
 		return bgColor;
 	}
 	
-	DetermineForegroundColor(index, row, column)
+	DetermineForegroundColor(index, offsetColor)
 	{
 		if (index < 0)
 		{
 			return "#FFFFFF";
 		}
 		
-		let fgColor = (row % 2 === 0) ^ (column % 2 === 0) ? "#FFFFFF" : "#000000";
+		let colorIndex = offsetColor ? index + 1 : index;
+		let fgColor = (colorIndex % 2 === 0) ? "#FFFFFF" : "#000000";
 		
 		if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
 		{
