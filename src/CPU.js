@@ -1,22 +1,17 @@
 /* A class that can serve as a computer-controlled opponent */
-class CPU
+class CPU extends Player
 {
     constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = true)
     {
-        this.identifier = identifier;
-        this.direction = direction;
-        this.dropablePieces = dropablePieces;
-        this.capturedPieces = capturedPieces;
-        this.color = color;
-        this.isCPU = isCPU;
+        super(identifier, direction, dropablePieces, capturedPieces, color, isCPU);
 
         this.caution = 0.75;
 
-        this.weightCaptures = 4;
-        this.weightMoves = 1;
+        this.weightCaptures = 0.8;
+        this.weightMoves = 0.2;
 
-        this.weightControl = 4;
-        this.weightInfluence = 1;
+        this.weightControl = 0.8;
+        this.weightInfluence = 0.2;
     }
 
     GetNextMove(board, game)
@@ -34,16 +29,17 @@ class CPU
         const baseInfluencePercent = Metrics.getPercentBoardInfluenced(game.board, this);
         possibleMoves.forEach((move) => {
             game.CommitMove(move);
-            let controlDelta = (Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent);
-            let influenceDelta = (Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent);
+
+            let controlDelta = Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1;
+            let influenceDelta = Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1;
             let score = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
             if (move.move && !move.capture)
             {
-                score *= this.weightMoves;
+                score += score * this.weightMoves;
             }
             if (move.capture)
             {
-                score *= this.weightCaptures;
+                score += score * this.weightCaptures;
             }
             if (Metrics.isChecked(game.board, move.targetLocation))
             {
