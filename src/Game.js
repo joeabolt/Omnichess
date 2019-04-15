@@ -39,19 +39,19 @@ class Game
      * Deliberately has no side effects so it can safely be called even 
      * if a human player ought to move first.
      */
-    StartCPU()
+    StartCPU(realizer)
     {
         if (this.nextTurn.player.isCPU)
         {
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this));
+            this.Step(this.nextTurn.player.GetNextMove(this.board, this), true, realizer);
         }
     }
 
-    async Step(move, doCPUTurn = true)
+    async Step(move, doCPUTurn = true, realizer = undefined)
     {
         if (this.gameState === 0)
         {
-            if (this.DoTurn(move))
+            if (this.DoTurn(move, realizer))
             {
                 this.CheckGameEnd();
             }
@@ -66,13 +66,12 @@ class Game
         }
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU)
         {
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this), false);
-            console.log("Action taken");
-            await sleep(500);
+            await sleep(1000);
+            this.Step(this.nextTurn.player.GetNextMove(this.board, this), false, realizer);
         }
     }
 
-    DoTurn(move)
+    DoTurn(move, realizer = undefined)
     {
         if (!this.nextTurn.Validate(move))
         {
@@ -86,7 +85,7 @@ class Game
         }
 
         this.lastTurn = this.nextTurn;
-        this.CommitMove(move);
+        this.CommitMove(move, true, realizer);
 
         return true;
     }
@@ -141,7 +140,7 @@ class Game
     /**
      *  Commits a move to the board, and pushes it to the move stack
      */
-    CommitMove(move, showOutput = true)
+    CommitMove(move, showOutput = true, realizer = undefined)
     {
         let capturedPiece = "";
         if (move.capture)
@@ -156,6 +155,10 @@ class Game
             this.board.contents[move.srcLocation] = undefined;
         }
         this.moveStack.push(move);
+        if (realizer)
+        {
+            realizer.Realize();
+        }
         if (showOutput)
         {
             document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";

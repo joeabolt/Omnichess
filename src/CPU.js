@@ -2,14 +2,14 @@
 class CPU
 {
     constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = true)
-	{
-		this.identifier = identifier;
-		this.direction = direction;
-		this.dropablePieces = dropablePieces;
-		this.capturedPieces = capturedPieces;
-		this.color = color;
+    {
+        this.identifier = identifier;
+        this.direction = direction;
+        this.dropablePieces = dropablePieces;
+        this.capturedPieces = capturedPieces;
+        this.color = color;
         this.isCPU = isCPU;
-        
+
         this.caution = 0.75;
 
         this.weightCaptures = 0.8;
