@@ -12,11 +12,11 @@ class CPU
 
         this.caution = 0.75;
 
-        this.weightCaptures = 0.8;
-        this.weightMoves = 0.2;
+        this.weightCaptures = 4;
+        this.weightMoves = 1;
 
-        this.weightControl = 0.8;
-        this.weightInfluence = 0.2;
+        this.weightControl = 4;
+        this.weightInfluence = 1;
     }
 
     GetNextMove(board, game)
@@ -30,10 +30,13 @@ class CPU
     {
         let bestMove = undefined;
         let bestMoveScore = 0;
+        const baseControlPercent = Metrics.getPercentBoardControlled(game.board, this);
+        const baseInfluencePercent = Metrics.getPercentBoardInfluenced(game.board, this);
         possibleMoves.forEach((move) => {
             game.CommitMove(move);
-            let score = 100 * (Metrics.getPercentBoardControlled(game.board, this) * this.weightControl + 
-                Metrics.getPercentBoardInfluenced(game.board, this) * this.weightInfluence);
+            let controlDelta = (Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent);
+            let influenceDelta = (Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent);
+            let score = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
             if (move.move && !move.capture)
             {
                 score *= this.weightMoves;

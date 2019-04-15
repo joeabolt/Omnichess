@@ -90,7 +90,7 @@ class Realizer
     {
         const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
 
-        this.game.Step(moveObj);
+        this.game.Step(moveObj, true, this);
         this.activeCell = undefined;
         this.Realize();
     }
