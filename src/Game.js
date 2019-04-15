@@ -34,7 +34,7 @@ class Game
         this.gameState = 0;
     }
 
-    Step(move)
+    Step(move, doCPUTurn = true)
     {
         if (this.gameState === 0)
         {
@@ -47,9 +47,9 @@ class Game
         {
             document.getElementById("message").innerHTML = "The game is now over!";
         }
-        if (this.gameState === 0 && this.nextTurn.player.isCPU)
+        while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU)
         {
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this));
+            this.Step(this.nextTurn.player.GetNextMove(this.board, this), false);
         }
     }
 
