@@ -8,6 +8,7 @@ fileInput.onchange = () => {
         game = Parser.Load(JSON.parse(reader.result));
         realizer = new Realizer(game);
         realizer.Realize();
+        game.StartCPU();
     };
     reader.readAsText(fileInput.files[0]);
 

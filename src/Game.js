@@ -34,7 +34,20 @@ class Game
         this.gameState = 0;
     }
 
-    Step(move, doCPUTurn = true)
+    /**
+     * Convenience function to kickstart a game when a CPU must go first.
+     * Deliberately has no side effects so it can safely be called even 
+     * if a human player ought to move first.
+     */
+    StartCPU()
+    {
+        if (this.nextTurn.player.isCPU)
+        {
+            this.Step(this.nextTurn.player.GetNextMove(this.board, this));
+        }
+    }
+
+    async Step(move, doCPUTurn = true)
     {
         if (this.gameState === 0)
         {
@@ -47,9 +60,15 @@ class Game
         {
             document.getElementById("message").innerHTML = "The game is now over!";
         }
+        function sleep(ms)
+        {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU)
         {
             this.Step(this.nextTurn.player.GetNextMove(this.board, this), false);
+            console.log("Action taken");
+            await sleep(500);
         }
     }
 

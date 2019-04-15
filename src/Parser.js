@@ -26,7 +26,11 @@ class Parser
         const players = new Map();
         config_data.players.forEach((template) => {
             // TODO: Magically parse the lists of dropable and captured pieces
-            const newPlayer = new Player(template.identifier, template.direction, [], [], template.color);
+            let newPlayer = new Player(template.identifier, template.direction, [], [], template.color);
+            if (template.isCPU && template.isCPU === true)
+            {
+                newPlayer = new CPU(template.identifier, template.direction, [], [], template.color);
+            }
             players.set(template.identifier, newPlayer);
         });
 
