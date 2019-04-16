@@ -30,6 +30,7 @@ class CPU extends Player
         possibleMoves.forEach((move) => {
             game.CommitMove(move);
 
+            /* Base score based on maximizing future options */
             const controlDelta = Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1;
             const influenceDelta = Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1;
             const baseScore = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
@@ -40,18 +41,30 @@ class CPU extends Player
             }
             if (move.capture)
             {
-                score += baseScore * this.weightCaptures;
+                score += baseScore * this.weightCaptures + move.capturedPiece.value;
             }
-            if (Metrics.isChecked(game.board, move.targetLocation))
+
+            /* Adjustments for moving in or out of check */
+            const destChecked = Metrics.isChecked(game.board, move.targetLocation);
+            game.Undo(move);
+            const srcChecked = Metrics.isChecked(game.board, move.srcLocation);
+            const pieceValue = game.board.contents[move.srcLocation];
+            let checkAdjustment = 0;
+            if (!srcChecked && destChecked) /* Moving into check */
             {
-                score *= (1 - this.caution);
+                checkAdjustment -= pieceValue;
             }
+            if (srcChecked && !destChecked) /* Moving out of check */
+            {
+                checkAdjustment += pieceValue;
+            }
+            score += checkAdjustment / (1 - this.caution);
+
             if (score > bestMoveScore)
             {
                 bestMoveScore = score;
                 bestMove = move;
             }
-            game.Undo();
         });
         return bestMove;
     }
