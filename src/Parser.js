@@ -70,6 +70,10 @@ class Parser
                 .setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture))
                 .setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture));
             piece.setDirection(piece.player.direction);
+            if (pieceTemplates.get(entry.piece).value)
+            {
+                piece.setValue(pieceTemplates.get(entry.piece).value);
+            }
             board.contents[entry.location] = piece;
         });
 

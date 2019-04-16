@@ -7,6 +7,7 @@ class Piece
         this.captureVectors = [];
         this.moveCaptureVectors = [];
         this.identifier = "";
+        this.value = 1;
         this.player = undefined;
     }
 
@@ -67,6 +68,12 @@ class Piece
     setPlayer(player)
     {
         this.player = player;
+        return this;
+    }
+
+    setValue(value)
+    {
+        this.value = value;
         return this;
     }
 }
