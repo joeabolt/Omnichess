@@ -148,7 +148,7 @@ const config = {
             [131,-132,null,-143,144,null,null,null,null]]
     },
     pieces: [{
-            move: "(0, 1d)",
+            move: "(0, 1d); (0, 1{3}di)",
             capture: "",
             moveCapture: "(1, 1d)",
             value: 1,

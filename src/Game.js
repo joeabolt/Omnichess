@@ -154,6 +154,7 @@ class Game
             this.board.contents[move.targetLocation] = this.board.contents[move.srcLocation];
             this.board.contents[move.srcLocation] = undefined;
         }
+        this.board.contents[move.targetLocation].setMoves(1);
         this.moveStack.push(move);
         if (realizer)
         {
@@ -184,6 +185,8 @@ class Game
         }
         this.redoStack.push(moveToUndo);
         this.UpdateUndoRedoVisibility();
+
+        this.board.contents[moveToUndo.srcLocation].setMoves(-1);
 
         this.turnIndex = (this.turnIndex - 1 + this.turnOrder.length) % this.turnOrder.length;
         this.nextTurn = this.turnOrder[this.turnIndex];

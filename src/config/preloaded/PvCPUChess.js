@@ -4,7 +4,7 @@ const config = {
         adjacencyMatrix: null
     },
     pieces: [{
-            move: "(0, 1d)",
+            move: "(0, 1d); (0, 2di)",
             capture: "",
             moveCapture: "(1, 1d)",
             "value": 1,

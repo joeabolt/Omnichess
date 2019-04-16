@@ -33,7 +33,7 @@ class Vector
                 return;
             }
 
-            const checkValid = vectorString.match(/\((\ *-?\d+[\d{}+jhd]*\ *,)+\ *-?\d+[\d{}+jhd]*\ *\)[\d{}+jhd]*/g);
+            const checkValid = vectorString.match(/\((\ *-?\d+[\d{}+jhdi]*\ *,)+\ *-?\d+[\d{}+jhdi]*\ *\)[\d{}+jhdi]*/g);
             if (checkValid === null || checkValid.length <= 0)
             {
                 console.error(`Improperly formatted vector: ${vectorString}`);
