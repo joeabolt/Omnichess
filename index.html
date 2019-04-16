@@ -31,10 +31,20 @@
 	</head>
 	<body>
 		<h1>Omnichess</h1>
-		<span id="inputSpan">
-			Load a configuration file!
+		<div id="input">
+			<h4>Load a configuration file!</h4>
 			<input id="configInput" type="file"></input>
-		</span>
+			<hr />
+			<div>
+				<h4>Use a pre-configured game!</h4>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/2PChess.js');">2-Player Chess</button>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPUChess.js');">Player vs CPU Chess</button> <br />
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/2PRaumschach.js');">2-Player Raumschach</button>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPURaumschach.js');">Player vs CPU Raumschach</button> <br />
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/2POmegaChess.js');">2-Player Omega Chess</button>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPUOmegaChess.js');">Player vs CPU Omega Chess</button>
+			</div>
+		</div>
 		<div id="mainDisplay">
 			<div id="output" style="font-family: monospace"></div>
 			<div id="message"></div>

@@ -5,15 +5,9 @@ const fileInput = document.getElementById("configInput")
 fileInput.onchange = () => {
     const reader = new FileReader();
     reader.onload = () => {
-        game = Parser.Load(JSON.parse(reader.result));
-        realizer = new Realizer(game);
-        realizer.Realize();
-        game.StartCPU(realizer);
+        loadConfig(JSON.parse(reader.result));
     };
     reader.readAsText(fileInput.files[0]);
-
-    document.getElementById("inputSpan").style.display = "none";
-    document.getElementById("mainDisplay").style.display = "block";
 };
 
 function processClick(event, cellIndex)
@@ -33,4 +27,25 @@ function clickHandler()
 
     realizer.SetActiveCell(undefined);
     realizer.Realize();
+}
+
+function loadConfig(config)
+{
+    game = Parser.Load(config);
+    realizer = new Realizer(game);
+    realizer.Realize();
+    game.StartCPU(realizer);
+    
+    document.getElementById("input").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "block";
+}
+
+function loadPreloadedConfig(path)
+{
+    const configScript = document.createElement("script");
+    configScript.src = path;
+    configScript.onload = () => {
+        loadConfig(config);
+    };
+    document.body.appendChild(configScript);
 }
