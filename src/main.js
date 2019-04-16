@@ -40,10 +40,10 @@ function loadConfig(config)
     document.getElementById("mainDisplay").style.display = "block";
 }
 
-function load2PChess()
+function loadPreloadedConfig(path)
 {
     const configScript = document.createElement("script");
-    configScript.src = "./src/config/preloaded/2PChess.js";
+    configScript.src = path;
     configScript.onload = () => {
         loadConfig(config);
     };
