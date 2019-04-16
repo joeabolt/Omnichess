@@ -115,8 +115,8 @@ class Piece
         if (!noPriorMove && this.moves === 0)
         {
             this.moveVectors = this.moveVectors.concat(this.initialMoveVectors);
-            this.captureVectors = this.moveVectors.concat(this.initialCaptureVectors);
-            this.moveCaptureVectors = this.moveVectors.concat(this.initialMoveCaptureVectors);
+            this.captureVectors = this.captureVectors.concat(this.initialCaptureVectors);
+            this.moveCaptureVectors = this.moveCaptureVectors.concat(this.initialMoveCaptureVectors);
         }
     }
 }
