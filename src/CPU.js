@@ -30,16 +30,17 @@ class CPU extends Player
         possibleMoves.forEach((move) => {
             game.CommitMove(move);
 
-            let controlDelta = Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1;
-            let influenceDelta = Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1;
-            let score = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
+            const controlDelta = Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1;
+            const influenceDelta = Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1;
+            const baseScore = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
+            let score = baseScore;
             if (move.move && !move.capture)
             {
-                score += score * this.weightMoves;
+                score += baseScore * this.weightMoves;
             }
             if (move.capture)
             {
-                score += score * this.weightCaptures;
+                score += baseScore * this.weightCaptures;
             }
             if (Metrics.isChecked(game.board, move.targetLocation))
             {
@@ -53,5 +54,44 @@ class CPU extends Player
             game.Undo();
         });
         return bestMove;
+    }
+
+    SetCaptureWeight(newCaptureWeight)
+    {
+        newCaptureWeight = Math.max(0, Math.min(1, newCaptureWeight));
+        this.weightCaptures = newCaptureWeight;
+        this.weightMoves = 1 - this.weightCaptures;
+        return this;
+    }
+
+    SetCaution(newCaution)
+    {
+        newCaution = Math.max(0, Math.min(1, newCaution));
+        this.caution = newCaution;
+        return this;
+    }
+
+    SetControlWeight(newControlWeight)
+    {
+        newControlWeight = Math.max(0, Math.min(1, newControlWeight));
+        this.weightControl = newControlWeight;
+        this.weightInfluence = 1 - this.weightControl;
+        return this;
+    }
+
+    SetInfluenceWeight(newInfluenceWeight)
+    {
+        newInfluenceWeight = Math.max(0, Math.min(1, newInfluenceWeight));
+        this.weightInfluence = newInfluenceWeight;
+        this.weightControl = 1 - this.weightInfluence;
+        return this;
+    }
+
+    SetMoveWeight(newMoveWeight)
+    {
+        newMoveWeight = Math.max(0, Math.min(1, newMoveWeight));
+        this.weightMoves = newMoveWeight;
+        this.weightCaptures = 1 - this.weightMoves;
+        return this;
     }
 }
