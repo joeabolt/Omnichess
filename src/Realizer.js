@@ -1,107 +1,219 @@
 /* Manages the display of the board to the user */
 class Realizer 
 {
-	constructor(game)
-	{
-		this.game = game;
-		this.board = game.board;
-		this.isFullyUpdated = false;
-		this.moveQueue = [];
-		this.moveQueueMutex = false;
-		
-		this.cellsPerRow = Math.round(Math.sqrt(this.board.contents.length));
-		
-		this.displayBoard = this.CreateDisplayBoard();
-	}
-	
-	/**
-	 * Method to be called by the front-end. Can be called multiple
-	 * times without incurring computational cost if no update is
-	 * available. Outputs the current state of the board.
-	 */
-	Realize()
-	{
-		if (this.isFullyUpdated)
-		{
-			return;
-		}
-		let outputArea = document.getElementById("output");
-		if (outputArea.firstChild)
-		{
-			outputArea.removeChild(outputArea.firstChild);
-		}
-		outputArea.appendChild(this.displayBoard);
-		this.isFullyUpdated = true;
-	}
-	
-	/**
-	 * Causes the realizer to update its representation of the
-	 * stored board. Should be called by the back-end. Incurs
-	 * computational cost each time it is run.
-	 */
-	Update()
-	{
-		// Keep track of what we are supposed to display
-		this.displayBoard = this.CreateDisplayBoard();
-		this.isFullyUpdated = false;
-	}
-	
-	GetMove()
-	{
-		while (this.moveQueueMutex);
-		this.moveQueueMutex = true;
-		const move = this.moveQueue.shift();
-		this.moveQueueMutex = false;
-		return move;
-	}
-	
-	InputMove(move)
-	{
-		/* Parse move into object */
-		const moveObject = {};
-		moveObject.move = move.includes("->");
-		moveObject.capture = move.includes("x");
-		moveObject.source = Number(move.match(/^\d+/));
-		moveObject.target = Number(move.trim().match(/\d+$/));
-		
-		/* Load move */
-		while (this.moveQueueMutex);
-		this.moveQueueMutex = true;
-		this.moveQueue.push(moveObject);
-		this.moveQueueMutex = false;
-		
-		/* Fire up the game engine */
-		this.game.Step();
-	}
-	
-	CreateDisplayBoard()
-	{
-		let board = document.createElement("table");
-		for (let rowIndex = 0; rowIndex < this.cellsPerRow; rowIndex++)
-		{
-			let row = board.insertRow(rowIndex);
-			for (let col = 0; col < this.cellsPerRow; col++)
-			{
-				let cell = row.insertCell(col);
-				const index = rowIndex * this.cellsPerRow + col;
-				
-				/* Obtain the contents of this cell, as a string */
-				let contents = this.board.contents[index];
-				contents = contents === undefined ? "&nbsp" : contents.identifier;
-				
-				const backgroundColor = (rowIndex % 2 === 0) ^ (col % 2 === 0) ? "#000000" : "#FFFFFF";
-				let foregroundColor = (rowIndex % 2 === 0) ^ (col % 2 === 0) ? "#FFFFFF" : "#000000";
-				if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
-				{
-					foregroundColor = this.board.contents[index].player.color;
-				}
-				
-				cell.style.backgroundColor = backgroundColor;
-				cell.style.color = foregroundColor;
-				cell.innerHTML = `${index}<br />${contents}`;
-			}
-		}
-		
-		return board;
-	}
+    constructor(game)
+    {
+        this.game = game;
+        this.board = game.board;
+
+        this.activeCell = undefined;
+        this.activeCellCanMove = [];
+        this.activeCellCanCapture = [];
+        this.activeCellCanMoveCapture = [];
+    }
+
+    /**
+     * Method to be called by the front-end. Incurs computational
+     * cost each time called. Outputs the current state of the board.
+     */
+    Realize()
+    {
+        let outputArea = document.getElementById("output");
+        if (outputArea.firstChild)
+        {
+            outputArea.removeChild(outputArea.firstChild);
+        }
+        outputArea.appendChild(this.CreateDisplayBoard());
+    }
+
+    ProcessClick(clickedCell)
+    {
+        if (this.activeCell === undefined)
+        {
+            this.SetActiveCell(clickedCell);
+            return;
+        }
+        if (clickedCell === this.activeCell)
+        {
+            this.SetActiveCell(undefined);
+            return;
+        }
+        if (this.activeCellCanMoveCapture.includes(clickedCell))
+        {
+            this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
+            return;
+        }
+        if (this.activeCellCanCapture.includes(clickedCell))
+        {
+            this.CreateAndProcessMove(false, true, this.activeCell, clickedCell);
+            return;
+        }
+        if (this.activeCellCanMove.includes(clickedCell))
+        {
+            this.CreateAndProcessMove(true, false, this.activeCell, clickedCell);
+            return;
+        }
+
+        /* They just clicked another cell, not a viable action */
+        this.SetActiveCell(clickedCell);
+    }
+
+    SetActiveCell(newActiveCell)
+    {
+        this.activeCell = newActiveCell;
+        this.activeCellCanMove = [];
+        this.activeCellCanCapture = [];
+        this.activeCellCanMoveCapture = [];
+
+        if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
+        {
+            const activePiece = this.board.contents[this.activeCell];
+
+            activePiece.moveVectors.forEach((vector) => {
+                this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
+            });
+            this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
+
+            activePiece.captureVectors.forEach((vector) => {
+                this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+            });
+            this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
+
+            activePiece.moveCaptureVectors.forEach((vector) => {
+                this.activeCellCanMoveCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+            });
+            this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
+        }
+    }
+
+    CreateAndProcessMove(move, capture, source, target)
+    {
+        const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
+
+        this.game.Step(moveObj, true, this);
+        this.activeCell = undefined;
+        this.Realize();
+    }
+
+    CreateDisplayBoard()
+    {
+        let toDisplay = this.board.ConvertToArray();
+        let dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
+        let dimensionCount = dimensionLengths.length;
+
+        let countOddDimensions = dimensionLengths.reduce((count, current) => {
+            return count + (current % 2 === 0) ? 0 : 1;
+        }, 0);
+
+        const board = this.AssembleChild(toDisplay, dimensionCount, countOddDimensions % 2 === 0);
+
+        return board;
+    }
+
+    AssembleChild(matrix, dimensions, offsetColoring)
+    {
+        if (dimensions === 0)
+        {
+            /* It's a single cell; make it and return */
+            const cellIndex = matrix; /* Rename for clarity */
+
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            let contents = "&nbsp";
+            const backgroundColor = this.DetermineBackgroundColor(cellIndex, offsetColoring);
+            const foregroundColor = this.DetermineForegroundColor(cellIndex, offsetColoring);
+
+            if (this.board.contents[cellIndex] !== undefined)
+                contents = this.board.contents[cellIndex].identifier;
+
+            cell.style.backgroundColor = backgroundColor;
+            cell.style.color = foregroundColor;
+
+            const size = "35px"; //TODO: Make this dynamic #55
+            cell.style.width = size;
+            cell.style.height = size;
+
+            cell.innerHTML = `${cellIndex}<br />${contents}`;
+            cell.onclick = () => { processClick(event, cellIndex); };
+
+            return cell;
+        }
+
+        let aggregateElement = document.createElement("div");
+        aggregateElement.className = ((dimensions % 2 === 0) ? "vdimension" : "hdimension");
+        aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
+        for (let i = 0; i < matrix.length; i++)
+        {
+            aggregateElement.appendChild(
+                this.AssembleChild(matrix[i],
+                dimensions - 1,
+                (matrix[i].length % 2 === 0 && i % 2 === 0) ? !offsetColoring : offsetColoring)
+            );
+        }
+
+        return aggregateElement;
+    }
+
+    DetermineBackgroundColor(index, offsetColor)
+    {
+        if (index < 0)
+        {
+            return "#AAAAAA";
+        }
+
+        let colorIndex = offsetColor ? (index + 1) : (index);
+        let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
+
+        if (this.activeCell !== undefined)
+        {
+            if (this.activeCell === index)
+            {
+                bgColor = "#00FF00";
+            }
+            if (this.activeCellCanMove.includes(index))
+            {
+                bgColor = "#0000FF";
+            }
+            if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
+            {
+                bgColor = "#FF0000";
+            }
+        }
+
+        return bgColor;
+    }
+
+    DetermineForegroundColor(index, offsetColor)
+    {
+        if (index < 0)
+        {
+            return "#FFFFFF";
+        }
+
+        let colorIndex = offsetColor ? index + 1 : index;
+        let fgColor = (colorIndex % 2 === 0) ? "#FFFFFF" : "#000000";
+
+        if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
+        {
+            fgColor = this.board.contents[index].player.color;
+        }
+
+        if (this.activeCell !== undefined)
+        {
+            if (this.activeCell === index)
+            {
+                fgColor = "#000000";
+            }
+            if (this.activeCellCanMove.includes(index))
+            {
+                fgColor = "#FFFFFF";
+            }
+            if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
+            {
+                fgColor = "#000000";
+            }
+        }
+
+        return fgColor;
+    }
 }

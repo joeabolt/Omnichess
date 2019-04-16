@@ -1,15 +1,51 @@
-let game = undefined;
 let realizer = undefined;
+let game = undefined;
+const fileInput = document.getElementById("configInput")
 
-async function startGame()
+fileInput.onchange = () => {
+    const reader = new FileReader();
+    reader.onload = () => {
+        loadConfig(JSON.parse(reader.result));
+    };
+    reader.readAsText(fileInput.files[0]);
+};
+
+function processClick(event, cellIndex)
 {
-	game = await Parser.Parse("./src/config/test01.js");
-	
-	realizer = new Realizer(game);
-	
-	game.SetRealizer(realizer);
-	
-	setInterval(() => {realizer.Realize();}, 500);
+    if (realizer === undefined)
+        return;
+
+    event.stopPropagation();
+    realizer.ProcessClick(cellIndex);
+    realizer.Realize();
 }
 
-startGame();
+function clickHandler()
+{
+    if (realizer === undefined)
+        return;
+
+    realizer.SetActiveCell(undefined);
+    realizer.Realize();
+}
+
+function loadConfig(config)
+{
+    game = Parser.Load(config);
+    realizer = new Realizer(game);
+    realizer.Realize();
+    game.StartCPU(realizer);
+    
+    document.getElementById("input").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "block";
+}
+
+function loadPreloadedConfig(path)
+{
+    const configScript = document.createElement("script");
+    configScript.src = path;
+    configScript.onload = () => {
+        loadConfig(config);
+    };
+    document.body.appendChild(configScript);
+}

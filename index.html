@@ -1,31 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html onClick="clickHandler();">
 	<head>
 		<title>Omnichess</title>
 		<style>
-			table {
-				border-collapse: true;
+			input {
+				margin: 5px;
 			}
 			
-			table, th, td {
+			.cell {
 				border: 1px solid black;
+				text-align: center;
+				font-weight: bolder;
+				margin: 1px;
+			}
+			
+			.hdimension {
+				display: flex;
+				flex-direction: row;
+			}
+			
+			.vdimension {
+				display: flex;
+				flex-direction: column;
+			}
+			
+			#mainDisplay, #undo, #redo {
+				display: none;
 			}
 		</style>
 	</head>
 	<body>
 		<h1>Omnichess</h1>
-		<div id="output" style="font-family: monospace"></div>
-		<input type="text" id="input" value="Input a move here!" />
-		<button onclick="realizer.InputMove(document.getElementById('input').value);
-			document.getElementById('input').value = '';">Submit</button>
-		<div id="message"></div>
+		<a href="https://github.com/joeabolt/Omnichess">Check it out on GitHub!</a><br />
+		<a href="https://github.com/joeabolt/Omnichess/issues/new/choose">File an issue</a>
+		<div id="input">
+			<h4>Load a configuration file!</h4>
+			<input id="configInput" type="file"></input>
+			<hr />
+			<div>
+				<h4>Use a pre-configured game!</h4>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/2PChess.js');">2-Player Chess</button>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPUChess.js');">Player vs CPU Chess</button> <br />
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/2PRaumschach.js');">2-Player Raumschach</button>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPURaumschach.js');">Player vs CPU Raumschach</button> <br />
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/2POmegaChess.js');">2-Player Omega Chess</button>
+				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPUOmegaChess.js');">Player vs CPU Omega Chess</button>
+			</div>
+		</div>
+		<div id="mainDisplay">
+			<div id="output" style="font-family: monospace"></div>
+			<div id="message"></div>
+			<button id="undo" onclick="game.Undo();">Undo</button>
+			<button id="redo" onclick="game.Redo();">Redo</button>
+		</div>
 		
+		<script src="src/MatrixUtilities.js"></script>
 		<script src="src/Player.js"></script>
 		<script src="src/Component.js"></script>
 		<script src="src/Vector.js"></script>
 		<script src="src/Piece.js"></script>
 		<script src="src/Board.js"></script>
+		<script src="src/Metrics.js"></script>
+		<script src="src/CPU.js"></script>
 		<script src="src/EndCondition.js"></script>
+		<script src="src/Move.js"></script>
 		<script src="src/Turn.js"></script>
 		<script src="src/Game.js"></script>
 		<script src="src/Parser.js"></script>
