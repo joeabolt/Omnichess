@@ -9,6 +9,12 @@ class Piece
         this.identifier = "";
         this.value = 1;
         this.player = undefined;
+
+        /* For distinguishing first-move actions */
+        this.moves = 0;
+        this.initialMoveVectors = [];
+        this.initialCaptureVectors = [];
+        this.initialMoveCaptureVectors = [];
     }
 
     static Create(baseObj)
@@ -44,18 +50,33 @@ class Piece
     setMoveVectors(moveVectors)
     {
         this.moveVectors = moveVectors;
+        this.initialMoveVectors = this.moveVectors.filter((vector) => {
+            return vector.components.reduce((initial, component) => {
+                return initial || component.initial;
+            }, false);
+        });
         return this;
     }
 
     setCaptureVectors(captureVectors)
     {
         this.captureVectors = captureVectors;
+        this.initialCaptureVectors = this.captureVectors.filter((vector) => {
+            return vector.components.reduce((initial, component) => {
+                return initial || component.initial;
+            }, false);
+        });
         return this;
     }
 
     setMoveCaptureVectors(moveCaptureVectors)
     {
         this.moveCaptureVectors = moveCaptureVectors;
+        this.initialMoveCaptureVectors = this.moveCaptureVectors.filter((vector) => {
+            return vector.components.reduce((initial, component) => {
+                return initial || component.initial;
+            }, false);
+        });
         return this;
     }
 
@@ -75,5 +96,27 @@ class Piece
     {
         this.value = value;
         return this;
+    }
+
+    setMoves(delta)
+    {
+        const noPriorMove = this.moves === 0;
+        this.moves += delta;
+
+        /* If first move, remove initial vectors */
+        if (this.moves > 0 && noPriorMove)
+        {
+            this.moveVectors = this.moveVectors.filter((vector) => !this.initialMoveVectors.includes(vector));
+            this.captureVectors = this.captureVectors.filter((vector) => !this.initialCaptureVectors.includes(vector));
+            this.moveCaptureVectors = this.moveCaptureVectors.filter((vector) => !this.initialMoveCaptureVectors.includes(vector));
+        }
+
+        /* If undoing first move, restore initial vectors */
+        if (!noPriorMove && this.moves === 0)
+        {
+            this.moveVectors = this.moveVectors.concat(this.initialMoveVectors);
+            this.captureVectors = this.moveVectors.concat(this.initialCaptureVectors);
+            this.moveCaptureVectors = this.moveVectors.concat(this.initialMoveCaptureVectors);
+        }
     }
 }

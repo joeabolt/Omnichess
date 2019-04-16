@@ -1,7 +1,7 @@
 /* Represents a component of a vector */
 class Component
 {
-    constructor(length, maxRep, jump, hop, promote)
+    constructor(length, maxRep, jump, hop, promote, initial)
     {
         this.length = length;
         /* Slight efficiency, clean output while debugging */
@@ -9,11 +9,12 @@ class Component
         this.jump = jump;
         this.hop = hop;
         this.promote = promote;
+        this.initial = initial;
     }
 
     static DeepCopy(component)
     {
-        return new Component(component.length, component.maxRep, component.jump, component.hop, component.promote);
+        return new Component(component.length, component.maxRep, component.jump, component.hop, component.promote, component.initial);
     }
 
     toString()
@@ -30,7 +31,8 @@ class Component
             1,
             localFlags.includes("j") || globalFlags.includes("j"),
             localFlags.includes("h") || globalFlags.includes("h"),
-            localFlags.includes("p") || globalFlags.includes("p")
+            localFlags.includes("p") || globalFlags.includes("p"),
+            localFlags.includes("i") || globalFlags.includes("i")
         );
 
         const globalFiniteRepetition = globalFlags.match(/{(\d+)}/);
@@ -72,7 +74,7 @@ class Component
             component.maxRep = 1;
         }
 
-        const reversedComponent = new Component(-component.length, component.maxRep, component.jump, component.hop, component.promote);
+        const reversedComponent = new Component(-component.length, component.maxRep, component.jump, component.hop, component.promote, component.initial);
         return localFlags.includes("d") || globalFlags.includes("d") || component.length === 0 ? [component] : [component, reversedComponent];
     }
 }
