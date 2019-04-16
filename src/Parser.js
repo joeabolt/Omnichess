@@ -29,7 +29,28 @@ class Parser
             let newPlayer = new Player(template.identifier, template.direction, [], [], template.color);
             if (template.isCPU && template.isCPU === true)
             {
+                /* Handle CPUs and their parameters */
                 newPlayer = new CPU(template.identifier, template.direction, [], [], template.color);
+                if (template.caution)
+                {
+                    newPlayer.SetCaution(template.caution);
+                }
+                if (template.captureWeight)
+                {
+                    newPlayer.SetCaptureWeight(template.captureWeight);
+                }
+                if (template.moveWeight)
+                {
+                    newPlayer.SetMoveWeight(template.moveWeight);
+                }
+                if (template.controlWeight)
+                {
+                    newPlayer.SetControlWeight(template.controlWeight);
+                }
+                if (template.influenceWeight)
+                {
+                    newPlayer.SetInfluenceWeight(template.influenceWeight);
+                }
             }
             players.set(template.identifier, newPlayer);
         });
