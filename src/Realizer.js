@@ -5,7 +5,6 @@ class Realizer
     {
         this.game = game;
         this.board = game.board;
-        this.isFullyUpdated = false;
 
         this.activeCell = undefined;
         this.activeCellCanMove = [];
@@ -25,7 +24,6 @@ class Realizer
             outputArea.removeChild(outputArea.firstChild);
         }
         outputArea.appendChild(this.CreateDisplayBoard());
-        this.isFullyUpdated = true;
     }
 
     ProcessClick(clickedCell)
@@ -92,7 +90,7 @@ class Realizer
     {
         const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
 
-        this.game.Step(moveObj);
+        this.game.Step(moveObj, true, this);
         this.activeCell = undefined;
         this.Realize();
     }

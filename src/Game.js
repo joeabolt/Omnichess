@@ -34,11 +34,24 @@ class Game
         this.gameState = 0;
     }
 
-    Step(move)
+    /**
+     * Convenience function to kickstart a game when a CPU must go first.
+     * Deliberately has no side effects so it can safely be called even 
+     * if a human player ought to move first.
+     */
+    StartCPU(realizer)
+    {
+        if (this.nextTurn.player.isCPU)
+        {
+            this.Step(this.nextTurn.player.GetNextMove(this.board, this), true, realizer);
+        }
+    }
+
+    async Step(move, doCPUTurn = true, realizer = undefined)
     {
         if (this.gameState === 0)
         {
-            if (this.DoTurn(move))
+            if (this.DoTurn(move, realizer))
             {
                 this.CheckGameEnd();
             }
@@ -47,9 +60,18 @@ class Game
         {
             document.getElementById("message").innerHTML = "The game is now over!";
         }
+        function sleep(ms)
+        {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU)
+        {
+            await sleep(1000);
+            this.Step(this.nextTurn.player.GetNextMove(this.board, this), false, realizer);
+        }
     }
 
-    DoTurn(move)
+    DoTurn(move, realizer = undefined)
     {
         if (!this.nextTurn.Validate(move))
         {
@@ -57,22 +79,14 @@ class Game
         }
         if (!this.Validate(move))
         {
-            console.log("Game invalidated the move.");
+            console.warn("Game invalidated the move.");
             document.getElementById("message").innerHTML = "Illegal move.";
             return false;
         }
 
-        /* Make the move */
-        this.CommitMove(move);
-
-        /* Get the next move */
         this.lastTurn = this.nextTurn;
-        this.nextTurn = this.nextTurn.EndTurn();
-        if (this.nextTurn === undefined)
-        {
-            this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
-            this.nextTurn = this.turnOrder[this.turnIndex];
-        }
+        this.CommitMove(move, true, realizer);
+
         return true;
     }
 
@@ -126,7 +140,7 @@ class Game
     /**
      *  Commits a move to the board, and pushes it to the move stack
      */
-    CommitMove(move, showOutput = true)
+    CommitMove(move, showOutput = true, realizer = undefined)
     {
         let capturedPiece = "";
         if (move.capture)
@@ -141,10 +155,17 @@ class Game
             this.board.contents[move.srcLocation] = undefined;
         }
         this.moveStack.push(move);
+        if (realizer)
+        {
+            realizer.Realize();
+        }
         if (showOutput)
         {
             document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
         }
+
+        this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
+        this.nextTurn = this.turnOrder[this.turnIndex];
         this.UpdateUndoRedoVisibility();
         // TODO: Add support for promote, drop
     }

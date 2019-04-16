@@ -43,9 +43,12 @@ class Metrics
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, false, false));
+                return returnSet.concat(board.GetCellIndices(vector, pieceLocation));
             }, []))].forEach((destination) => {
-                moves.push(new Move(true, true, pieceLocation, destination));
+                if (board.contents[destination] === undefined)
+                {
+                    moves.push(new Move(true, false, pieceLocation, destination));
+                }
             });
         });
         return moves;
@@ -87,5 +90,23 @@ class Metrics
             });
         });
         return moveLocations.length / (board.contents.length - 1);
+    }
+
+    static isChecked(board, pieceLocation)
+    {
+        const checkedPiece = board.contents[pieceLocation];
+        let checked = false;
+        board.contents.forEach((piece) => {
+            if (!piece || piece.player === checkedPiece.player)
+            {
+                return;
+            }
+            const canAttack = [...new Set(piece.moveCaptureVectors.reduce((returnSet, vector) => {
+                return returnSet.concat(board.GetCellIndices(vector, game.board.contents.indexOf(piece), true, false));
+            }, []))].includes(pieceLocation);
+            checked = checked || canAttack;
+        });
+
+        return checked;
     }
 }
