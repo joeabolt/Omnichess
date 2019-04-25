@@ -1,4 +1,5 @@
 {
+    "indexRenderer": "chess",
     "board": {
         "lengths": [8, 4],
         "adjacencyMatrix": null

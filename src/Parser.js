@@ -11,15 +11,16 @@ class Parser
 
         /* Build the board */
         const boardTemplate = config_data.board;
+        const indexRenderer = IndexRenderers.getRenderer(config_data.indexRenderer);
         let board = undefined;
         if (boardTemplate.adjacencyMatrix !== undefined &&
             boardTemplate.adjacencyMatrix !== null)
         {
-            board = new Board(boardTemplate.adjacencyMatrix);
+            board = new Board(boardTemplate.adjacencyMatrix, indexRenderer);
         }
         else
         {
-            board = new Board(Board.Generate(boardTemplate.lengths));
+            board = new Board(Board.Generate(boardTemplate.lengths), indexRenderer);
         }
 
         /* Build the players */

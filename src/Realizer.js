@@ -105,12 +105,13 @@ class Realizer
             return count + (current % 2 === 0) ? 0 : 1;
         }, 0);
 
-        const board = this.AssembleChild(toDisplay, dimensionCount, countOddDimensions % 2 === 0);
+        const board = this.AssembleChild(toDisplay, dimensionCount,
+            dimensionLengths, countOddDimensions % 2 === 0);
 
         return board;
     }
 
-    AssembleChild(matrix, dimensions, offsetColoring)
+    AssembleChild(matrix, dimensions, dimensionLengths, offsetColoring)
     {
         if (dimensions === 0)
         {
@@ -133,7 +134,8 @@ class Realizer
             cell.style.width = size;
             cell.style.height = size;
 
-            cell.innerHTML = `${cellIndex}<br />${contents}`;
+            const displayIndex = this.board.renderIndex(dimensionLengths, cellIndex);
+            cell.innerHTML = `${displayIndex}<br />${contents}`;
             cell.onclick = () => { processClick(event, cellIndex); };
 
             return cell;
@@ -146,7 +148,7 @@ class Realizer
         {
             aggregateElement.appendChild(
                 this.AssembleChild(matrix[i],
-                dimensions - 1,
+                dimensions - 1, dimensionLengths,
                 (matrix[i].length % 2 === 0 && i % 2 === 0) ? !offsetColoring : offsetColoring)
             );
         }

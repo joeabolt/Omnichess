@@ -1,9 +1,10 @@
 /* Represents the board state at a point in time */
 class Board 
 {
-    constructor(adjacencyMatrix)
+    constructor(adjacencyMatrix, indexRenderer)
     {
         this.cells = adjacencyMatrix;
+        this.renderIndex = indexRenderer;
         /* The below works because we insist on a square/cubic grid */
         this.dimensions = Math.round(Math.log(adjacencyMatrix[0].length) / Math.log(3));
         this.contents = [];
