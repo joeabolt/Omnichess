@@ -31,6 +31,7 @@ class Serializer
             }
             const template = {};
 
+            piece.undoDirection();
             template.move = piece.moveVectors.map(vector => vector.toString()).join(";");
             template.capture = piece.captureVectors.map(vector => vector.toString()).join(";");
             template.moveCapture = piece.moveCaptureVectors.map(vector => vector.toString()).join(";");

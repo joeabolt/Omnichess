@@ -9,6 +9,7 @@ class Piece
         this.identifier = "";
         this.value = 1;
         this.player = undefined;
+        this.direction = undefined;
 
         /* For distinguishing first-move actions */
         this.moves = 0;
@@ -37,6 +38,18 @@ class Piece
      */
     setDirection(direction)
     {
+        if (this.direction !== undefined)
+        {
+            for(let i = 0; i < this.direction.length; i++)
+            {
+                this.direction *= direction[i];
+            }
+        }
+        else
+        {
+            this.direction = direction;
+        }
+        
         this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
             for (let i = 0; i < vector.components.length; i++)
             {
@@ -118,5 +131,15 @@ class Piece
             this.captureVectors = this.captureVectors.concat(this.initialCaptureVectors);
             this.moveCaptureVectors = this.moveCaptureVectors.concat(this.initialMoveCaptureVectors);
         }
+    }
+
+    undoDirection()
+    {
+        let nextDirection = [];
+        for(let i = 0; i < this.direction.length; i++)
+        {
+            nextDirection.push(1 / this.direction[i]);
+        }
+        this.setDirection(nextDirection);
     }
 }
