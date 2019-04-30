@@ -14,11 +14,11 @@ class Serializer
         /* Serialize the board (shape, not state) */
         output.board = {};
         output.board.lengths = MatrixUtilities.GetLengths(game.board.ConvertToArray());
-        output.adjacencyMatrix = game.board.cells;
+        output.board.adjacencyMatrix = game.board.cells;
 
         /* Serialize pieces */
         output.pieces = [];
-        for (let i = 0; i < game.board.contents; i++)
+        for (let i = 0; i < game.board.contents.length; i++)
         {
             const piece = game.board.contents[i];
             if (piece === undefined)
@@ -41,9 +41,9 @@ class Serializer
 
         /* Serialize the players (does not preserve current turn) */
         output.players = [];
-        for (let i = 0; i < game.board.players; i++)
+        for (let i = 0; i < game.players.length; i++)
         {
-            const player = game.board.players[i];
+            const player = game.players[i];
             const template = {};
 
             template.identifier = player.identifier;
@@ -64,7 +64,7 @@ class Serializer
 
         /* Serialize the end conditions */
         output.endConditions = [];
-        for (let i = 0; i < game.endConditions; i++)
+        for (let i = 0; i < game.endConditions.length; i++)
         {
             const endCondition = game.endConditions[i];
             const template = {};
@@ -78,7 +78,7 @@ class Serializer
 
         /* Serialize the board state */
         output.boardState = [];
-        for (let i = 0; i < game.board.contents; i++)
+        for (let i = 0; i < game.board.contents.length; i++)
         {
             const piece = game.board.contents[i];
             if (piece === undefined)
@@ -89,7 +89,7 @@ class Serializer
 
             data.player = piece.player.identifier;
             data.piece = piece.identifier;
-            data.location = i+1;
+            data.location = i;
 
             output.boardState.push(data);
         }

@@ -49,3 +49,8 @@ function loadPreloadedConfig(path)
     };
     document.body.appendChild(configScript);
 }
+
+function save()
+{
+    console.log(JSON.stringify(Serializer.Serialize(game)));
+}
