@@ -8,7 +8,8 @@ class Vector
 
     toString()
     {
-        const vectorString = this.components.map(c => c.toString()).join(", ");
+        /* Always add directional flag; vectors are not collapsed */
+        const vectorString = this.components.map(c => c.toString() + "d").join(", ");
         return `(${vectorString})`;
     }
 
