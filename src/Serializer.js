@@ -32,10 +32,13 @@ class Serializer
             const template = {};
 
             piece.undoDirection();
+            const moves = piece.moves;
+            piece.setMoves(moves * -1);
             template.move = piece.moveVectors.map(vector => vector.toString()).join(";");
             template.capture = piece.captureVectors.map(vector => vector.toString()).join(";");
             template.moveCapture = piece.moveCaptureVectors.map(vector => vector.toString()).join(";");
             template.identifier = piece.identifier;
+            piece.setMoves(moves);
 
             output.pieces.push(template);
         }
@@ -91,6 +94,7 @@ class Serializer
             data.player = piece.player.identifier;
             data.piece = piece.identifier;
             data.location = i;
+            data.hasMoved = piece.moves > 0;
 
             output.boardState.push(data);
         }
