@@ -68,19 +68,20 @@ class Realizer
         if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
         {
             const activePiece = this.board.contents[this.activeCell];
+            const navigator = new Navigator(this.board);
 
             activePiece.moveVectors.forEach((vector) => {
-                this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
+                this.activeCellCanMove.push(...navigator.GetCellIndices(vector, this.activeCell, false));
             });
             this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
 
             activePiece.captureVectors.forEach((vector) => {
-                this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+                this.activeCellCanCapture.push(...navigator.GetCellIndices(vector, this.activeCell, true, true));
             });
             this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
 
             activePiece.moveCaptureVectors.forEach((vector) => {
-                this.activeCellCanMoveCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+                this.activeCellCanMoveCapture.push(...navigator.GetCellIndices(vector, this.activeCell, true, true));
             });
             this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
         }

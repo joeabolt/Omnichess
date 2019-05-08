@@ -20,12 +20,13 @@ class Metrics
 
     static getAllCaptures(board, player)
     {
+        const navigator = new Navigator(board);
         const alliedPieces = Metrics.getAllAlliedPieces(board, player);
         const captures = [];
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveCaptureVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
+                return returnSet.concat(navigator.GetCellIndices(vector, pieceLocation, true, true));
             }, []))].forEach((captureDest) => {
                 if (board.contents[captureDest] && board.contents[captureDest].player !== player)
                 {
@@ -38,12 +39,13 @@ class Metrics
 
     static getAllMoves(board, player)
     {
+        const navigator = new Navigator(board);
         const alliedPieces = Metrics.getAllAlliedPieces(board, player);
         const moves = [];
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation));
+                return returnSet.concat(navigator.GetCellIndices(vector, pieceLocation));
             }, []))].forEach((destination) => {
                 if (board.contents[destination] === undefined)
                 {
@@ -56,12 +58,13 @@ class Metrics
 
     static getPercentBoardControlled(board, player)
     {
+        const navigator = new Navigator(board);
         const alliedPieces = Metrics.getAllAlliedPieces(board, player);
         const captureLocations = [];
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveCaptureVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, false));
+                return returnSet.concat(navigator.GetCellIndices(vector, pieceLocation, true, false));
             }, []))].forEach((captureDest) => {
                 if (captureLocations.indexOf(captureDest) === -1)
                 {
@@ -76,12 +79,13 @@ class Metrics
 
     static getPercentBoardInfluenced(board, player)
     {
+        const navigator = new Navigator(board);
         const alliedPieces = Metrics.getAllAlliedPieces(board, player);
         const moveLocations = [];
         alliedPieces.forEach((piece) => {
             const pieceLocation = board.contents.indexOf(piece);
             [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, false, false));
+                return returnSet.concat(navigator.GetCellIndices(vector, pieceLocation, false, false));
             }, []))].forEach((destination) => {
                 if (moveLocations.indexOf(destination) === -1)
                 {
@@ -94,6 +98,7 @@ class Metrics
 
     static isChecked(board, pieceLocation)
     {
+        const navigator = new Navigator(board);
         const checkedPiece = board.contents[pieceLocation];
         let checked = false;
         board.contents.forEach((piece) => {
@@ -102,7 +107,7 @@ class Metrics
                 return;
             }
             const canAttack = [...new Set(piece.moveCaptureVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, game.board.contents.indexOf(piece), true, false));
+                return returnSet.concat(navigator.GetCellIndices(vector, game.board.contents.indexOf(piece), true, false));
             }, []))].includes(pieceLocation);
             checked = checked || canAttack;
         });

@@ -4,6 +4,7 @@ class Game
     constructor(board, players, endConditions)
     {
         this.board = board;
+        this.navigator = new Navigator(this.board);
         this.players = players;
         this.endConditions = endConditions;
 
@@ -131,7 +132,7 @@ class Game
         }
 
         vectorList.forEach((vector) => {
-            validity = validity || this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.targetLocation);
+            validity = validity || this.navigator.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.targetLocation);
         });
 
         return validity;
