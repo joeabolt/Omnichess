@@ -19,8 +19,10 @@ class Component
 
     toString()
     {
+        /* Always add directional flag, because components are always directional */
         return this.length + (this.maxRep > 1 ? "{" + this.maxRep + "}" : "") + 
-            (this.jump ? "j" : "") + (this.hop ? "h" : "") + (this.promote ? "p" : "")
+            (this.jump ? "j" : "") + (this.hop ? "h" : "") + (this.promote ? "p" : "") +
+            (this.initial ? "i" : "") + "d";
     }
 
     static Create(localFlags, globalFlags)

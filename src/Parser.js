@@ -74,6 +74,10 @@ class Parser
             {
                 piece.setValue(pieceTemplates.get(entry.piece).value);
             }
+            if (entry.hasMoved)
+            {
+                piece.setMoves(1);
+            }
             board.contents[entry.location] = piece;
         });
 

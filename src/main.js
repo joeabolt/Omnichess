@@ -49,3 +49,18 @@ function loadPreloadedConfig(path)
     };
     document.body.appendChild(configScript);
 }
+
+function save()
+{
+    const dataString = JSON.stringify(Serializer.Serialize(game));
+    console.log(dataString);
+
+    var blob = new Blob([dataString], {type: "application/json"});
+    var url  = URL.createObjectURL(blob);
+
+    var a = document.createElement('a');
+    a.download    = "SavedGame.json";
+    a.href        = url;
+    a.textContent = "Download SavedGame.json";
+    a.click();
+}
