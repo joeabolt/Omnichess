@@ -58,7 +58,7 @@ class Game
         }
         if (this.gameState !== 0)
         {
-            document.getElementById("message").innerHTML = "The game is now over!";
+            document.getElementById("message").innerHTML = "The game is now over!<br />" + document.getElementById("message").innerHTML;
         }
         function sleep(ms)
         {
@@ -162,7 +162,12 @@ class Game
         }
         if (showOutput)
         {
-            document.getElementById("message").innerHTML = this.nextTurn.player.identifier + " moved " + this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".";
+            const newMessage = this.nextTurn.player.identifier + " moved " + 
+                this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + 
+                move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".<br />" + 
+                document.getElementById("message").innerHTML;
+            console.log(newMessage);
+            document.getElementById("message").innerHTML = newMessage;
         }
 
         this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;

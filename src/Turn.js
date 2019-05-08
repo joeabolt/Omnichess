@@ -48,8 +48,6 @@ class Turn
             throw "Tried to capture allied piece.";
         }
 
-        document.getElementById("message").innerHTML = "";
-
         return approved;
     }
 
