@@ -47,7 +47,7 @@ class Serializer
         output.players = [];
         for (let i = 0; i < game.players.length; i++)
         {
-            const player = game.players[i];
+            const player = game.turnOrder[(game.turnIndex + i) % game.turnOrder.length].player
             const template = {};
 
             template.identifier = player.identifier;
