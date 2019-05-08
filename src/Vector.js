@@ -8,7 +8,7 @@ class Vector
 
     toString()
     {
-        const vectorString = this.components.join(", ");
+        const vectorString = this.components.map(c => c.toString()).join(", ");
         return `(${vectorString})`;
     }
 
