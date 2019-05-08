@@ -67,7 +67,7 @@ class Game
         }
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU)
         {
-            await sleep(1000);
+            await sleep(750);
             this.Step(this.nextTurn.player.GetNextMove(this.board, this), false, realizer);
         }
     }
