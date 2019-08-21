@@ -28,7 +28,7 @@ class CPU extends Player
         const baseControlPercent = Metrics.getPercentBoardControlled(game.board, this);
         const baseInfluencePercent = Metrics.getPercentBoardInfluenced(game.board, this);
         possibleMoves.forEach((move) => {
-            game.CommitMove(move);
+            game.CommitMove(move, false);
 
             /* Base score based on maximizing future options */
             const controlDelta = Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1;
@@ -46,7 +46,7 @@ class CPU extends Player
 
             /* Adjustments for moving in or out of check */
             const destChecked = Metrics.isChecked(game.board, move.targetLocation);
-            game.Undo(move);
+            game.Undo(move, false);
             const srcChecked = Metrics.isChecked(game.board, move.srcLocation);
             const pieceValue = game.board.contents[move.srcLocation];
             let checkAdjustment = 0;
