@@ -166,7 +166,6 @@ class Game
                 this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + 
                 move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".<br />" + 
                 document.getElementById("message").innerHTML;
-            console.log(newMessage);
             document.getElementById("message").innerHTML = newMessage;
         }
 
