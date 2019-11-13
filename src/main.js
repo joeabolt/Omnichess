@@ -17,3 +17,8 @@ function toggleDarkMode() {
         body.classList.add("darkMode");
     }
 }
+
+function doThing() {
+    const newPlayer = { location: 3, player: 0 };
+    engine.addPiece(newPlayer);
+}
