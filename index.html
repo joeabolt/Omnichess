@@ -3,15 +3,100 @@
 	<head>
 		<title>Omnichess</title>
 	</head>
-	<body>
-		<h1>Omnichess</h1>
-		<a href="https://github.com/joeabolt/Omnichess">Check it out on GitHub!</a><br />
-		<a href="https://github.com/joeabolt/Omnichess/issues/new/choose">File an issue</a>
+	<style>
+	div {
+		margin-top: 5px;
+	}
+	/* The switch - the box around the slider */
+	.switch {
+	position: relative;
+	display: inline-block;
+	width: 25px;
+	height: 15px;
+	}
+
+	/* Hide default HTML checkbox */
+	.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	}
+
+	/* The slider */
+	.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #777;
+	-webkit-transition: .3s;
+	transition: .3s;
+	}
+
+	.slider:before {
+	position: absolute;
+	content: "";
+	height: 13px;
+	width: 13px;
+	left: 1px;
+	bottom: 1px;
+	background-color: #bbb;
+	-webkit-transition: .3s;
+	transition: .3s;
+	}
+
+	input:checked + .slider {
+	background-color: rgb(1, 75, 13);
+	}
+
+	input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+	}
+
+	input:checked + .slider:before {
+	-webkit-transform: translateX(10px);
+	-ms-transform: translateX(10px);
+	transform: translateX(10px);
+	}
+
+	/* Rounded sliders */
+	.slider.round {
+	border-radius: 15px;
+	}
+
+	.slider.round:before {
+	border-radius: 50%;
+	}
+
+	.darkMode {
+		background-color: #111010;
+		color: #ccc;
+	}
+	</style>
+	<body id="body">
+		<div>
+			<h1>Omnichess</h1>
+			<a href="https://github.com/joeabolt/Omnichess">Check it out on GitHub!</a><br />
+			<a href="https://github.com/joeabolt/Omnichess/issues/new/choose">File an issue</a>
+		</div>
+		<div>
+			<label class="switch">
+				<input type="checkbox" onclick="toggleDarkMode()">
+				<span class="slider round"></span>
+			</label>
+		</div>
+		<div id="inputDiv>">
+			<input id="input" type="text" />
+			<button id="submit" onclick="process()">Submit!</button>
+		</div>
 		<div id="mainDisplay">
-			<div id="message">
+			<div id="message" style="font-family: monospace">
 				This is where messages will be displayed.
 			</div>
 		</div>
+		<script src="src/Engine.js"></script>
 		<script src="src/main.js"></script>
 	</body>
 </html>
