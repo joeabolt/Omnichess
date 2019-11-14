@@ -1,4 +1,5 @@
 const engine = new Engine();
+engine.buildContext();
 sendMessage("The JavaScript loaded correctly!");
 
 function process() {
