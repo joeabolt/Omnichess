@@ -1,6 +1,5 @@
 const engine = new Engine();
 engine.buildContext();
-sendMessage("The JavaScript loaded correctly!");
 
 function process() {
     sendMessage(engine.parse(document.getElementById("input").value));
@@ -20,6 +19,5 @@ function toggleDarkMode() {
 }
 
 function doThing() {
-    const newPlayer = { location: 3, player: 0 };
-    engine.addPiece(newPlayer);
+    Test.runAllTests();
 }

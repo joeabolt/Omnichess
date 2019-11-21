@@ -47,15 +47,13 @@ class Engine {
     }
 
     parse(inputString) {
-        console.log("Parsing: " + inputString);
-
         // Trim out whitespaces into single spaces
         inputString.replace(/\s+/g, " ");
-        inputString = inputString.toLowerCase();
+        inputString = inputString.toLowerCase().trim();
 
         // Handle parens
         // TODO: handle from left to right because of context-shifts (if, find)
-        while (inputString.indexOf("(") > 0) {
+        while (inputString.indexOf("(") > -1) {
             const closeParen = inputString.indexOf(")");
             const openParen = inputString.lastIndexOf("(", closeParen);
             const substring = inputString.substring(openParen + 1, closeParen);
@@ -74,12 +72,62 @@ class Engine {
                 const property = tokens.shift();
                 const varIndex = target.match(/\d+/g)[0];
                 tokens.unshift(self.context.variables[varIndex][property]);
+            } else if (!isNaN(parseInt(currToken))) {
+                const firstNum = parseInt(currToken);
+                const operator = tokens.shift();
+                let secondNum = 0;
+                switch (operator) {
+                    case "+":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum + secondNum);
+                        break;
+                    case "-":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum - secondNum);
+                        break;
+                    case "*":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum * secondNum);
+                        break;
+                    case "/":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum / secondNum);
+                        break;
+                    case "=":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum == secondNum);
+                        break;
+                    case "!=":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum != secondNum);
+                        break;
+                    case ">":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum > secondNum);
+                        break;
+                    case "<":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum < secondNum);
+                        break;
+                    case ">=":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum >= secondNum);
+                        break;
+                    case "<=":
+                        secondNum = parseInt(tokens.shift());
+                        tokens.unshift(firstNum <= secondNum);
+                        break;
+                    case undefined: // just a number, no more tokens
+                        output += (output.length > 0 ? " " : "") + currToken;
+                        break;
+                    default: // just a number; not an equation, and more tokens
+                        output += (output.length > 0 ? " " : "") + currToken;
+                        tokens.unshift(operator);
+                }
             } else {
-                output += currToken + " ";
+                output += (output.length > 0 ? " " : "") + currToken;
             }
         }
-
-        output = output.trim();
 
         return output;
     }
