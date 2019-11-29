@@ -2,6 +2,7 @@ class Test {
     static runAllTests() {
         const allTests = Object.getOwnPropertyNames(Test)
             .filter(prop => typeof Test[prop] === "function");
+        const failedTests = [];
         allTests.forEach((testName) => {
             if (testName === "runAllTests") {
                 return;
@@ -10,9 +11,15 @@ class Test {
             if (Test[testName]()) {
                 console.log("Passed.");
             } else {
+                failedTests.push(testName);
                 console.error("Test " + testName + " failed.");
             }
         });
+        if (failedTests.length > 0) {
+            console.error("The following tests failed: " + failedTests.join(", "));
+        } else {
+            console.log("All tests passed!");
+        }
     }
 
     static basicArithmetic() {
@@ -66,6 +73,46 @@ class Test {
         engine.addPiece(piece);
 
         const actualOutput = engine.parse(input);
+        if (actualOutput !== expectedOutput) {
+            console.log("Expected: " + expectedOutput);
+            console.log("Actual: " + actualOutput);
+            return false;
+        }
+
+        return true;
+    }
+
+    static setPlayerProperties() {
+        const input = ["set var[0] player 5", "get var[0] player"];
+        const expectedOutput = "5";
+        const piece = { location: 3, player: 1 };
+
+        const engine = new Engine();
+        engine.buildContext();
+        engine.addPiece(piece);
+
+        engine.parse(input[0]);
+        const actualOutput = engine.parse(input[1]);
+        if (actualOutput !== expectedOutput) {
+            console.log("Expected: " + expectedOutput);
+            console.log("Actual: " + actualOutput);
+            return false;
+        }
+
+        return true;
+    }
+
+    static setCustomPlayerProperties() {
+        const input = ["set var[0] testProperty 5", "get var[0] testProperty"];
+        const expectedOutput = "5";
+        const piece = { location: 3, player: 1 };
+
+        const engine = new Engine();
+        engine.buildContext();
+        engine.addPiece(piece);
+
+        engine.parse(input[0]);
+        const actualOutput = engine.parse(input[1]);
         if (actualOutput !== expectedOutput) {
             console.log("Expected: " + expectedOutput);
             console.log("Actual: " + actualOutput);

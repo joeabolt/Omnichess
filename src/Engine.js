@@ -72,7 +72,13 @@ class Engine {
                 const property = tokens.shift();
                 const varIndex = target.match(/\d+/g)[0];
                 tokens.unshift(self.context.variables[varIndex][property]);
-            } else if (!isNaN(parseInt(currToken))) {
+            } else if (currToken == "set") {
+                const target = tokens.shift();
+                const property = tokens.shift();
+                const value = tokens.shift();
+                const varIndex = target.match(/\d+/g)[0];
+                self.context.variables[varIndex].forEach((piece) => piece[property] = value);
+            } else if (!isNaN(parseInt(currToken))) { // number
                 const firstNum = parseInt(currToken);
                 const operator = tokens.shift();
                 let secondNum = 0;
