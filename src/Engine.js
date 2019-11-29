@@ -32,12 +32,12 @@ class Engine {
 
         // temp
         if (self.context) {
-            self.context.variables.push(piece);
+            self.context.variables.push([piece]);
         }
     }
 
     buildContext() {
-        self.context = { variables: [] };
+        self.context = { variables: [], vectors: [] };
         self.allContexts.push(self.context);
     }
 
@@ -60,75 +60,85 @@ class Engine {
             inputString = inputString.substring(0, openParen) + this.parse(substring) + inputString.substring(closeParen + 1);
         }
 
-        // tokenize, being processing
+        // tokenize, begin processing
         const tokens = inputString.match(/\S+/g);
 
         // Beging processing and building output
         let output = "";
         while (tokens.length > 0) {
-            const currToken = tokens.shift();
+            const currToken = tokens.shift() + "";
             if (currToken == "get") {
                 const target = tokens.shift(); // will be a variable (var[x])
                 const property = tokens.shift();
                 const varIndex = target.match(/\d+/g)[0];
-                tokens.unshift(self.context.variables[varIndex][property]);
+                tokens.unshift(self.context.variables[varIndex][0][property]);
             } else if (currToken == "set") {
                 const target = tokens.shift();
                 const property = tokens.shift();
                 const value = tokens.shift();
                 const varIndex = target.match(/\d+/g)[0];
                 self.context.variables[varIndex].forEach((piece) => piece[property] = value);
+            } else if (currToken.indexOf("<") >= 0) {
+                let vectorString = currToken;
+                while (vectorString.indexOf(">") === -1) vectorString += tokens.shift();
+                const newVectorIndex = self.context.vectors.length;
+                self.context.vectors[newVectorIndex] = Vector.parse(vectorString);
+                tokens.unshift("vec[" + newVectorIndex + "]");
             } else if (!isNaN(parseInt(currToken))) { // number
                 const firstNum = parseInt(currToken);
                 const operator = tokens.shift();
                 let secondNum = 0;
+                let unshiftThing = undefined;
                 switch (operator) {
                     case "+":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum + secondNum);
+                        unshiftThing = firstNum + secondNum;
                         break;
                     case "-":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum - secondNum);
+                        unshiftThing = firstNum - secondNum;
                         break;
                     case "*":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum * secondNum);
+                        unshiftThing = firstNum * secondNum;
                         break;
                     case "/":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum / secondNum);
+                        unshiftThing = firstNum / secondNum;
                         break;
                     case "=":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum == secondNum);
+                        unshiftThing = firstNum == secondNum;
                         break;
                     case "!=":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum != secondNum);
+                        unshiftThing = firstNum != secondNum;
                         break;
                     case ">":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum > secondNum);
+                        unshiftThing = firstNum > secondNum;
                         break;
                     case "<":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum < secondNum);
+                        unshiftThing = firstNum < secondNum;
                         break;
                     case ">=":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum >= secondNum);
+                        unshiftThing = firstNum >= secondNum;
                         break;
                     case "<=":
                         secondNum = parseInt(tokens.shift());
-                        tokens.unshift(firstNum <= secondNum);
+                        unshiftThing = firstNum <= secondNum;
                         break;
                     case undefined: // just a number, no more tokens
                         output += (output.length > 0 ? " " : "") + currToken;
                         break;
                     default: // just a number; not an equation, and more tokens
                         output += (output.length > 0 ? " " : "") + currToken;
-                        tokens.unshift(operator);
+                        unshiftThing = operator;
+                }
+                if (unshiftThing !== undefined) {
+                    tokens.unshift("" + unshiftThing);
                 }
             } else {
                 output += (output.length > 0 ? " " : "") + currToken;
