@@ -51,15 +51,6 @@ class Engine {
         inputString.replace(/\s+/g, " ");
         inputString = inputString.toLowerCase().trim();
 
-        // Handle parens
-        // TODO: handle from left to right because of context-shifts (if, find)
-        while (inputString.indexOf("(") > -1) {
-            const closeParen = inputString.indexOf(")");
-            const openParen = inputString.lastIndexOf("(", closeParen);
-            const substring = inputString.substring(openParen + 1, closeParen);
-            inputString = inputString.substring(0, openParen) + this.parse(substring) + inputString.substring(closeParen + 1);
-        }
-
         // tokenize, begin processing
         const tokens = inputString.match(/\S+/g);
 
@@ -67,7 +58,17 @@ class Engine {
         let output = "";
         while (tokens.length > 0) {
             const currToken = tokens.shift() + "";
-            if (currToken == "get") {
+            if (currToken.indexOf("(") >= 0) { // Handle parentheses
+                let openParenCount = currToken.split("(").length - currToken.split(")").length;
+                let wrappedString = currToken;
+                while (openParenCount > 0) {
+                    const nextToken = tokens.shift();
+                    openParenCount = openParenCount + nextToken.split("(").length - nextToken.split(")").length;
+                    wrappedString += " " + nextToken;
+                }
+                wrappedString = wrappedString.slice(1, -1);
+                tokens.unshift(this.parse(wrappedString));
+            } else if (currToken == "get") {
                 const target = tokens.shift(); // will be a variable (var[x])
                 const property = tokens.shift();
                 const varIndex = target.match(/\d+/g)[0];
@@ -84,6 +85,10 @@ class Engine {
                 const newVectorIndex = self.context.vectors.length;
                 self.context.vectors[newVectorIndex] = Vector.parse(vectorString);
                 tokens.unshift("vec[" + newVectorIndex + "]");
+            } else if (currToken == "find") {
+                const varType = tokens.shift();
+                const varTarget = tokens.shift();
+                tokens.shift(); // clears the pipe
             } else if (!isNaN(parseInt(currToken))) { // number
                 const firstNum = parseInt(currToken);
                 const operator = tokens.shift();
