@@ -89,6 +89,7 @@ class Engine {
                 const varType = tokens.shift();
                 const varTarget = tokens.shift();
                 tokens.shift(); // clears the pipe
+                // Grab parens and send to a find function
             } else if (!isNaN(parseInt(currToken))) { // number
                 const firstNum = parseInt(currToken);
                 const operator = tokens.shift();
@@ -151,5 +152,21 @@ class Engine {
         }
 
         return output;
+    }
+
+    findPieces(destVariable, filterString) {
+        const filters = filterString.split(";").map(str => str.trim());
+        const possiblePieces = self.pieces.map(a => a);
+        filters.forEach((filter) => {
+            const tokens = inputString.match(/\S+/g);
+            const currToken = tokens.shift();
+            while (tokens.length > 0) {
+                if (currToken === "get") {
+                    
+                }
+            }
+        });
+        const varIndex = destVariable.match(/\d+/g)[0];
+        self.context.variables[varIndex] = possiblePieces;
     }
 }
