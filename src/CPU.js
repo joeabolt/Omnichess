@@ -1,8 +1,6 @@
 /* A class that can serve as a computer-controlled opponent */
-class CPU extends Player
-{
-    constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = true)
-    {
+class CPU extends Player {
+    constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = true) {
         super(identifier, direction, dropablePieces, capturedPieces, color, isCPU);
 
         this.caution = 0.75;
@@ -14,15 +12,13 @@ class CPU extends Player
         this.weightInfluence = 0.2;
     }
 
-    GetNextMove(board, game)
-    {
+    GetNextMove(board, game) {
         const possibleActions = Metrics.getAllCaptures(board, this).concat(Metrics.getAllMoves(board, this));
         const bestAction = this.GetBestOption(possibleActions, game);
         return bestAction;
     }
 
-    GetBestOption(possibleMoves, game)
-    {
+    GetBestOption(possibleMoves, game) {
         let bestMove = undefined;
         let bestMoveScore = 0;
         const baseControlPercent = Metrics.getPercentBoardControlled(game.board, this);
@@ -35,12 +31,10 @@ class CPU extends Player
             const influenceDelta = Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1;
             const baseScore = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
             let score = baseScore;
-            if (move.move && !move.capture)
-            {
+            if (move.move && !move.capture) {
                 score += baseScore * this.weightMoves;
             }
-            if (move.capture)
-            {
+            if (move.capture) {
                 score += baseScore * this.weightCaptures + move.capturedPiece.value;
             }
 
@@ -50,18 +44,15 @@ class CPU extends Player
             const srcChecked = Metrics.isChecked(game.board, move.srcLocation);
             const pieceValue = game.board.contents[move.srcLocation];
             let checkAdjustment = 0;
-            if (!srcChecked && destChecked) /* Moving into check */
-            {
+            if (!srcChecked && destChecked) /* Moving into check */ {
                 checkAdjustment -= pieceValue;
             }
-            if (srcChecked && !destChecked) /* Moving out of check */
-            {
+            if (srcChecked && !destChecked) /* Moving out of check */ {
                 checkAdjustment += pieceValue;
             }
             score += checkAdjustment / (1 - this.caution);
 
-            if (score > bestMoveScore)
-            {
+            if (score > bestMoveScore) {
                 bestMoveScore = score;
                 bestMove = move;
             }
@@ -69,39 +60,34 @@ class CPU extends Player
         return bestMove;
     }
 
-    SetCaptureWeight(newCaptureWeight)
-    {
+    SetCaptureWeight(newCaptureWeight) {
         newCaptureWeight = Math.max(0, Math.min(1, newCaptureWeight));
         this.weightCaptures = newCaptureWeight;
         this.weightMoves = 1 - this.weightCaptures;
         return this;
     }
 
-    SetCaution(newCaution)
-    {
+    SetCaution(newCaution) {
         newCaution = Math.max(0, Math.min(1, newCaution));
         this.caution = newCaution;
         return this;
     }
 
-    SetControlWeight(newControlWeight)
-    {
+    SetControlWeight(newControlWeight) {
         newControlWeight = Math.max(0, Math.min(1, newControlWeight));
         this.weightControl = newControlWeight;
         this.weightInfluence = 1 - this.weightControl;
         return this;
     }
 
-    SetInfluenceWeight(newInfluenceWeight)
-    {
+    SetInfluenceWeight(newInfluenceWeight) {
         newInfluenceWeight = Math.max(0, Math.min(1, newInfluenceWeight));
         this.weightInfluence = newInfluenceWeight;
         this.weightControl = 1 - this.weightInfluence;
         return this;
     }
 
-    SetMoveWeight(newMoveWeight)
-    {
+    SetMoveWeight(newMoveWeight) {
         newMoveWeight = Math.max(0, Math.min(1, newMoveWeight));
         this.weightMoves = newMoveWeight;
         this.weightCaptures = 1 - this.weightMoves;

@@ -1,6 +1,5 @@
 /* Represents a player in the game; either computer-controlled or human-controlled */
-class Player 
-{
+class Player  {
 	/**
 	 *  Constructs a player with the passed paramters. Direction is
 	 *  expected as an array with one entry per dimension, as either
@@ -10,8 +9,7 @@ class Player
 	 *  are pieces on the board, owned are pieces not on the board, captured
 	 *  are pieces captured from the enemy.
 	 */
-	constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = false)
-	{
+	constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = false) {
 		this.identifier = identifier;
 		this.direction = direction;
 		this.dropablePieces = dropablePieces;
