@@ -8,6 +8,10 @@ class Move {
         this.capturedPiece = capturedPiece
     }
 
+    toString() {
+        return this.srcLocation + " > " + this.targetLocation;
+    }
+
     setMove(move) {
         this.move = move;
         return this;

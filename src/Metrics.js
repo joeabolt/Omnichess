@@ -95,4 +95,13 @@ class Metrics {
 
         return checked;
     }
+
+    static getScoreOfCheckedPieces(board, player) {
+        return board.contents.reduce((sum, piece, index) => {
+            if (piece && piece.player === player && Metrics.isChecked(board, index)) {
+                sum = sum + piece.value;
+            }
+            return sum;
+        }, 0);
+    }
 }

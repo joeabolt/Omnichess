@@ -8,6 +8,7 @@ class EndCondition {
         this.player = player;
         this.state = win ? 1 : -1;
         this.configurationString = configurationString;
+        this.pieceType = this.configurationString.trim().split(" ")[1];
     }
 
     EvaluateGame(board, lastTurn, nextTurn) {

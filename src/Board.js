@@ -10,6 +10,26 @@ class Board  {
         for (let i = 0; i <= this.cells.length; i++) {
             this.contents.push(undefined);
         }
+
+        this.array = this.ConvertToArray();
+
+        // Calculated once, used to estimate piece value if not explicitly set
+        // It is the valid location with the most mobility (based on each cell "voting" on its neighbors, with vote strength = # neighbors)
+        this.sink = -1;
+        this.source = -1;
+        let maxLength = MatrixUtilities.GetLengths(this.array).reduce((max, curr) => Math.max(max, curr), 0);
+        let cellValues = this.cells.map(neighbors => neighbors.filter(x => x != null).reduce((sum) => sum + 1, 0) - 1);
+        for (let i = 0; i < maxLength / 2; i++) {
+            // Update everyone with the sum of their neighbors
+            let nextCellValues = cellValues.map((strength, index) => {
+                return this.cells[index].filter(x => x != null)
+                    .map(neighbor => cellValues[neighbor - 1])
+                    .reduce((sum, curr) => sum + curr, 0) - strength;
+            });
+            cellValues = nextCellValues;
+        }
+        this.sink = cellValues.reduce((strongest, current, index) => cellValues[strongest] > current ? strongest : index, 1);
+        this.source = cellValues.reduce((weakest, current, index) => cellValues[weakest] < current ? weakest : index, 1);
     }
 
     /**
@@ -114,6 +134,9 @@ class Board  {
      * they contain the index of the cell they represent.
      */
     ConvertToArray() {
+        if (this.array) {
+            return this.array;
+        }
         if (this.cells.length === 0) {
             return MatrixUtilities.GetEmptyMatrix(this.dimensions);
         }
@@ -125,7 +148,8 @@ class Board  {
         MatrixUtilities.InsertHyperplaneInMatrix(0, -1, outputBoard, this.dimensions);
 
         /* Use the center direction to correctly get the index of the first cell */
-        const firstCell = this.cells[0][(Math.pow(3, this.dimensions) - 1) / 2]
+        const centerDirection = (Math.pow(3, this.dimensions) - 1) / 2;
+        const firstCell = this.cells[0][centerDirection]
 
         /* Navigate in to the location for the first cell, and place it there */
         let root = outputBoard;
@@ -137,11 +161,39 @@ class Board  {
         /* Manually perform first expansion */
         cellsToAdd.push(...this.Expand(firstCell, outputBoard));
 
+        const directionSort = (a, b) => {
+            const centerDirection = (Math.pow(3, this.dimensions) - 1) / 2;
+            const aCentered = Math.log(Math.abs(a.direction - centerDirection)) / Math.log(3) % 1 == 0;
+            const bCentered = Math.log(Math.abs(b.direction - centerDirection)) / Math.log(3) % 1 == 0;
+            // Prefer orthogonals
+            if (aCentered && !bCentered) {
+                return -1;
+            } else if (bCentered && !aCentered) {
+                return 1;
+            } else if (aCentered && bCentered) { // Followed by lower-dimension expansions
+                if (Math.abs(a.direction - centerDirection) < Math.abs(b.direction - centerDirection)) {
+                    return -1;
+                } else if (Math.abs(b.direction - centerDirection) < Math.abs(a.direction - centerDirection)) {
+                    return 1;
+                }
+                return a.direction - b.direction;
+            } else { // Followed by really any sort - orthogonals should define axes well enough
+                return a.direction - b.direction;
+            }
+        };
+        cellsToAdd.sort(directionSort);
+
+
         /* Breadth-first expand */
         while (cellsToAdd.length > 0) {
-            const index = cellsToAdd.shift();
+            const next = cellsToAdd.shift();
+            const index = next.index;
             cellsToAdd.push(...this.Expand(Math.abs(index), outputBoard));
+            cellsToAdd.sort(directionSort);
         }
+
+        MatrixUtilities.TrimUnusedHyperplanes(outputBoard);
+        MatrixUtilities.RotateMaxesToEnd(outputBoard);
 
         return outputBoard;
     }
@@ -151,9 +203,9 @@ class Board  {
      * columns) to make room if necessary. Returns a list of indices for any cells added.
      */
     Expand(index, matrix) {
-        let coordinates = MatrixUtilities.GetCoordinates(index, matrix, this.dimensions);
+        let coordinates = MatrixUtilities.GetCoordinates(index, matrix);
         if (coordinates === undefined) {
-            coordinates = MatrixUtilities.GetCoordinates(-1 * index, matrix, this.dimensions);
+            coordinates = MatrixUtilities.GetCoordinates(-1 * index, matrix);
             if (coordinates === undefined)  {
                 throw "No such element in matrix!";
             }
@@ -168,7 +220,7 @@ class Board  {
             }
 
             /* Skip over cells that have already been inserted */
-            if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix, this.dimensions) !== undefined) {
+            if (MatrixUtilities.GetCoordinates(neighbors[direction], matrix) !== undefined) {
                 continue;
             }
 
@@ -202,7 +254,7 @@ class Board  {
 
             /* Perform insertion */
             insertionPoint[newCoordinates[newCoordinates.length - 1]] = neighbors[direction];
-            cellsAdded.push(neighbors[direction]);
+            cellsAdded.push({ index: neighbors[direction], direction: direction });
         }
 
         return cellsAdded;
