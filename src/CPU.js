@@ -11,6 +11,8 @@ class CPU extends Player {
 
         this.weightControl = 0.8;
         this.weightInfluence = 0.2;
+
+        this.verbose = false;
     }
 
     GetNextMove(board, game) {
@@ -47,18 +49,21 @@ class CPU extends Player {
             const newAttack = Metrics.getScoreOfCheckedPieces(game.board, enemy);
             const destChecked = Metrics.isChecked(game.board, move.targetLocation);
             game.Undo(move, false);
+            const pieceValue = game.board.contents[move.srcLocation].value;
             let checkAdjustment = 0;
             checkAdjustment += (currentThreat - newThreat) / Math.pow(1 - this.caution, 2);
-            checkAdjustment += (newAttack - currentAttack) / Math.pow(1 - this.aggression, 2);
+            checkAdjustment += ((newAttack - currentAttack) / Math.pow(1 - this.aggression, 2)) / (destChecked ? pieceValue : 1);
             score += checkAdjustment;
 
             if (score > bestMoveScore) {
-                console.log("New best move: " + move.toString());
-                console.log("  Base score: " + baseScore);
-                console.log("  Move weight: " + (baseScore * this.weightMoves));
-                console.log("  Capture weight: " + (move.capture ? baseScore * this.weightCaptures + move.capturedPiece.value : 0));
-                console.log("  Check weight: " + (checkAdjustment) + ` (T${currentThreat} -> ${newThreat}; A${currentAttack} -> ${newAttack})`);
-                console.log("  New best score: " + (bestMoveScore));
+                if (this.verbose) {
+                    console.log("New best move: " + move.toString());
+                    console.log("  Base score: " + baseScore);
+                    console.log("  Move weight: " + (baseScore * this.weightMoves));
+                    console.log("  Capture weight: " + (move.capture ? baseScore * this.weightCaptures + move.capturedPiece.value : 0));
+                    console.log("  Check weight: " + (checkAdjustment) + ` (T${currentThreat} -> ${newThreat}; A${currentAttack} -> ${newAttack})`);
+                    console.log("  New best score: " + (score));
+                }
                 bestMoveScore = score;
                 bestMove = move;
             }

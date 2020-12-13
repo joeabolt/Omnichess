@@ -40,8 +40,14 @@ class EndCondition {
             }
             return 0;
         }
-        if (words[1] === "check") {
-            // TODO: Implement the check end condition
+        if (words[0] === "check") {
+            // Check if all instances of this.player's this.pieceType are in check
+            const checkmate = Metrics.getAllAlliedPieceLocationsByType(board, this.player, this.pieceType).every(location => {
+                return Metrics.isCheckmated(board, location);
+            });
+            if (checkmate) {
+                return this.state;
+            }
         }
 
         return 0;

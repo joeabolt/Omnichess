@@ -65,12 +65,12 @@ const config = {
     endConditions: [{
             player: "White",
             win: false,
-            config: "count K = 0 @ end Black"
+            config: "check K @ end Black"
         },
         {
             player: "Black",
             win: false,
-            config: "count K = 0 @ end White"
+            config: "check K @ end White"
         }
     ],
     boardState: [{
