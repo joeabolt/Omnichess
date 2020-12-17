@@ -8,6 +8,13 @@ class Move {
         this.capturedPiece = capturedPiece
     }
 
+    equals(move) {
+        if (move == null) {
+            return false;
+        }
+        return (this.srcLocation === move.srcLocation && this.targetLocation === move.targetLocation && this.capture === move.capture);
+    }
+
     toString() {
         return this.srcLocation + " > " + this.targetLocation;
     }

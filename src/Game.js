@@ -122,27 +122,38 @@ class Game  {
      *  Commits a move to the board, and pushes it to the move stack
      */
     CommitMove(move, showOutput = true, realizer = undefined) {
-        let capturedPiece = "";
+        let capturedPiece = null;
         if (move.capture) {
-            capturedPiece = this.board.contents[move.targetLocation].identifier;
+            capturedPiece = this.board.contents[move.targetLocation];
             this.nextTurn.player.capturedPieces.push(this.board.contents[move.targetLocation]);
             this.board.contents[move.targetLocation] = undefined;
         }
         if (move.move) {
             this.board.contents[move.targetLocation] = this.board.contents[move.srcLocation];
             this.board.contents[move.srcLocation] = undefined;
+            this.board.contents[move.targetLocation].setMoves(1);
+        } else {
+            this.board.contents[move.srcLocation].setMoves(1);
         }
-        this.board.contents[move.targetLocation].setMoves(1);
         this.moveStack.push(move);
         if (realizer) {
             realizer.Realize();
         }
         if (showOutput) {
-            const newMessage = this.nextTurn.player.identifier + " moved " + 
-                this.board.contents[move.targetLocation].identifier + " from " + move.srcLocation + " to " + 
-                move.targetLocation + (move.capture ? (", capturing " + capturedPiece) : "") + ".<br />" + 
-                document.getElementById("message").innerHTML;
-            document.getElementById("message").innerHTML = newMessage;
+            let message = [];
+            if (move.move) {
+                const movingPlayer = this.nextTurn.player.identifier;
+                const movingPiece = this.board.contents[move.targetLocation].identifier;
+                message.push(`${movingPlayer} moved ${movingPiece} from ${move.srcLocation} to ${move.targetLocation}.`);
+            }
+            if (move.capture) {
+                const capturedPieceName = capturedPiece.identifier;
+                const capturingPieceName = this.board.contents[move.move ? move.targetLocation : move.srcLocation].identifier;
+                const capturedPlayer = capturedPiece.player.identifier;
+                message.push(`${capturedPlayer}'s ${capturedPieceName} at ${move.targetLocation} was captured by ${capturingPieceName}.`);
+            }
+            message = message.join(" ") + "<br />" + document.getElementById("message").innerHTML;
+            document.getElementById("message").innerHTML = message;
         }
 
         this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;

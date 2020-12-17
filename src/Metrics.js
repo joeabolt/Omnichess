@@ -36,6 +36,13 @@ class Metrics {
                     captures.push(new Move(true, true, pieceLocation, captureDest, board.contents[captureDest]));
                 }
             });
+            [...new Set(piece.captureVectors.reduce((returnSet, vector) => {
+                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
+            }, []))].forEach((captureDest) => {
+                if (board.contents[captureDest] && board.contents[captureDest].player !== player) {
+                    captures.push(new Move(false, true, pieceLocation, captureDest, board.contents[captureDest]));
+                }
+            });
         });
         return captures;
     }
@@ -103,7 +110,6 @@ class Metrics {
             if (!piece || piece.player === player) {
                 return;
             }
-            let attackPoints = new Set();
             piece.captureVectors.concat(piece.moveCaptureVectors).forEach(vector => {
                 const destinations = board.GetCellIndices(vector, enemyLocation, true, enforceCaptureEligible);
                 if (destinations.indexOf(pieceLocation) != -1) {
@@ -118,7 +124,23 @@ class Metrics {
         return checkedBy;
     }
 
+    static isProtected(board, pieceLocation, enforceCaptureEligible = false) {
+        const alliedPlayer = board.contents[pieceLocation].player;
+        return board.contents.some((piece, location) => {
+            if (!piece || piece.player !== alliedPlayer) {
+                return false;
+            }
+            return piece.captureVectors.concat(piece.moveCaptureVectors).some(vector => {
+                const destinations = board.GetCellIndices(vector, location, true, enforceCaptureEligible);
+                return destinations.indexOf(pieceLocation) != -1;
+            });
+        });
+    }
+
     static isChecked(board, pieceLocation) {
+        if (board.contents[pieceLocation] == null) {
+            return false;
+        }
         return Metrics.checkedBy(board, pieceLocation).size > 0;
     }
 
@@ -149,8 +171,18 @@ class Metrics {
         }, 0);
     }
 
+    static getScoreOfDefendedPieces(board, player) {
+        return board.contents.reduce((sum, piece, index) => {
+            if (piece && piece.player === player && Metrics.isProtected(board, index)) {
+                sum = sum + piece.value;
+            }
+            return sum;
+        }, 0);
+    }
+
     static isCheckmated(board, pieceLocation) {
         const checkmatedPiece = board.contents[pieceLocation];
+        const checkmatedPlayer = checkmatedPiece.player;
         // 1. That piece must be in check
         if (!Metrics.isChecked(board, pieceLocation)) {
             return false;
@@ -160,7 +192,7 @@ class Metrics {
         checkmatedPiece.moveVectors.forEach(vector => [...board.GetCellIndices(vector, pieceLocation)].forEach(dest => destinations.add(dest)));
         checkmatedPiece.moveCaptureVectors.forEach(vector => [...board.GetCellIndices(vector, pieceLocation)].forEach(dest => destinations.add(dest)));
         destinations = [...destinations];
-        destinations = destinations.filter(canMoveTo => !Metrics.isCheckedFor(board, canMoveTo, checkmatedPiece.player));
+        destinations = destinations.filter(canMoveTo => !Metrics.isCheckedFor(board, canMoveTo, checkmatedPlayer));
         if (destinations.length > 0) {
             return false;
         }
@@ -168,10 +200,10 @@ class Metrics {
         // 3. Get all pieces checking the target
         const checkingPieces = Metrics.checkedBy(board, pieceLocation);
 
-        if (checkingPieces.length === 1) {
+        if (checkingPieces.size === 1) {
             const checkingPieceLocation = Array.from(checkingPieces.keys())[0];
             // 4. If only 1 checking piece, the checking piece is not itself in check
-            if (Metrics.isChecked(board, checkingPieceLocation)) {
+            if (!Metrics.isCheckedFor(board, checkingPieceLocation, checkmatedPlayer)) {
                 return false;
             }            
         }
@@ -189,7 +221,7 @@ class Metrics {
             return checkingVectors.every(cellList => cellList.indexOf(cell) != -1);
         });
         if (interruptablePoints.length > 0) {
-            if (interruptablePoints.some(interruptPoint => Metrics.isInfluenced(board, interruptPoint, checkmatedPiece.player))) {
+            if (interruptablePoints.some(interruptPoint => Metrics.isInfluenced(board, interruptPoint, checkmatedPlayer))) {
                 return false;
             }
         }

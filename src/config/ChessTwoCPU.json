@@ -4,7 +4,7 @@
         "adjacencyMatrix": null
     },
     "pieces": [{
-            "move": "(0, 1d)",
+            "move": "(0, 1d); (0, 2di)",
             "capture": "",
             "moveCapture": "(1, 1d)",
             "value": 1,
@@ -66,12 +66,12 @@
     "endConditions": [{
             "player": "White",
             "win": false,
-            "config": "count K = 0 @ end Black"
+            "config": "check K @ end Black"
         },
         {
             "player": "Black",
             "win": false,
-            "config": "count K = 0 @ end White"
+            "config": "check K @ end White"
         }
     ],
     "boardState": [{

@@ -6,13 +6,15 @@ class CPU extends Player {
         this.aggression = 0.5;
         this.caution = 0.75;
 
-        this.weightCaptures = 0.8;
+        this.weightCaptures = 0.6;
         this.weightMoves = 0.2;
 
         this.weightControl = 0.8;
         this.weightInfluence = 0.2;
 
-        this.verbose = false;
+        this.verbose = true;
+        this.lastMove = null;
+        this.doubleLastMove = null;
     }
 
     GetNextMove(board, game) {
@@ -22,6 +24,7 @@ class CPU extends Player {
     }
 
     GetBestOption(possibleMoves, game) {
+        if (this.verbose) console.log("CONSIDERING MOVES");
         const enemy = game.players[1 - game.players.indexOf(this)];
         let bestMove = undefined;
         let bestMoveScore = 0;
@@ -29,12 +32,13 @@ class CPU extends Player {
         const baseInfluencePercent = Metrics.getPercentBoardInfluenced(game.board, this);
         const currentThreat = Metrics.getScoreOfCheckedPieces(game.board, this);
         const currentAttack = Metrics.getScoreOfCheckedPieces(game.board, enemy);
+        const currentDefense = Metrics.getScoreOfDefendedPieces(game.board, this);
         possibleMoves.forEach((move) => {
             game.CommitMove(move, false);
 
             /* Base score based on maximizing future options */
-            const controlDelta = Math.pow(Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1, 5);
-            const influenceDelta = Math.pow(Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1, 5);
+            const controlDelta = Math.pow(Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1, 3.5);
+            const influenceDelta = Math.pow(Metrics.getPercentBoardInfluenced(game.board, this) - baseInfluencePercent + 1, 3.5);
             const baseScore = 100 * (controlDelta * this.weightControl + influenceDelta * this.weightInfluence);
             let score = baseScore;
             if (move.move && !move.capture) {
@@ -47,27 +51,57 @@ class CPU extends Player {
             /* Adjustments for moving in or out of check */
             const newThreat = Metrics.getScoreOfCheckedPieces(game.board, this);
             const newAttack = Metrics.getScoreOfCheckedPieces(game.board, enemy);
+            const newDefense = Metrics.getScoreOfDefendedPieces(game.board, this);
             const destChecked = Metrics.isChecked(game.board, move.targetLocation);
             game.Undo(move, false);
+            const srcProtected = Metrics.isProtected(game.board, move.srcLocation);
+            const srcChecked = Metrics.isChecked(game.board, move.srcLocation);
             const pieceValue = game.board.contents[move.srcLocation].value;
             let checkAdjustment = 0;
             checkAdjustment += (currentThreat - newThreat) / Math.pow(1 - this.caution, 2);
-            checkAdjustment += ((newAttack - currentAttack) / Math.pow(1 - this.aggression, 2)) / (destChecked ? pieceValue : 1);
+            let attackDelta = newAttack - currentAttack;
+            if (move.capture) {
+                // Don't penalize for captures
+                attackDelta += move.capturedPiece.value;
+            }
+            checkAdjustment += ((attackDelta) / Math.pow(1 - this.aggression, 2));
+            checkAdjustment /= 2.5;
             score += checkAdjustment;
+
+            let pieceLossAdjustment = destChecked ? -1 * pieceValue / (1 - this.caution) : 0;
+            if (destChecked && (!srcChecked || (srcChecked && srcProtected))) {
+                // Moving into check to get a check on another piece? We'll lose this one for sure. Wipe out benefits
+                pieceLossAdjustment += -1 * ((newAttack - currentAttack) / Math.pow(1 - this.aggression, 3));
+            }
+            score += pieceLossAdjustment;
+
+            let defenseAdjustment = (newDefense - currentDefense) / (1 - this.caution) / 1.25;
+            score += defenseAdjustment;
+
+            if (move.equals(this.doubleLastMove)) {
+                // TODO: Improve cycle tracking
+                // score = 1; // So it doesn't get trapped in a cycle
+            }
 
             if (score > bestMoveScore) {
                 if (this.verbose) {
                     console.log("New best move: " + move.toString());
                     console.log("  Base score: " + baseScore);
-                    console.log("  Move weight: " + (baseScore * this.weightMoves));
-                    console.log("  Capture weight: " + (move.capture ? baseScore * this.weightCaptures + move.capturedPiece.value : 0));
+                    console.log("  Move/Capture weight: " + (baseScore * this.weightMoves) + " : " + (move.capture ? baseScore * this.weightCaptures + move.capturedPiece.value : 0));
                     console.log("  Check weight: " + (checkAdjustment) + ` (T${currentThreat} -> ${newThreat}; A${currentAttack} -> ${newAttack})`);
+                    console.log("  Loss weight: " + (pieceLossAdjustment) + ` (SC:${srcChecked} DC:${destChecked} SP:${srcProtected})`);
+                    console.log("  Defense weight: " + defenseAdjustment + ` (D${currentDefense} -> ${newDefense})`);
                     console.log("  New best score: " + (score));
                 }
+
                 bestMoveScore = score;
                 bestMove = move;
             }
         });
+
+        this.doubleLastMove = this.lastMove;
+        this.lastMove = bestMove;
+
         return bestMove;
     }
 
