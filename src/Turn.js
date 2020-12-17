@@ -7,42 +7,34 @@
  *  say all pieces or all actions ("* *" means
  *  everything goes).
  */
-class Turn
-{
-    constructor(player, board, legalActions)
-    {
+class Turn {
+    constructor(player, board, legalActions) {
         this.player = player;
         this.board = board;
         this.legalActions = legalActions;
     }
 
-    Validate(move)
-    {
+    Validate(move) {
         let approved = true;
-        if (this.legalActions.piece !== undefined)
-        {
+        if (this.legalActions.piece !== undefined) {
             // TODO: Dark magic to validate it's the right piece
         }
-        if (this.board.contents[move.srcLocation].player !== this.player)
-        {
+        if (this.board.contents[move.srcLocation].player !== this.player) {
             document.getElementById("message").innerHTML = "Invalid action: tried to move the opponent's piece.";
             approved = false;
             throw "Tried to move the enemy's piece.";
         }
-        if (move.move && !this.legalActions.move)
-        {
+        if (move.move && !this.legalActions.move) {
             document.getElementById("message").innerHTML = "Invalid action: must not move.";
             approved = false;
             throw "Tried to move when move disallowed.";
         }
-        if (move.capture && !this.legalActions.capture)
-        {
+        if (move.capture && !this.legalActions.capture) {
             document.getElementById("message").innerHTML = "Invalid action: must not capture.";
             approved = false;
             throw "Tried to capture when capture disallowed.";
         }
-        if (this.board.contents[move.targetLocation] !== undefined && this.board.contents[move.targetLocation].player === this.player)
-        {
+        if (this.board.contents[move.targetLocation] !== undefined && this.board.contents[move.targetLocation].player === this.player) {
             document.getElementById("message").innerHTML = "Invalid action: cannot capture allied piece.";
             approved = false;
             throw "Tried to capture allied piece.";
@@ -61,8 +53,7 @@ class Turn
      *  return another Turn for this player that only
      *  allows the capturing piece to capture again.
      */
-    EndTurn()
-    {
+    EndTurn() {
         return undefined;
     }
 }

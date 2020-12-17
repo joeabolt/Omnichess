@@ -1,8 +1,6 @@
 /* Represents a piece in the game */
-class Piece 
-{
-    constructor()
-    {
+class Piece  {
+    constructor() {
         this.moveVectors = [];
         this.captureVectors = [];
         this.moveCaptureVectors = [];
@@ -18,8 +16,7 @@ class Piece
         this.initialMoveCaptureVectors = [];
     }
 
-    static Create(baseObj)
-    {
+    static Create(baseObj) {
         /* Currently assumes baseObj has a string for
          * move, capture, moveCapture, and player.
          */
@@ -36,23 +33,18 @@ class Piece
      *  Changes the length of vector components, so it only really applies if
      *  the piece has directional vectors.
      */
-    setDirection(direction)
-    {
-        if (this.direction !== undefined)
-        {
-            for(let i = 0; i < this.direction.length; i++)
-            {
+    setDirection(direction) {
+        if (this.direction !== undefined) {
+            for(let i = 0; i < this.direction.length; i++) {
                 this.direction *= direction[i];
             }
         }
-        else
-        {
+        else {
             this.direction = direction;
         }
         
         this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
-            for (let i = 0; i < vector.components.length; i++)
-            {
+            for (let i = 0; i < vector.components.length; i++) {
                 vector.components[i].length *= direction[i];
             }
         });
@@ -60,8 +52,7 @@ class Piece
         return this;
     }
 
-    setMoveVectors(moveVectors)
-    {
+    setMoveVectors(moveVectors) {
         this.moveVectors = moveVectors;
         this.initialMoveVectors = this.moveVectors.filter((vector) => {
             return vector.components.reduce((initial, component) => {
@@ -71,8 +62,7 @@ class Piece
         return this;
     }
 
-    setCaptureVectors(captureVectors)
-    {
+    setCaptureVectors(captureVectors) {
         this.captureVectors = captureVectors;
         this.initialCaptureVectors = this.captureVectors.filter((vector) => {
             return vector.components.reduce((initial, component) => {
@@ -82,8 +72,7 @@ class Piece
         return this;
     }
 
-    setMoveCaptureVectors(moveCaptureVectors)
-    {
+    setMoveCaptureVectors(moveCaptureVectors) {
         this.moveCaptureVectors = moveCaptureVectors;
         this.initialMoveCaptureVectors = this.moveCaptureVectors.filter((vector) => {
             return vector.components.reduce((initial, component) => {
@@ -93,51 +82,43 @@ class Piece
         return this;
     }
 
-    setIdentifier(identifier)
-    {
+    setIdentifier(identifier) {
         this.identifier = identifier;
         return this;
     }
 
-    setPlayer(player)
-    {
+    setPlayer(player) {
         this.player = player;
         return this;
     }
 
-    setValue(value)
-    {
+    setValue(value) {
         this.value = value;
         return this;
     }
 
-    setMoves(delta)
-    {
+    setMoves(delta) {
         const noPriorMove = this.moves === 0;
         this.moves += delta;
 
         /* If first move, remove initial vectors */
-        if (this.moves > 0 && noPriorMove)
-        {
+        if (this.moves > 0 && noPriorMove) {
             this.moveVectors = this.moveVectors.filter((vector) => !this.initialMoveVectors.includes(vector));
             this.captureVectors = this.captureVectors.filter((vector) => !this.initialCaptureVectors.includes(vector));
             this.moveCaptureVectors = this.moveCaptureVectors.filter((vector) => !this.initialMoveCaptureVectors.includes(vector));
         }
 
         /* If undoing first move, restore initial vectors */
-        if (!noPriorMove && this.moves === 0)
-        {
+        if (!noPriorMove && this.moves === 0) {
             this.moveVectors = this.moveVectors.concat(this.initialMoveVectors);
             this.captureVectors = this.captureVectors.concat(this.initialCaptureVectors);
             this.moveCaptureVectors = this.moveCaptureVectors.concat(this.initialMoveCaptureVectors);
         }
     }
 
-    undoDirection()
-    {
+    undoDirection() {
         let nextDirection = [];
-        for(let i = 0; i < this.direction.length; i++)
-        {
+        for(let i = 0; i < this.direction.length; i++) {
             nextDirection.push(1 / this.direction[i]);
         }
         this.setDirection(nextDirection);

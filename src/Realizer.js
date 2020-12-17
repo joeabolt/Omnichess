@@ -1,8 +1,6 @@
 /* Manages the display of the board to the user */
-class Realizer 
-{
-    constructor(game)
-    {
+class Realizer  {
+    constructor(game) {
         this.game = game;
         this.board = game.board;
 
@@ -16,40 +14,32 @@ class Realizer
      * Method to be called by the front-end. Incurs computational
      * cost each time called. Outputs the current state of the board.
      */
-    Realize()
-    {
+    Realize() {
         let outputArea = document.getElementById("output");
-        if (outputArea.firstChild)
-        {
+        if (outputArea.firstChild) {
             outputArea.removeChild(outputArea.firstChild);
         }
         outputArea.appendChild(this.CreateDisplayBoard());
     }
 
-    ProcessClick(clickedCell)
-    {
-        if (this.activeCell === undefined)
-        {
+    ProcessClick(clickedCell) {
+        if (this.activeCell === undefined) {
             this.SetActiveCell(clickedCell);
             return;
         }
-        if (clickedCell === this.activeCell)
-        {
+        if (clickedCell === this.activeCell) {
             this.SetActiveCell(undefined);
             return;
         }
-        if (this.activeCellCanMoveCapture.includes(clickedCell))
-        {
+        if (this.activeCellCanMoveCapture.includes(clickedCell)) {
             this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
             return;
         }
-        if (this.activeCellCanCapture.includes(clickedCell))
-        {
+        if (this.activeCellCanCapture.includes(clickedCell)) {
             this.CreateAndProcessMove(false, true, this.activeCell, clickedCell);
             return;
         }
-        if (this.activeCellCanMove.includes(clickedCell))
-        {
+        if (this.activeCellCanMove.includes(clickedCell)) {
             this.CreateAndProcessMove(true, false, this.activeCell, clickedCell);
             return;
         }
@@ -58,15 +48,13 @@ class Realizer
         this.SetActiveCell(clickedCell);
     }
 
-    SetActiveCell(newActiveCell)
-    {
+    SetActiveCell(newActiveCell) {
         this.activeCell = newActiveCell;
         this.activeCellCanMove = [];
         this.activeCellCanCapture = [];
         this.activeCellCanMoveCapture = [];
 
-        if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined)
-        {
+        if (this.activeCell !== undefined && this.board.contents[this.activeCell] !== undefined) {
             const activePiece = this.board.contents[this.activeCell];
 
             activePiece.moveVectors.forEach((vector) => {
@@ -86,8 +74,7 @@ class Realizer
         }
     }
 
-    CreateAndProcessMove(move, capture, source, target)
-    {
+    CreateAndProcessMove(move, capture, source, target) {
         const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
 
         this.game.Step(moveObj, true, this);
@@ -95,8 +82,7 @@ class Realizer
         this.Realize();
     }
 
-    CreateDisplayBoard()
-    {
+    CreateDisplayBoard() {
         let toDisplay = this.board.ConvertToArray();
         let dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
         let dimensionCount = dimensionLengths.length;
@@ -110,10 +96,8 @@ class Realizer
         return board;
     }
 
-    AssembleChild(matrix, dimensions, offsetColoring)
-    {
-        if (dimensions === 0)
-        {
+    AssembleChild(matrix, dimensions, offsetColoring) {
+        if (dimensions === 0) {
             /* It's a single cell; make it and return */
             const cellIndex = matrix; /* Rename for clarity */
 
@@ -142,8 +126,7 @@ class Realizer
         let aggregateElement = document.createElement("div");
         aggregateElement.className = ((dimensions % 2 === 0) ? "vdimension" : "hdimension");
         aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
-        for (let i = 0; i < matrix.length; i++)
-        {
+        for (let i = 0; i < matrix.length; i++) {
             aggregateElement.appendChild(
                 this.AssembleChild(matrix[i],
                 dimensions - 1,
@@ -154,28 +137,22 @@ class Realizer
         return aggregateElement;
     }
 
-    DetermineBackgroundColor(index, offsetColor)
-    {
-        if (index < 0)
-        {
+    DetermineBackgroundColor(index, offsetColor) {
+        if (index < 0) {
             return "#AAAAAA";
         }
 
         let colorIndex = offsetColor ? (index + 1) : (index);
         let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
 
-        if (this.activeCell !== undefined)
-        {
-            if (this.activeCell === index)
-            {
+        if (this.activeCell !== undefined) {
+            if (this.activeCell === index) {
                 bgColor = "#00FF00";
             }
-            if (this.activeCellCanMove.includes(index))
-            {
+            if (this.activeCellCanMove.includes(index)) {
                 bgColor = "#0000FF";
             }
-            if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
-            {
+            if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index)) {
                 bgColor = "#FF0000";
             }
         }
@@ -183,33 +160,26 @@ class Realizer
         return bgColor;
     }
 
-    DetermineForegroundColor(index, offsetColor)
-    {
-        if (index < 0)
-        {
+    DetermineForegroundColor(index, offsetColor) {
+        if (index < 0) {
             return "#FFFFFF";
         }
 
         let colorIndex = offsetColor ? index + 1 : index;
         let fgColor = (colorIndex % 2 === 0) ? "#FFFFFF" : "#000000";
 
-        if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined)
-        {
+        if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined) {
             fgColor = this.board.contents[index].player.color;
         }
 
-        if (this.activeCell !== undefined)
-        {
-            if (this.activeCell === index)
-            {
+        if (this.activeCell !== undefined) {
+            if (this.activeCell === index) {
                 fgColor = "#000000";
             }
-            if (this.activeCellCanMove.includes(index))
-            {
+            if (this.activeCellCanMove.includes(index)) {
                 fgColor = "#FFFFFF";
             }
-            if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index))
-            {
+            if (this.activeCellCanCapture.includes(index) || this.activeCellCanMoveCapture.includes(index)) {
                 fgColor = "#000000";
             }
         }

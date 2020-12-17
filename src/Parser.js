@@ -1,24 +1,14 @@
 /* Class to create game resources based on a json file */
-class Parser 
-{
-    static Load(config_data)
-    {
-        /* Load piece identifiers mapped to their templates */
-        const pieceTemplates = new Map();
-        config_data.pieces.forEach((template) => {
-            pieceTemplates.set(template.identifier, template);
-        });
-
+class Parser  {
+    static Load(config_data) {
         /* Build the board */
         const boardTemplate = config_data.board;
         let board = undefined;
         if (boardTemplate.adjacencyMatrix !== undefined &&
-            boardTemplate.adjacencyMatrix !== null)
-        {
+            boardTemplate.adjacencyMatrix !== null) {
             board = new Board(boardTemplate.adjacencyMatrix);
         }
-        else
-        {
+        else {
             board = new Board(Board.Generate(boardTemplate.lengths));
         }
 
@@ -27,28 +17,22 @@ class Parser
         config_data.players.forEach((template) => {
             // TODO: Magically parse the lists of dropable and captured pieces
             let newPlayer = new Player(template.identifier, template.direction, [], [], template.color);
-            if (template.isCPU && template.isCPU === true)
-            {
+            if (template.isCPU && template.isCPU === true) {
                 /* Handle CPUs and their parameters */
                 newPlayer = new CPU(template.identifier, template.direction, [], [], template.color);
-                if (template.caution)
-                {
+                if (template.caution) {
                     newPlayer.SetCaution(template.caution);
                 }
-                if (template.captureWeight)
-                {
+                if (template.captureWeight) {
                     newPlayer.SetCaptureWeight(template.captureWeight);
                 }
-                if (template.moveWeight)
-                {
+                if (template.moveWeight) {
                     newPlayer.SetMoveWeight(template.moveWeight);
                 }
-                if (template.controlWeight)
-                {
+                if (template.controlWeight) {
                     newPlayer.SetControlWeight(template.controlWeight);
                 }
-                if (template.influenceWeight)
-                {
+                if (template.influenceWeight) {
                     newPlayer.SetInfluenceWeight(template.influenceWeight);
                 }
             }
@@ -60,6 +44,27 @@ class Parser
         config_data.endConditions.forEach((template) => {
             endConditions.push(new EndCondition(players.get(template.player), template.win, template.config));
         });
+        const royals = [...new Set(endConditions.map(condition => condition.pieceType))];
+        
+        /* Load piece identifiers mapped to their templates */
+        const pieceTemplates = new Map();
+        config_data.pieces.forEach((template) => {
+            if (template.value == null) {
+                const piece = new Piece()
+                    .setMoveVectors(Vector.Create(template.move))
+                    .setCaptureVectors(Vector.Create(template.capture))
+                    .setMoveCaptureVectors(Vector.Create(template.moveCapture));
+                const vectors = piece.moveVectors.concat(piece.captureVectors).concat(piece.moveCaptureVectors);
+                const maxDestinations = [...new Set(vectors.map(vector => board.GetCellIndices(vector, board.sink, true, false)).flat())];
+                const minDestinations = [...new Set(vectors.map(vector => board.GetCellIndices(vector, board.source, true, false)).flat())];
+                let value = (maxDestinations.length + minDestinations.length) / 4;
+                if (royals.indexOf(template.identifier) != -1) {
+                    value = value + 1000;
+                }
+                template.value = value;
+            }
+            pieceTemplates.set(template.identifier, template);
+        });
 
         /* Initialize the board */
         config_data.boardState.forEach((entry) => {
@@ -68,14 +73,10 @@ class Parser
                 .setPlayer(players.get(entry.player))
                 .setMoveVectors(Vector.Create(pieceTemplates.get(entry.piece).move))
                 .setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture))
-                .setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture));
+                .setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture))
+                .setValue(pieceTemplates.get(entry.piece).value);
             piece.setDirection(piece.player.direction);
-            if (pieceTemplates.get(entry.piece).value)
-            {
-                piece.setValue(pieceTemplates.get(entry.piece).value);
-            }
-            if (entry.hasMoved)
-            {
+            if (entry.hasMoved) {
                 piece.setMoves(1);
             }
             board.contents[entry.location] = piece;

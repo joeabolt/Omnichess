@@ -10,8 +10,7 @@ fileInput.onchange = () => {
     reader.readAsText(fileInput.files[0]);
 };
 
-function processClick(event, cellIndex)
-{
+function processClick(event, cellIndex) {
     if (realizer === undefined)
         return;
 
@@ -20,8 +19,7 @@ function processClick(event, cellIndex)
     realizer.Realize();
 }
 
-function clickHandler()
-{
+function clickHandler() {
     if (realizer === undefined)
         return;
 
@@ -29,8 +27,7 @@ function clickHandler()
     realizer.Realize();
 }
 
-function loadConfig(config)
-{
+function loadConfig(config) {
     game = Parser.Load(config);
     realizer = new Realizer(game);
     realizer.Realize();
@@ -40,8 +37,7 @@ function loadConfig(config)
     document.getElementById("mainDisplay").style.display = "block";
 }
 
-function loadPreloadedConfig(path)
-{
+function loadPreloadedConfig(path) {
     const configScript = document.createElement("script");
     configScript.src = path;
     configScript.onload = () => {
@@ -50,8 +46,7 @@ function loadPreloadedConfig(path)
     document.body.appendChild(configScript);
 }
 
-function save()
-{
+function save() {
     const dataString = JSON.stringify(Serializer.Serialize(game));
     console.log(dataString);
 

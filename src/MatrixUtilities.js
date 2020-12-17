@@ -1,14 +1,21 @@
-class MatrixUtilities
-{
+class MatrixUtilities {
+    static Index(matrix, coordinates) {
+        if (coordinates.length === 0) {
+            return matrix;
+        }
+        if (matrix.length <= coordinates[0]) {
+            return null;
+        }
+        return this.Index(matrix[coordinates[0]], coordinates.slice(1));
+    }
+
     /**
      * Converts a direction index to a vector consisting of -1s, 
      * 0s, and 1s. Assumes the "small" dimensions come first.
      */
-    static DirectionToVector(direction, dimensions)
-    {
+    static DirectionToVector(direction, dimensions) {
         let output = [];
-        for (let currentDimension = 0; currentDimension < dimensions; currentDimension++)
-        {
+        for (let currentDimension = 0; currentDimension < dimensions; currentDimension++) {
             output.push((direction % 3) - 1);
             direction = Math.floor(direction / 3);
         }
@@ -20,20 +27,15 @@ class MatrixUtilities
      * and the lengths of the dimensions it contains, fills all such cells
      * with null.
      */
-    static FillHyperPlaneInMatrix(root, desiredLengths)
-    {
-        if (desiredLengths.length === 1)
-        {
-            for (let i = root.length; i < desiredLengths[0]; i++)
-            {
+    static FillHyperPlaneInMatrix(root, desiredLengths) {
+        if (desiredLengths.length === 1) {
+            for (let i = root.length; i < desiredLengths[0]; i++) {
                 root.push(null);
             }
             return;
         }
-        for (let i = 0; i < desiredLengths[0]; i++)
-        {
-            if (i >= root.length)
-            {
+        for (let i = 0; i < desiredLengths[0]; i++) {
+            if (i >= root.length) {
                 root.push([]);
             }
             MatrixUtilities.FillHyperPlaneInMatrix(root[i], desiredLengths.slice(1, desiredLengths.length));
@@ -44,21 +46,17 @@ class MatrixUtilities
      * Returns the coordinates of value within matrix, as an array, smallest
      * axis first. Returns undefined if value could not be found. 
      */
-    static GetCoordinates(value, matrix, dimensions)
-    {
-        if (dimensions === 1)
-        {
-            if (matrix.includes(value))
-            {
+    static GetCoordinates(value, matrix) {
+        const dimensions = this.GetLengths(matrix).length;
+        if (dimensions === 1) {
+            if (matrix.includes(value)) {
                 return [matrix.indexOf(value)];
             }
             return undefined;
         }
-        for (let i = 0; i < matrix.length; i++)
-        {
+        for (let i = 0; i < matrix.length; i++) {
             const coords = MatrixUtilities.GetCoordinates(value, matrix[i], dimensions - 1);
-            if (coords !== undefined)
-            {
+            if (coords !== undefined) {
                 coords.push(i);
                 return coords;
             }
@@ -72,18 +70,14 @@ class MatrixUtilities
      *  for centered. vectorAxis indicates which axis to be used, with 0 meaning
      *  the smallest.
      */
-    static GetDirectionsByVector(vectorAxis, vectorSign, dimensions)
-    {
+    static GetDirectionsByVector(vectorAxis, vectorSign, dimensions) {
         const directions = [];
-        for (let direction = 0; direction < Math.pow(3, dimensions); direction++)
-        {
+        for (let direction = 0; direction < Math.pow(3, dimensions); direction++) {
             const vector = [];
-            for (let axis = 0; axis < dimensions; axis++)
-            {
+            for (let axis = 0; axis < dimensions; axis++) {
                 vector.push(Math.floor(direction / Math.pow(3, axis)) % 3);
             }
-            if (vector[vectorAxis] === vectorSign)
-            {
+            if (vector[vectorAxis] === vectorSign) {
                 directions.push(direction);
             }
         }
@@ -95,12 +89,10 @@ class MatrixUtilities
      * specified number of dimensions. E.g., [[[]]] is an
      * empty 3D matrix.
      */
-    static GetEmptyMatrix(dimensions)
-    {
+    static GetEmptyMatrix(dimensions) {
         const output = [];
         let pointer = output;
-        for (let i = 1; i < dimensions; i++)
-        {
+        for (let i = 1; i < dimensions; i++) {
             pointer[0] = [];
             pointer = pointer[0];
         }
@@ -110,14 +102,25 @@ class MatrixUtilities
     /**
      * Returns an array of the lengths of a matrix. Largest dimensions first.
      */
-    static GetLengths(matrix)
-    {
+    static GetLengths(matrix) {
         const dimensionalLengths = [];
         let currentDimension = matrix;
-        while (Array.isArray(currentDimension))
-        {
+        while (Array.isArray(currentDimension)) {
             dimensionalLengths.push(currentDimension.length);
             currentDimension = currentDimension[0];
+        }
+        return dimensionalLengths;
+    }
+
+    static GetMaxLengths(matrix) {
+        const dimensionalLengths = [];
+        let contestants = [matrix];
+        while (contestants.length > 0 && Array.isArray(contestants[0])) {
+            let maximumLength = contestants.reduce((maxLength, contestant) => Math.max(maxLength, contestant.length), 0);
+            dimensionalLengths.push(maximumLength);
+            let nextContestants = [];
+            contestants.forEach(contestant => contestant.forEach(child => nextContestants.push(child)));
+            contestants = nextContestants;
         }
         return dimensionalLengths;
     }
@@ -128,31 +131,24 @@ class MatrixUtilities
      * new hyperplane with null. Hyperplanes have dimensions = dimensions - 1, so in a
      * square matrix, they create a row or column (in a cube, they make a face).
      */
-    static InsertHyperplaneInMatrix(axis, sign, matrix, dimensions)
-    {
-        if (dimensions === 1)
-        {
-            if (sign < 0)
-            {
+    static InsertHyperplaneInMatrix(axis, sign, matrix, dimensions) {
+        if (dimensions === 1) {
+            if (sign < 0) {
                 matrix.splice(0, 0, null);
             }
-            if (sign > 0)
-            {
+            if (sign > 0) {
                 matrix.splice(matrix.length, 0, null);
             }
             return;
         }
-        if (dimensions === (axis + 1))
-        {
+        if (dimensions === (axis + 1)) {
             /* Do the insertion */
             let root = undefined;
-            if (sign < 0)
-            {
+            if (sign < 0) {
                 matrix.splice(0, 0, []);
                 root = matrix[0];
             }
-            if (sign > 0)
-            {
+            if (sign > 0) {
                 matrix.splice(matrix.length, 0, []);
                 root = matrix[matrix.length - 1];
             }
@@ -165,29 +161,88 @@ class MatrixUtilities
 
             return;
         }
-        for (let i = 0; i < matrix.length; i++)
-        {
+        for (let i = 0; i < matrix.length; i++) {
             MatrixUtilities.InsertHyperplaneInMatrix(axis, sign, matrix[i], dimensions - 1);
+        }
+    }
+
+    static TrimUnusedHyperplanes(matrix) {
+        let lengths = MatrixUtilities.GetMaxLengths(matrix);
+        for (let dimension = 0; dimension < lengths.length; dimension++) {
+            for (let lockValue = 0; lockValue < lengths[dimension]; lockValue++) {
+                const coordinates = this.GetAllCoordinatesInHyperplane(lengths, dimension, lockValue);
+                if (coordinates.every(coords => {
+                    const value = this.Index(matrix, coords);
+                    return value == null;
+                })) {
+                    // console.log("Removing index " + lockValue + " from dimension " + dimension);
+                    this.RemoveHyperplane(matrix, dimension, lockValue);
+                    // Reset for next run
+                    lockValue--;
+                    lengths = MatrixUtilities.GetMaxLengths(matrix);
+                }
+            }
+        }
+    }
+
+    static RemoveHyperplane(matrix, dimension, index) {
+        if (dimension === 0) {
+            matrix.splice(index, 1);
+            return matrix;
+        }
+        for (let i = 0; i < matrix.length; i++) {
+            this.RemoveHyperplane(matrix[i], dimension - 1, index);
+        }
+    }
+
+    static GetAllCoordinatesInHyperplane(lengths, dimensionLock, dimensionValue) {
+        if (lengths.length === 1 && dimensionLock !== 0) {
+            return new Array(lengths[0]).fill(-1).map((x,i) => i);
+        } else if (lengths.length === 1 && dimensionLock === 0) {
+            return [dimensionValue];
+        } else {
+            if (dimensionLock === 0) {
+                return this.GetAllCoordinatesInHyperplane(lengths.slice(1), -1, -1)
+                    .map(arr => {
+                        if (!Array.isArray(arr)) {
+                            arr = [arr];
+                        }
+                        arr.unshift(dimensionValue);
+                        return arr;
+                    });
+            } else {
+                const dimLengths = new Array(lengths[0]).fill(-1).map((x,i) => i);
+                const allCoords = [];
+                for (let i = 0; i < dimLengths.length; i++) {
+                    const lowerCoordiantes = this.GetAllCoordinatesInHyperplane(lengths.slice(1), dimensionLock - 1, dimensionValue);
+                    lowerCoordiantes.map(arr => {
+                        if (!Array.isArray(arr)) {
+                            arr = [arr];
+                        }
+                        arr.unshift(i);
+                        return arr;
+                    }).forEach(arr => {
+                        allCoords.push(arr);
+                    });
+                }
+                return allCoords;
+            }
         }
     }
 
     /**
      * Converts a matrix to a slightly more understandable string
      */
-    static MatrixToString(matrix, dimensions)
-    {
-        if (dimensions <= 0 || dimensions === undefined || dimensions === null)
-        {
+    static MatrixToString(matrix, dimensions) {
+        if (dimensions <= 0 || dimensions === undefined || dimensions === null) {
             throw "Dimensions not specified for MatrixToString()!";
         }
-        if (dimensions === 1)
-        {
+        if (dimensions === 1) {
             return "[" + matrix.toString() + "]";
         }
 
         let output = "[";
-        for (let i = 0; i < matrix.length; i++)
-        {
+        for (let i = 0; i < matrix.length; i++) {
             output += MatrixUtilities.MatrixToString(matrix[i], dimensions - 1) + ",";
         }
         output = output.slice(0, -1) + "]";
@@ -199,8 +254,7 @@ class MatrixUtilities
      * a numerical vector (0 thru 3^n - 1). Assumes the "small" dimensions
      * come first.
      */
-    static VectorToDirection(vector)
-    {
+    static VectorToDirection(vector) {
         return vector.reduce(
             (direction, currentValue, currentIndex) => {
                 direction += Math.pow(3, currentIndex) * (currentValue + 1);
@@ -209,12 +263,40 @@ class MatrixUtilities
             0
         );
     }
+
+    /**
+     * Rotates the matrix along each dimension until the last value in the first vector is greater than the first value.
+     * @param {Array} matrix 
+     */
+    static RotateMaxesToEnd(matrix) {
+        const lengths = this.GetLengths(matrix);
+        const zeroCoordinates = new Array(lengths.length).fill(0);
+        for (let dimension = 0; dimension < lengths.length; dimension++) {
+            let maxCoords = JSON.parse(JSON.stringify(zeroCoordinates));
+            maxCoords[dimension] = lengths[dimension] - 1;
+            while (Math.abs(this.Index(matrix, maxCoords)) < Math.abs(this.Index(matrix, zeroCoordinates))) {
+                this.RotateAlongDimension(matrix, dimension);
+            }
+        }
+    }
+
+    static RotateAlongDimension(matrix, dimension) {
+        if (dimension === 0) {
+            save = matrix[0];
+            for (let i = 1; i < matrix.length; i++) {
+                matrix[i - 1] = matrix[i];
+            }
+            matrix[matrix.length - 1] = save;
+            return;
+        }
+        for (let i = 0; i < matrix.length; i++) {
+            this.RotateAlongDimension(matrix[i], dimension - 1);
+        }
+    }
 }
 
-class ArrayUtilities
-{
-    static ProductOfLastN(array, n)
-    {
+class ArrayUtilities {
+    static ProductOfLastN(array, n) {
         const cutoff = Math.max(Math.min(array.length - n, array.length), 0);
         return array.reduceRight(
             (totalProduct, currentValue, currentIndex) => {
