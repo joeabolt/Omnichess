@@ -4,10 +4,24 @@ class Parser  {
         /* Build the board */
         const boardTemplate = config_data.board;
         let board = undefined;
-        if (boardTemplate.adjacencyMatrix) {
-            board = new Board(boardTemplate.adjacencyMatrix);
+        if (boardTemplate.type && boardTemplate.type == "hex") {
+            // Hex board
+            if (boardTemplate.adjacencyMatrix) {
+                // Accept input
+                board = new HexBoard(boardTemplate.adjacencyMatrix);
+            } else {
+                // Auto-generate
+                board = new HexBoard(HexBoard.Generate(boardTemplate.lengths, boardTemplate.orientation));
+            }
         } else {
-            board = new Board(Board.Generate(boardTemplate.lengths));
+            // Square board
+            if (boardTemplate.adjacencyMatrix) {
+                // Accept input
+                board = new Board(boardTemplate.adjacencyMatrix);
+            } else {
+                // Auto-generate
+                board = new Board(Board.Generate(boardTemplate.lengths));
+            }
         }
 
         /* Build the players */

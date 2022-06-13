@@ -189,7 +189,9 @@ class HexBoard  {
         const wideRow = dimensions[0];
         const shortRow = dimensions[0] - 1;
         const rows = dimensions[1];
-        const numberOfCells = (rows % 2 == 0) ? (wideRow + shortRow) * rows / 2 : (wideRow + shortRow) * ((rows / 2) - 1) + wideRow;
+        const numberOfCells = (rows % 2 == 0) ? 
+                (wideRow + shortRow) * rows / 2 : // End on short row
+                (wideRow + shortRow) * (Math.floor(rows / 2)) + wideRow; // End on wide row
 
         // Right (0) is +1 if not at end of row
         // Down-right (1) is +wideRow if not at end of wide row or bottom
@@ -199,7 +201,7 @@ class HexBoard  {
         // Up-right (5) is -shortRow if not at end of wide row or top
 
         const adjacencyMatrix = [];
-        for (let i = 0; i < numberOfCells; i++) {
+        for (let i = 0; i <= numberOfCells; i++) {
             const top = i <= wideRow;
             const bottom = (numberOfCells - i) < (rows % 2 == 0 ? shortRow : wideRow);
             const posInCycle = i % (wideRow + shortRow);

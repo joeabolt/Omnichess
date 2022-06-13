@@ -90,13 +90,14 @@ class Realizer  {
         let countOddDimensions = dimensionLengths.reduce((count, current) => {
             return count + (current % 2 === 0) ? 0 : 1;
         }, 0);
+        let tricoloring = dimensionLengths.length == 2 && toDisplay[0].length != toDisplay[1].length;
 
-        const board = this.AssembleChild(toDisplay, dimensionCount, countOddDimensions % 2 === 0);
+        const board = this.AssembleChild(toDisplay, dimensionCount, countOddDimensions % 2, tricoloring);
 
         return board;
     }
 
-    AssembleChild(matrix, dimensions, offsetColoring) {
+    AssembleChild(matrix, dimensions, offsetColoring, tricoloring = false) {
         if (dimensions === 0) {
             /* It's a single cell; make it and return */
             const cellIndex = matrix; /* Rename for clarity */
@@ -104,8 +105,8 @@ class Realizer  {
             const cell = document.createElement("div");
             cell.className = `cell${cellIndex < 0 ? " oob" : ""}`;
             let contents = "&nbsp";
-            const backgroundColor = this.DetermineBackgroundColor(cellIndex, offsetColoring);
-            const foregroundColor = this.DetermineForegroundColor(cellIndex, offsetColoring);
+            const backgroundColor = this.DetermineBackgroundColor(cellIndex, offsetColoring, tricoloring);
+            const foregroundColor = this.DetermineForegroundColor(cellIndex, offsetColoring, tricoloring);
 
             if (this.board.contents[cellIndex] !== undefined) {
                 contents = this.board.contents[cellIndex].identifier;
@@ -128,23 +129,39 @@ class Realizer  {
         aggregateElement.className = ((dimensions % 2 === 0) ? "vdimension" : "hdimension");
         aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
         for (let i = 0; i < matrix.length; i++) {
-            aggregateElement.appendChild(
-                this.AssembleChild(matrix[i],
-                dimensions - 1,
-                (matrix[i].length % 2 === 0 && i % 2 === 0) ? !offsetColoring : offsetColoring)
-            );
+            if (dimensions == 1 && tricoloring) {
+                aggregateElement.appendChild(
+                    this.AssembleChild(matrix[i],
+                    dimensions - 1,
+                    (offsetColoring ? i + 1 : i) % 3,
+                    tricoloring)
+                );
+            } else {
+                aggregateElement.appendChild(
+                    this.AssembleChild(matrix[i],
+                    dimensions - 1,
+                    (matrix[i].length % 2 === 0 && i % 2 === 0) ? 1 - offsetColoring : offsetColoring,
+                    tricoloring)
+                );
+            }
         }
 
         return aggregateElement;
     }
 
-    DetermineBackgroundColor(index, offsetColor) {
+    DetermineBackgroundColor(index, offsetColor, tricoloring = false) {
         if (index < 0) {
             return "#FFFFFF";
         }
 
         let colorIndex = offsetColor ? (index + 1) : (index);
         let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
+
+        if (tricoloring) {
+            if (offsetColor == 0) bgColor = "#C0C088";
+            if (offsetColor == 1) bgColor = "#C088C0";
+            if (offsetColor == 2) bgColor = "#88C0C0";
+        }
 
         if (this.activeCell !== undefined) {
             if (this.activeCell === index) {
@@ -161,13 +178,19 @@ class Realizer  {
         return bgColor;
     }
 
-    DetermineForegroundColor(index, offsetColor) {
+    DetermineForegroundColor(index, offsetColor, tricoloring = false) {
         if (index < 0) {
             return "#FFFFFF";
         }
 
         let colorIndex = offsetColor ? index + 1 : index;
         let fgColor = (colorIndex % 2 === 0) ? "#FFFFFF" : "#000000";
+
+        if (tricoloring) {
+            if (offsetColor == 0) fgColor = "#000000";
+            if (offsetColor == 1) fgColor = "#000000";
+            if (offsetColor == 2) fgColor = "#000000";
+        }
 
         if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined) {
             fgColor = this.board.contents[index].player.color;
