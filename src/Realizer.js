@@ -102,13 +102,14 @@ class Realizer  {
             const cellIndex = matrix; /* Rename for clarity */
 
             const cell = document.createElement("div");
-            cell.className = "cell";
+            cell.className = `cell${cellIndex < 0 ? " oob" : ""}`;
             let contents = "&nbsp";
             const backgroundColor = this.DetermineBackgroundColor(cellIndex, offsetColoring);
             const foregroundColor = this.DetermineForegroundColor(cellIndex, offsetColoring);
 
-            if (this.board.contents[cellIndex] !== undefined)
+            if (this.board.contents[cellIndex] !== undefined) {
                 contents = this.board.contents[cellIndex].identifier;
+            }
 
             cell.style.backgroundColor = backgroundColor;
             cell.style.color = foregroundColor;
@@ -139,7 +140,7 @@ class Realizer  {
 
     DetermineBackgroundColor(index, offsetColor) {
         if (index < 0) {
-            return "#AAAAAA";
+            return "#FFFFFF";
         }
 
         let colorIndex = offsetColor ? (index + 1) : (index);

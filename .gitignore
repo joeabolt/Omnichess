@@ -1,1 +1,6 @@
 *.code-workspace
+
+# Stuff to turn off once converted to node server for 2p
+index.js
+node_modules/*
+package*
