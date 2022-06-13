@@ -4,11 +4,9 @@ class Parser  {
         /* Build the board */
         const boardTemplate = config_data.board;
         let board = undefined;
-        if (boardTemplate.adjacencyMatrix !== undefined &&
-            boardTemplate.adjacencyMatrix !== null) {
+        if (boardTemplate.adjacencyMatrix) {
             board = new Board(boardTemplate.adjacencyMatrix);
-        }
-        else {
+        } else {
             board = new Board(Board.Generate(boardTemplate.lengths));
         }
 
