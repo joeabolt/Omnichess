@@ -62,11 +62,9 @@ class Parser  {
         const pieceTemplates = new Map();
         config_data.pieces.forEach((template) => {
             if (template.value == null) {
-                const piece = new Piece()
-                    .setMoveVectors(Vector.Create(template.move))
-                    .setCaptureVectors(Vector.Create(template.capture))
-                    .setMoveCaptureVectors(Vector.Create(template.moveCapture));
-                const vectors = piece.moveVectors.concat(piece.captureVectors).concat(piece.moveCaptureVectors);
+                const vectors = Vector.Create(template.move)
+                        .concat(Vector.Create(template.capture))
+                        .concat(Vector.Create(template.moveCapture));
                 const maxDestinations = [...new Set(vectors.map(vector => board.GetCellIndices(vector, board.sink, true, false)).flat())];
                 const minDestinations = [...new Set(vectors.map(vector => board.GetCellIndices(vector, board.source, true, false)).flat())];
                 let value = (maxDestinations.length + minDestinations.length) / 4;

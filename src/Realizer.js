@@ -158,9 +158,9 @@ class Realizer  {
         let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
 
         if (tricoloring) {
-            if (offsetColor == 0) bgColor = "#C0C088";
-            if (offsetColor == 1) bgColor = "#C088C0";
-            if (offsetColor == 2) bgColor = "#88C0C0";
+            if (offsetColor == 0) bgColor = "#B2B29F";
+            if (offsetColor == 1) bgColor = "#B29FB2";
+            if (offsetColor == 2) bgColor = "#9FB2B2";
         }
 
         if (this.activeCell !== undefined) {

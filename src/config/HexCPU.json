@@ -19,7 +19,7 @@
             "identifier": "N"
         },
         {
-            "move": "(1, 1, 0)+, (1, 0, 1)+; (0, 1, 1)+",
+            "move": "(1, 1, 0)s+; (1, 0, 1)s+; (0, 1, -1)s+",
             "capture": "",
             "moveCapture": "(1, 1, 0)+, (1, 0, 1)+; (0, 1, 1)+",
             "identifier": "B"
@@ -28,7 +28,7 @@
     "players": [{
             "identifier": "White",
             "color": "#0088FF",
-            "direction": [1, -1],
+            "direction": [1, -1, 1],
             "dropablePieces": "",
             "capturedPieces": "",
             "isCPU": false
@@ -36,7 +36,7 @@
         {
             "identifier": "Black",
             "color": "#FF0000",
-            "direction": [1, 1],
+            "direction": [1, 1, 1],
             "dropablePieces": "",
             "capturedPieces": "",
             "isCPU": true
@@ -55,8 +55,8 @@
     ],
     "boardState": [
         {
-            "player": "White",
-            "piece": "R",
+            "player": "Black",
+            "piece": "N",
             "location": 64
         }
     ]

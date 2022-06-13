@@ -53,14 +53,18 @@ class HexBoard  {
      *  locations can be found.
      */
     GetCellIndices(vector, startLocation, includeCaptureEligible = false, enforceCaptureEligible = false) {
+        let verbose = startLocation == 64 && enforceCaptureEligible == false;
+        verbose = false;
         const allCellIndices = new Set();
 
         const maxRepetitions = vector.components.reduce((maximum, currComp) => {
             return Math.max(maximum, currComp.maxRep);
         }, 1);
+        // const maxRepetitions = 1;
 
         for (let i = 1; i <= maxRepetitions; i++) {
-            const output = this.GetPathOutput(startLocation, vector.components, i);
+            const output = this.GetPathOutput(startLocation, vector.components, i, verbose);
+            if (verbose) console.log(`Stepping along ${vector.toString()} gave ${output}`);
 
             if (output === null || output <= 0 || 
                 (this.contents[output] !== undefined && !includeCaptureEligible) || 
@@ -80,7 +84,7 @@ class HexBoard  {
      *  Returns null if it goes off the board, or cannot find
      *  a valid path (such as being obstructed).
      */
-    GetPathOutput(start, components, iterations) {
+    GetPathOutput(start, components, iterations, verbose) {
         let destCell = start;
         let prevCell = start;
         
@@ -107,15 +111,18 @@ class HexBoard  {
             prevCell = destCell;
             if (steps[0] != 0) {
                 const direction = steps[0] > 0 ? 0 : 3; // Right or left
-                destCell = this.cells[destCell - 1][direction];
+                destCell = this.cells[destCell][direction];
+                if (verbose) console.log("Stepped along axis 0 to " + destCell);
             }
             if (steps[1] != 0 && destCell !== null && destCell > 0) {
                 const direction = steps[1] > 0 ? 1 : 4; // Down-right or up-left
-                destCell = this.cells[destCell - 1][direction];
+                destCell = this.cells[destCell][direction];
+                if (verbose) console.log("Stepped along axis 1 to " + destCell);
             }
             if (steps[2] != 0 && destCell !== null && destCell > 0) {
-                const direction = steps[0] > 0 ? 5 : 2; // Up-right or down-left
-                destCell = this.cells[destCell - 1][direction];
+                const direction = steps[2] > 0 ? 5 : 2; // Up-right or down-left
+                destCell = this.cells[destCell][direction];
+                if (verbose) console.log("Stepped along axis 2 to " + destCell);
             }
 
             /* Do not include OoB */

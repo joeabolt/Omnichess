@@ -91,8 +91,10 @@ class Vector {
      */
     static SyncCombineComponents(components) {
         const outputs = [];
+        components.reverse();
         outputs.push(components.map(options => options[0]));
         outputs.push(components.map(options => options.length === 2 ? options[1] : options[0]));
+        components.reverse();
         return outputs;
     }
 }
