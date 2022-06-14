@@ -41,7 +41,7 @@
         {
             "move": "(1d, 0, 0); (2di, 0, 0);",
             "capture": "",
-            "moveCapture": "(1d, 1d, 0); (1d, 0, 1d)",
+            "moveCapture": "(0, 0, 1d); (0, 1d, 0)",
             "identifier": "p"
         }
     ],
@@ -56,7 +56,7 @@
         {
             "identifier": "Orange",
             "color": "#FFAA00",
-            "direction": [-1, 1, 1],
+            "direction": [-1, -1, -1],
             "dropablePieces": "",
             "capturedPieces": "",
             "isCPU": true
