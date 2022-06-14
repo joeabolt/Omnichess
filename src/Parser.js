@@ -11,7 +11,7 @@ class Parser  {
                 board = new HexBoard(boardTemplate.adjacencyMatrix);
             } else {
                 // Auto-generate
-                board = new HexBoard(HexBoard.Generate(boardTemplate.lengths, boardTemplate.orientation));
+                board = new HexBoard(HexBoard.Generate(boardTemplate.lengths, boardTemplate.orientation, boardTemplate.oob));
             }
         } else {
             // Square board

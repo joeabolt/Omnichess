@@ -115,9 +115,12 @@ class Realizer  {
             cell.style.backgroundColor = backgroundColor;
             cell.style.color = foregroundColor;
 
-            const size = "35px"; //TODO: Make this dynamic #55
+            const size = "37px"; //TODO: Make this dynamic #55
             cell.style.width = size;
             cell.style.height = size;
+            if (tricoloring) {
+                cell.style.width = "42px";
+            }
 
             cell.innerHTML = `${cellIndex}<br />${contents}`;
             cell.onclick = () => { processClick(event, cellIndex); };
@@ -157,10 +160,15 @@ class Realizer  {
         let colorIndex = offsetColor ? (index + 1) : (index);
         let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
 
+        // if (tricoloring) {
+        //     if (offsetColor == 0) bgColor = "#FFCE9E";
+        //     if (offsetColor == 1) bgColor = "#D18B47";
+        //     if (offsetColor == 2) bgColor = "#E8AB6F";
+        // }
         if (tricoloring) {
-            if (offsetColor == 0) bgColor = "#B2B29F";
-            if (offsetColor == 1) bgColor = "#B29FB2";
-            if (offsetColor == 2) bgColor = "#9FB2B2";
+            if (offsetColor == 0) bgColor = "#666666";
+            if (offsetColor == 1) bgColor = "#000000";
+            if (offsetColor == 2) bgColor = "#333333";
         }
 
         if (this.activeCell !== undefined) {
@@ -186,10 +194,15 @@ class Realizer  {
         let colorIndex = offsetColor ? index + 1 : index;
         let fgColor = (colorIndex % 2 === 0) ? "#FFFFFF" : "#000000";
 
+        // if (tricoloring) {
+        //     if (offsetColor == 0) fgColor = "#000000";
+        //     if (offsetColor == 1) fgColor = "#000000";
+        //     if (offsetColor == 2) fgColor = "#000000";
+        // }
         if (tricoloring) {
-            if (offsetColor == 0) fgColor = "#000000";
-            if (offsetColor == 1) fgColor = "#000000";
-            if (offsetColor == 2) fgColor = "#000000";
+            if (offsetColor == 0) fgColor = "#FFFFFF";
+            if (offsetColor == 1) fgColor = "#FFFFFF";
+            if (offsetColor == 2) fgColor = "#FFFFFF";
         }
 
         if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined) {

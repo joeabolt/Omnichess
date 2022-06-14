@@ -53,7 +53,7 @@ class HexBoard  {
      *  locations can be found.
      */
     GetCellIndices(vector, startLocation, includeCaptureEligible = false, enforceCaptureEligible = false) {
-        let verbose = startLocation == 64 && enforceCaptureEligible == false;
+        let verbose = startLocation == 61 && enforceCaptureEligible == true;
         verbose = false;
         const allCellIndices = new Set();
 
@@ -69,6 +69,7 @@ class HexBoard  {
             if (output === null || output <= 0 || 
                 (this.contents[output] !== undefined && !includeCaptureEligible) || 
                 (this.contents[output] === undefined && enforceCaptureEligible)) {
+                if (verbose) console.log("  Ineligible by capture rules; ignoring");
                 continue;
             }
             allCellIndices.add(output);
@@ -142,7 +143,12 @@ class HexBoard  {
                 if (canHopObstacle) {
                     continue;
                 }
-                break;
+
+                if (deltas.reduce((sum, x) => sum + x, 0) !== 0) {
+                    return null;
+                } else {
+                    break;
+                }
             }
         }
 
@@ -174,9 +180,9 @@ class HexBoard  {
             // Check if I'm in-bounds by asking a neighbor
             let inBounds = true;
             if (this.cells[i][0]) {
-                inBounds = this.cells[this.cells[i][0]][3] > 0;
+                inBounds = this.cells[Math.abs(this.cells[i][0])][3] > 0;
             } else if (this.cells[i][3]) {
-                inBounds = this.cells[this.cells[i][3]][0] > 0;
+                inBounds = this.cells[Math.abs(this.cells[i][3])][0] > 0;
             }
             row.push(inBounds ? i : -i);
             if (this.cells[i][0] === null) {
@@ -192,7 +198,7 @@ class HexBoard  {
      * Generates and returns an adjacency matrix. Orientation must be horizontal or vertical and specifies
      * which direction the side-to-side lines go. (Horizontal has a row on top, vertical has a point)
      */
-    static Generate(dimensions, orientation) {
+    static Generate(dimensions, orientation, oob = []) {
         const wideRow = dimensions[0];
         const shortRow = dimensions[0] - 1;
         const rows = dimensions[1];
@@ -226,6 +232,9 @@ class HexBoard  {
             adjacencyMatrix.push(moves);
         }
 
-        return adjacencyMatrix;
+        // Process oob
+        const boundedAdjacencyMatrix = adjacencyMatrix.map(neighbors => neighbors.map(x => oob.includes(x) ? -x : x));
+
+        return boundedAdjacencyMatrix;
     }
 }
