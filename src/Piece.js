@@ -44,8 +44,15 @@ class Piece  {
         }
         
         this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
-            for (let i = 0; i < vector.components.length; i++) {
-                vector.components[i].length *= direction[i];
+            if (vector.synchronized) {
+                const flip = direction.reduce((flip, x) => flip * x, 1);
+                for (let i = 0; i < vector.components.length; i++) {
+                    vector.components[i].length *= flip;
+                }
+            } else {
+                for (let i = 0; i < vector.components.length; i++) {
+                    vector.components[i].length *= direction[i];
+                }
             }
         });
 

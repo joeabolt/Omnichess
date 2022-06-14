@@ -2,6 +2,7 @@
 class Vector {
     constructor(components) {
         this.components = components;
+        this.synchronized = false;
     }
 
     toString() {
@@ -53,7 +54,11 @@ class Vector {
                 combinationMethod = Vector.SyncCombineComponents;
             }
             combinationMethod(components).forEach(crossProduct => {
-                vectors.push(new Vector(crossProduct));
+                const newVector = new Vector(crossProduct);
+                if (globalFlags.includes("s")) {
+                    newVector.synchronized = true;
+                }
+                vectors.push(newVector);
             });
         });
 
