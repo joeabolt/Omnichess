@@ -162,6 +162,18 @@ class HexBoard  {
     }
 
     /**
+     * Used to help with checkmate calculations
+     */
+    GetCellsOnVectorBetween(vector, startLocation, endLocation) {
+        let cells = [];
+        for (let location = startLocation; location != endLocation; ) {
+            location = this.GetPathOutput(location, vector.components, 1);
+            cells.push(location);
+        }
+        return cells;
+    }
+
+    /**
      * Produces a matrix. Each cell represents a visible slot on the board.
      * Where these cells are not included in the board, they contain negative values. Otherwise, 
      * they contain the index of the cell they represent.
