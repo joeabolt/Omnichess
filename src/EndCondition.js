@@ -53,3 +53,7 @@ class EndCondition {
         return 0;
     }
 }
+
+if (typeof window === 'undefined') {
+    module.exports.EndCondition = EndCondition;
+}

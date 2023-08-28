@@ -1,3 +1,5 @@
+const {Component} = require("./Component.js");
+
 /* Convenience class to store a vector and its associated flags */
 class Vector {
     constructor(components) {
@@ -102,4 +104,8 @@ class Vector {
         components.reverse();
         return outputs;
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Vector = Vector;
 }

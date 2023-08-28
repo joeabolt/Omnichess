@@ -57,3 +57,7 @@ class Turn {
         return undefined;
     }
 }
+
+if (typeof window === 'undefined') {
+    module.exports.Turn = Turn;
+}

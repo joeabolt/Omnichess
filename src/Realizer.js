@@ -1,8 +1,7 @@
 /* Manages the display of the board to the user */
 class Realizer  {
-    constructor(game) {
-        this.game = game;
-        this.board = game.board;
+    constructor(board) {
+        this.board = board;
 
         this.activeCell = undefined;
         this.activeCellCanMove = [];
@@ -14,41 +13,45 @@ class Realizer  {
      * Method to be called by the front-end. Incurs computational
      * cost each time called. Outputs the current state of the board.
      */
-    Realize() {
+    realize() {
         let outputArea = document.getElementById("output");
         if (outputArea.firstChild) {
             outputArea.removeChild(outputArea.firstChild);
         }
-        outputArea.appendChild(this.CreateDisplayBoard());
+        outputArea.appendChild(this.createDisplayBoard());
     }
 
-    ProcessClick(clickedCell) {
+    processClick(clickedCell) {
         if (this.activeCell === undefined) {
-            this.SetActiveCell(clickedCell);
-            return;
+            this.setActiveCell(clickedCell);
+            return null;
         }
         if (clickedCell === this.activeCell) {
-            this.SetActiveCell(undefined);
-            return;
+            this.setActiveCell(undefined);
+            return null;
         }
+
         if (this.activeCellCanMoveCapture.includes(clickedCell)) {
-            this.CreateAndProcessMove(true, true, this.activeCell, clickedCell);
-            return;
+            const move = this.createMove(true, true, this.activeCell, clickedCell);
+            this.setActiveCell(undefined);
+            return move;
         }
         if (this.activeCellCanCapture.includes(clickedCell)) {
-            this.CreateAndProcessMove(false, true, this.activeCell, clickedCell);
-            return;
+            const move = this.createMove(false, true, this.activeCell, clickedCell);
+            this.setActiveCell(undefined);
+            return move;
         }
         if (this.activeCellCanMove.includes(clickedCell)) {
-            this.CreateAndProcessMove(true, false, this.activeCell, clickedCell);
-            return;
+            const move = this.createMove(true, false, this.activeCell, clickedCell);
+            this.setActiveCell(undefined);
+            return move;
         }
 
         /* They just clicked another cell, not a viable action */
-        this.SetActiveCell(clickedCell);
+        this.setActiveCell(clickedCell);
     }
 
-    SetActiveCell(newActiveCell) {
+    setActiveCell(newActiveCell) {
         this.activeCell = newActiveCell;
         this.activeCellCanMove = [];
         this.activeCellCanCapture = [];
@@ -74,16 +77,13 @@ class Realizer  {
         }
     }
 
-    CreateAndProcessMove(move, capture, source, target) {
+    createMove(move, capture, source, target) {
         const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
-
-        this.game.Step(moveObj, true, this);
-        this.activeCell = undefined;
-        this.Realize();
+        return moveObj;
     }
 
-    CreateDisplayBoard() {
-        let toDisplay = this.board.ConvertToArray();
+    createDisplayBoard() {
+        let toDisplay = this.board.array;
         let dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
         let dimensionCount = dimensionLengths.length;
 
@@ -91,13 +91,14 @@ class Realizer  {
             return count + (current % 2 === 0) ? 0 : 1;
         }, 0);
         let tricoloring = dimensionLengths.length == 2 && toDisplay[0].length != toDisplay[1].length;
+        let verticalHex = tricoloring && this.board.orientation == "vertical";
 
-        const board = this.AssembleChild(toDisplay, dimensionCount, countOddDimensions % 2, tricoloring);
+        const board = this.assembleChild(toDisplay, dimensionCount, countOddDimensions % 2, tricoloring, verticalHex);
 
         return board;
     }
 
-    AssembleChild(matrix, dimensions, offsetColoring, tricoloring = false) {
+    assembleChild(matrix, dimensions, offsetColoring, tricoloring = false, verticalHex = false) {
         if (dimensions === 0) {
             /* It's a single cell; make it and return */
             const cellIndex = matrix; /* Rename for clarity */
@@ -105,10 +106,10 @@ class Realizer  {
             const cell = document.createElement("div");
             cell.className = `cell${cellIndex < 0 ? " oob" : ""}`;
             let contents = "&nbsp";
-            const backgroundColor = this.DetermineBackgroundColor(cellIndex, offsetColoring, tricoloring);
-            const foregroundColor = this.DetermineForegroundColor(cellIndex, offsetColoring, tricoloring);
+            const backgroundColor = this.determineBackgroundColor(cellIndex, offsetColoring, tricoloring);
+            const foregroundColor = this.determineForegroundColor(cellIndex, offsetColoring, tricoloring);
 
-            if (this.board.contents[cellIndex] !== undefined) {
+            if (this.board.contents[cellIndex] != undefined) {
                 contents = this.board.contents[cellIndex].identifier;
             }
 
@@ -119,7 +120,11 @@ class Realizer  {
             cell.style.width = size;
             cell.style.height = size;
             if (tricoloring) {
-                cell.style.width = "42px";
+                if (verticalHex) {
+                    cell.style.height = "42px";
+                } else {
+                    cell.style.width = "42px";
+                }
             }
 
             cell.innerHTML = `${cellIndex}<br />${contents}`;
@@ -129,22 +134,22 @@ class Realizer  {
         }
 
         let aggregateElement = document.createElement("div");
-        aggregateElement.className = ((dimensions % 2 === 0) ? "vdimension" : "hdimension");
+        aggregateElement.className = ((dimensions % 2 === 0 ^ verticalHex) ? "vdimension" : "hdimension");
         aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
         for (let i = 0; i < matrix.length; i++) {
             if (dimensions == 1 && tricoloring) {
                 aggregateElement.appendChild(
-                    this.AssembleChild(matrix[i],
+                    this.assembleChild(matrix[i],
                     dimensions - 1,
                     (offsetColoring ? i + 1 : i) % 3,
-                    tricoloring)
+                    tricoloring, verticalHex)
                 );
             } else {
                 aggregateElement.appendChild(
-                    this.AssembleChild(matrix[i],
+                    this.assembleChild(matrix[i],
                     dimensions - 1,
                     (matrix[i].length % 2 === 0 && i % 2 === 0) ? 1 - offsetColoring : offsetColoring,
-                    tricoloring)
+                    tricoloring, verticalHex)
                 );
             }
         }
@@ -152,7 +157,7 @@ class Realizer  {
         return aggregateElement;
     }
 
-    DetermineBackgroundColor(index, offsetColor, tricoloring = false) {
+    determineBackgroundColor(index, offsetColor, tricoloring = false) {
         if (index < 0) {
             return "#FFFFFF";
         }
@@ -160,11 +165,6 @@ class Realizer  {
         let colorIndex = offsetColor ? (index + 1) : (index);
         let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
 
-        // if (tricoloring) {
-        //     if (offsetColor == 0) bgColor = "#FFCE9E";
-        //     if (offsetColor == 1) bgColor = "#D18B47";
-        //     if (offsetColor == 2) bgColor = "#E8AB6F";
-        // }
         if (tricoloring) {
             if (offsetColor == 0) bgColor = "#666666";
             if (offsetColor == 1) bgColor = "#000000";
@@ -186,7 +186,7 @@ class Realizer  {
         return bgColor;
     }
 
-    DetermineForegroundColor(index, offsetColor, tricoloring = false) {
+    determineForegroundColor(index, offsetColor, tricoloring = false) {
         if (index < 0) {
             return "#FFFFFF";
         }
@@ -194,18 +194,13 @@ class Realizer  {
         let colorIndex = offsetColor ? index + 1 : index;
         let fgColor = (colorIndex % 2 === 0) ? "#FFFFFF" : "#000000";
 
-        // if (tricoloring) {
-        //     if (offsetColor == 0) fgColor = "#000000";
-        //     if (offsetColor == 1) fgColor = "#000000";
-        //     if (offsetColor == 2) fgColor = "#000000";
-        // }
         if (tricoloring) {
             if (offsetColor == 0) fgColor = "#FFFFFF";
             if (offsetColor == 1) fgColor = "#FFFFFF";
             if (offsetColor == 2) fgColor = "#FFFFFF";
         }
 
-        if (this.board.contents[index] !== undefined && this.board.contents[index].player.color !== undefined) {
+        if (this.board.contents[index] != undefined && this.board.contents[index].player.color != undefined) {
             fgColor = this.board.contents[index].player.color;
         }
 

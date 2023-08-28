@@ -3,7 +3,7 @@ const config = {
         "lengths": [12, 11],
         "adjacencyMatrix": null,
         "type": "hex",
-        "orientation": "horizontal",
+        "orientation": "vertical",
         "oob": [1, 2, 3, 10, 11, 12, 13, 14, 22, 23, 24, 25, 34, 35, 36, 46, 47, 58, 70, 81, 82, 92, 93, 94, 
             103, 104, 105, 106, 114, 115, 116, 117, 118, 125, 126, 127]
     },
@@ -255,4 +255,8 @@ const config = {
             "location": 113
         }
     ]
+}
+
+if (typeof window === 'undefined') {
+    module.exports.config = config;
 }

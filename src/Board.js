@@ -1,3 +1,6 @@
+const {ArrayUtilities} = require("./ArrayUtilities.js");
+const {MatrixUtilities} = require("./MatrixUtilities.js");
+
 /* Represents the board state at a point in time */
 class Board  {
     constructor(adjacencyMatrix) {
@@ -276,7 +279,7 @@ class Board  {
      * Generates and returns an adjacency matrix with the lengths specified in dimensions,
      * an array of integers. Uses a n-dimensional matrix, where n = dimensions.length.
      */
-    static Generate(dimensions) {
+    static Generate(dimensions, oob = []) {
         const adjacencyMatrix = [];
         const cellCount = ArrayUtilities.ProductOfLastN(dimensions, dimensions.length);
         const directions = Math.pow(3, dimensions.length);
@@ -303,7 +306,11 @@ class Board  {
                         totalOffset += increment;
                     }
                 }
-                adjacencyMatrix[i - 1].push(i + totalOffset);
+                let numberToInsert = i + totalOffset;
+                if (oob.includes(numberToInsert)) {
+                    numberToInsert *= -1;
+                }
+                adjacencyMatrix[i - 1].push(numberToInsert);
             }
         }
 
@@ -344,4 +351,9 @@ class Board  {
 
         return adjacencyMatrix;
     }
+}
+
+
+if (typeof window === 'undefined') {
+    module.exports.Board = Board;
 }

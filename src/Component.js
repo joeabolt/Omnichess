@@ -68,3 +68,7 @@ class Component {
         return localFlags.includes("d") || globalFlags.includes("d") || component.length === 0 ? [component] : [component, reversedComponent];
     }
 }
+
+if (typeof window === 'undefined') {
+    module.exports.Component = Component;
+}

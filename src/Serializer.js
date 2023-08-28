@@ -92,3 +92,8 @@ class Serializer {
         return output;
     }
 }
+
+
+if (typeof window === 'undefined') {
+    module.exports.Serializer = Serializer;
+}

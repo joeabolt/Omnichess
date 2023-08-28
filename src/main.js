@@ -1,3 +1,21 @@
+const socket = io();
+
+// socket.emit('event');
+// socket.on('event', (data) => { func });
+
+socket.on('start game', (data) => {
+    console.log(data);
+    realizer = new Realizer(data.board);
+    realizer.realize();
+    
+    document.getElementById("input").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "block";
+});
+socket.on('update', (data) => {
+    realizer.board = data.board;
+    realizer.realize();
+});
+
 let realizer = undefined;
 let game = undefined;
 const fileInput = document.getElementById("configInput")
@@ -10,28 +28,31 @@ fileInput.onchange = () => {
     reader.readAsText(fileInput.files[0]);
 };
 
-function processClick(event, cellIndex) {
+async function processClick(event, cellIndex) {
     if (realizer === undefined)
         return;
 
     event.stopPropagation();
-    realizer.ProcessClick(cellIndex);
-    realizer.Realize();
+    const move = realizer.processClick(cellIndex);
+    if (move != null) {
+        await game.step(move, true, () => {realizer.realize();});
+    }
+    realizer.realize();
 }
 
 function clickHandler() {
     if (realizer === undefined)
         return;
 
-    realizer.SetActiveCell(undefined);
-    realizer.Realize();
+    realizer.setActiveCell(undefined);
+    realizer.realize();
 }
 
 function loadConfig(config) {
     game = Parser.Load(config);
-    realizer = new Realizer(game);
-    realizer.Realize();
-    game.StartCPU(realizer);
+    realizer = new Realizer(game.board);
+    realizer.realize();
+    game.startCPU(realizer);
     
     document.getElementById("input").style.display = "none";
     document.getElementById("mainDisplay").style.display = "block";
@@ -44,6 +65,13 @@ function loadPreloadedConfig(path) {
         loadConfig(config);
     };
     document.body.appendChild(configScript);
+}
+
+function loadPreloadedConfig2(path) {
+    const actualPath = "preloaded" + path.substring(path.lastIndexOf('/'));
+    console.log("Actual path: " + actualPath);
+    const event = {configName: actualPath};
+    socket.emit('start game', event);
 }
 
 function save() {

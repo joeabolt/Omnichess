@@ -1,3 +1,12 @@
+const {Board} = require("./Board.js");
+const {HexBoard} = require("./HexBoard.js");
+const {Player} = require("./Player.js");
+const {CPU} = require("./CPU.js");
+const {EndCondition} = require("./EndCondition.js");
+const {Vector} = require("./Vector.js");
+const {Piece} = require("./Piece.js");
+const {Game} = require("./Game.js");
+
 /* Class to create game resources based on a json file */
 class Parser  {
     static Load(config_data) {
@@ -13,6 +22,11 @@ class Parser  {
                 // Auto-generate
                 board = new HexBoard(HexBoard.Generate(boardTemplate.lengths, boardTemplate.orientation, boardTemplate.oob));
             }
+            if (boardTemplate.orientation) {
+                board.orientation = boardTemplate.orientation;
+            } else {
+                board.orientation = "horizontal";
+            }
         } else {
             // Square board
             if (boardTemplate.adjacencyMatrix) {
@@ -20,7 +34,7 @@ class Parser  {
                 board = new Board(boardTemplate.adjacencyMatrix);
             } else {
                 // Auto-generate
-                board = new Board(Board.Generate(boardTemplate.lengths));
+                board = new Board(Board.Generate(boardTemplate.lengths, boardTemplate.oob));
             }
         }
 
@@ -99,4 +113,8 @@ class Parser  {
 
         return game;
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Parser = Parser;
 }

@@ -1,3 +1,5 @@
+const {Turn} = require("./Turn.js");
+
 /* Manages the state of the game */
 class Game  {
     constructor(board, players, endConditions) {
@@ -37,16 +39,16 @@ class Game  {
      * Deliberately has no side effects so it can safely be called even 
      * if a human player ought to move first.
      */
-    StartCPU(realizer) {
+    startCPU() {
         if (this.nextTurn.player.isCPU) {
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this), true, realizer);
+            this.step(this.nextTurn.player.GetNextMove(this.board, this), true);
         }
     }
 
-    async Step(move, doCPUTurn = true, realizer = undefined) {
+    async step(move, doCPUTurn = true, callback = () => {}) {
         if (this.gameState === 0) {
-            if (this.DoTurn(move, realizer)) {
-                this.CheckGameEnd();
+            if (this.doTurn(move, callback)) {
+                this.checkGameEnd();
             }
         }
         if (this.gameState !== 0) {
@@ -57,27 +59,27 @@ class Game  {
         }
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU) {
             await sleep(1000);
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this), false, realizer);
+            this.step(this.nextTurn.player.GetNextMove(this.board, this), false, callback);
         }
     }
 
-    DoTurn(move, realizer = undefined) {
+    doTurn(move, callback = () => {}) {
         if (!this.nextTurn.Validate(move)) {
             return false;
         }
-        if (!this.Validate(move)) {
+        if (!this.validate(move)) {
             console.warn("Game invalidated the move.");
             document.getElementById("message").innerHTML = "Illegal move.";
             return false;
         }
 
         this.lastTurn = this.nextTurn;
-        this.CommitMove(move, true, realizer);
+        this.commitMove(move, true, callback);
 
         return true;
     }
 
-    CheckGameEnd() {
+    checkGameEnd() {
         // TODO: Update to allow multiple simultaneous win/loss conditions
         this.endConditions.forEach((endCondition) => {
             const evaluation = endCondition.EvaluateGame(this.board, this.lastTurn, this.nextTurn);
@@ -92,7 +94,7 @@ class Game  {
      *
      *  TODO: Add support for promote, drop
      */
-    Validate(move) {
+    validate(move) {
         let validity = false;
         const actor = this.board.contents[move.srcLocation];
 
@@ -121,7 +123,7 @@ class Game  {
     /**
      *  Commits a move to the board, and pushes it to the move stack
      */
-    CommitMove(move, showOutput = true, realizer = undefined) {
+    commitMove(move, showOutput = true, callback = () => {}) {
         let capturedPiece = null;
         if (move.capture) {
             capturedPiece = this.board.contents[move.targetLocation];
@@ -136,9 +138,6 @@ class Game  {
             this.board.contents[move.srcLocation].setMoves(1);
         }
         this.moveStack.push(move);
-        if (realizer) {
-            realizer.Realize();
-        }
         if (showOutput) {
             let message = [];
             if (move.move) {
@@ -158,11 +157,12 @@ class Game  {
 
         this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
         this.nextTurn = this.turnOrder[this.turnIndex];
-        this.UpdateUndoRedoVisibility();
+        this.updateUndoRedoVisibility();
         // TODO: Add support for promote, drop
+        callback();
     }
 
-    Undo(showOutput = true) {
+    undo(showOutput = true) {
         const moveToUndo = this.moveStack.pop();
         if (moveToUndo.move) {
             this.board.contents[moveToUndo.srcLocation] = this.board.contents[moveToUndo.targetLocation];
@@ -172,7 +172,7 @@ class Game  {
             this.board.contents[moveToUndo.targetLocation] = moveToUndo.capturedPiece;
         }
         this.redoStack.push(moveToUndo);
-        this.UpdateUndoRedoVisibility();
+        this.updateUndoRedoVisibility();
 
         this.board.contents[moveToUndo.srcLocation].setMoves(-1);
 
@@ -180,11 +180,11 @@ class Game  {
         this.nextTurn = this.turnOrder[this.turnIndex];
     }
 
-    Redo(showOutput = true) {
-        this.CommitMove(this.redoStack.pop(), showOutput);
+    redo(showOutput = true) {
+        this.commitMove(this.redoStack.pop(), showOutput);
     }
 
-    UpdateUndoRedoVisibility() {
+    updateUndoRedoVisibility() {
         if (game.moveStack.length > 0) {
             document.getElementById("undo").style.display = "inline";
         }
@@ -199,4 +199,8 @@ class Game  {
             document.getElementById("redo").style.display = "none";
         }
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Game = Game;
 }

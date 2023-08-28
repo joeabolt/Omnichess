@@ -131,3 +131,7 @@ class Piece  {
         this.setDirection(nextDirection);
     }
 }
+
+if (typeof window === 'undefined') {
+    module.exports.Piece = Piece;
+}

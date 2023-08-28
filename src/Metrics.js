@@ -229,3 +229,7 @@ class Metrics {
         return true;
     }
 }
+
+if (typeof window === 'undefined') {
+    module.exports.Metrics = Metrics;
+}

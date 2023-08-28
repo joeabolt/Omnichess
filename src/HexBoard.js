@@ -1,3 +1,5 @@
+const {ArrayUtilities} = require("./ArrayUtilities.js");
+const {MatrixUtilities} = require("./MatrixUtilities.js");
 /* Represents the board state at a point in time for a hexagonal board */
 
 /*
@@ -13,6 +15,7 @@
 class HexBoard  {
     constructor(adjacencyMatrix) {
         this.cells = adjacencyMatrix;
+        this.oob = adjacencyMatrix.flatMap(neighbors => neighbors.filter(x => x < 0).map(x => -x)).concat(0);
         this.contents = [];
 
         /* Has an extra cell (0), but will never be used, and makes stuff line up */
@@ -24,21 +27,23 @@ class HexBoard  {
 
         // Calculated once, used to estimate piece value if not explicitly set
         // It is the valid location with the most mobility (based on each cell "voting" on its neighbors, with vote strength = # neighbors)
-        this.sink = -1;
-        this.source = -1;
         let maxLength = Math.ceil(Math.sqrt(this.cells.length)); // Approximately correct; good enough for this purpose
-        let cellValues = this.cells.map(neighbors => neighbors.filter(x => x != null).reduce((sum) => sum + 1, 0));
+        let cellValues = this.cells.map(neighbors => neighbors.filter(x => x != null && x > 0).reduce((sum) => sum + 1, 0));
+        cellValues = cellValues.map((x,i) => this.oob.includes(i) ? 0 : x);
         for (let i = 0; i < maxLength / 2; i++) {
             // Update everyone with the sum of their neighbors
             let nextCellValues = cellValues.map((strength, index) => {
-                return this.cells[index].filter(x => x != null)
-                    .map(neighbor => cellValues[neighbor - 1])
+                return this.cells[index].filter(x => x != null && x > 0)
+                    .map(neighbor => cellValues[neighbor])
                     .reduce((sum, curr) => sum + curr, 0) - strength;
             });
             cellValues = nextCellValues;
+            cellValues = cellValues.map((x,i) => this.oob.includes(i) ? 0 : x);
         }
+        this.sink = cellValues.findIndex(x => x > 0);
+        this.source = cellValues.findIndex(x => x > 0);
         this.sink = cellValues.reduce((strongest, current, index) => cellValues[strongest] > current ? strongest : index, 1);
-        this.source = cellValues.reduce((weakest, current, index) => cellValues[weakest] < current ? weakest : index, 1);
+        this.source = cellValues.reduce((weakest, current, index) => (cellValues[weakest] > current && current > 0) ? index : weakest, 1);
     }
 
     /**
@@ -249,4 +254,8 @@ class HexBoard  {
 
         return boundedAdjacencyMatrix;
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.HexBoard = HexBoard;
 }
