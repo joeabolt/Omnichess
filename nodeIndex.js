@@ -21,11 +21,7 @@ const activeGames = new Map();
 io.on('connection', (socket) => {
     let activeGame = undefined;
     let playerIdentifier = undefined;
-    console.log('user connected');
-    // socket.broadcast.emit('hi'); // Goes to everyone except that socket
-    // io.emit('event name', payload); // Goes to everyone
     socket.on('join game', (event) => {
-        console.log("Trying to join game: " + JSON.stringify(event));
         const game = activeGames.get(event.gameId);
         if (game && game.password === event.password) {
             // Join game and reserve slot
@@ -65,8 +61,11 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('disconnect', () => {
-        console.log('user disconnected');
-        // TODO
+        if (activeGame) {
+            io.to(activeGame).emit('abandoned');
+            playerIdentifier = undefined;
+            activeGame = undefined;
+        }
     });
     socket.on('move', (event) => {
         const move = new Move(event.move, event.capture, event.srcLocation, event.targetLocation, event.capturedPiece);

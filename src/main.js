@@ -1,5 +1,6 @@
 const socket = io();
 document.getElementById("lobby").style.display = "none";
+document.getElementById("error").style.display = "none";
 
 // socket.emit('event');
 // socket.on('event', (data) => { func });
@@ -9,6 +10,7 @@ socket.on('start game', (data) => {
     realizer.realize();
     realizer.setLog(data.log);
     
+    document.getElementById("error").style.display = "none";
     document.getElementById("input").style.display = "none";
     document.getElementById("lobby").style.display = "none";
     document.getElementById("mainDisplay").style.display = "block";
@@ -17,6 +19,7 @@ socket.on('join lobby', (event) => {
     document.getElementById("gameId").innerHTML = event.gameId;
     document.getElementById("password").innerHTML = event.password;
     
+    document.getElementById("error").style.display = "none";
     document.getElementById("input").style.display = "none";
     document.getElementById("lobby").style.display = "block";
     document.getElementById("mainDisplay").style.display = "none";
@@ -27,6 +30,13 @@ socket.on('update', (data) => {
     realizer.board = data.board;
     realizer.realize();
     realizer.setLog(data.log);
+});
+socket.on('abandoned', () => {
+    document.getElementById("error").innerHTML = "The other player(s) left.";
+    document.getElementById("error").style.display = "block";
+    document.getElementById("input").style.display = "block";
+    document.getElementById("lobby").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "none";
 });
 
 let realizer = undefined;
