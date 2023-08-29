@@ -116,6 +116,7 @@ function getNumber() {
 }
 
 // Initialize server
-server.listen(8080, () => {
-    console.log('listening on *:8080');
+// Not using 8080 so I can throw this on my server that a different process on 8080
+server.listen(8192, () => {
+    console.log('listening on *:8192');
 });
