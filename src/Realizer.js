@@ -211,8 +211,8 @@ class Realizer  {
             if (offsetColor == 2) fgColor = "#FFFFFF";
         }
 
-        if (this.board.contents[index] != undefined && this.board.contents[index].player.color != undefined) {
-            fgColor = this.board.contents[index].player.color;
+        if (this.board.contents[index] != undefined && this.board.contents[index].color != undefined) {
+            fgColor = this.board.contents[index].color;
         }
 
         if (this.activeCell !== undefined) {

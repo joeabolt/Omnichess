@@ -46,6 +46,15 @@ class HexBoard  {
         this.source = cellValues.reduce((weakest, current, index) => (cellValues[weakest] > current && current > 0) ? index : weakest, 1);
     }
 
+    asJson() {
+        return {
+            array: this.array,
+            contents: this.contents.map(x => x ? x.asJson() : x),
+            orientation: this.orientation,
+            cells: this.cells
+        };
+    }
+
     /**
      *  Returns a Set of all locations (as indices) described
      *  by the vector relative to startLocation. Will not continue

@@ -16,6 +16,16 @@ class Piece  {
         this.initialMoveCaptureVectors = [];
     }
 
+    asJson() {
+        return {
+            moveVectors: this.moveVectors,
+            captureVectors: this.captureVectors,
+            moveCaptureVectors: this.moveCaptureVectors,
+            identifier: this.identifier,
+            color: this.player ? this.player.color : undefined
+        };
+    }
+
     static Create(baseObj) {
         /* Currently assumes baseObj has a string for
          * move, capture, moveCapture, and player.

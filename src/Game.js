@@ -52,7 +52,7 @@ class Game  {
 
     startGame(io) {
         this.startCPU();
-        const startGameEvent = {board: this.board, log: this.log};
+        const startGameEvent = {board: this.board.asJson(), log: this.log};
         io.to(this.gameId).emit('start game', startGameEvent);
     }
 
@@ -67,7 +67,7 @@ class Game  {
         }
     }
 
-    async step(move, doCPUTurn = true, callback = () => {}) {
+    async step(move, doCPUTurn = true, callback = () => {}, depth = 0) {
         if (this.gameState === 0) {
             this.doTurn(move);
         }
@@ -77,7 +77,7 @@ class Game  {
         }
         callback();
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU) {
-            await this.step(this.nextTurn.player.GetNextMove(this.board, this), false, callback);
+            await this.step(this.nextTurn.player.GetNextMove(this.board, this), false, callback, depth + 1);
         }
     }
 

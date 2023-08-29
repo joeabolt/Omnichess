@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
 
 function sendUpdate(gameId) {
     const game = activeGames.get(gameId);
-    const event = {board: game.board, log: game.log};
+    const event = {board: game.board.asJson(), log: game.log};
     io.to(gameId).emit('update', event);
 }
 
