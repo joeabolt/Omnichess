@@ -44,3 +44,7 @@ class Move {
         return this;
     }
 }
+
+if (typeof window === 'undefined') {
+    module.exports.Move = Move;
+}

@@ -1,18 +1,21 @@
+const {Player} = require("./Player.js");
+const {Metrics} = require("./Metrics.js");
+
 /* A class that can serve as a computer-controlled opponent */
 class CPU extends Player {
     constructor(identifier, direction, dropablePieces, capturedPieces, color = undefined, isCPU = true) {
         super(identifier, direction, dropablePieces, capturedPieces, color, isCPU);
 
-        this.aggression = 0.5;
-        this.caution = 0.75;
+        this.aggression = 0.5; // Higher values place increased importance on capturing enemy
+        this.caution = 0.75; // Higher values place increased importance on protecting ally
 
-        this.weightCaptures = 0.6;
-        this.weightMoves = 0.2;
+        this.weightCaptures = 0.6; // Multiplies the "value" of captures
+        this.weightMoves = 0.2; // Multiplies the "value" of moves
 
-        this.weightControl = 0.8;
-        this.weightInfluence = 0.2;
+        this.weightControl = 0.8; // Increases importance of being able to capture most of the board
+        this.weightInfluence = 0.2; // Increases importance of being able to move to most of the board
 
-        this.verbose = true;
+        this.verbose = false;
         this.lastMove = null;
         this.doubleLastMove = null;
     }
@@ -34,7 +37,7 @@ class CPU extends Player {
         const currentAttack = Metrics.getScoreOfCheckedPieces(game.board, enemy);
         const currentDefense = Metrics.getScoreOfDefendedPieces(game.board, this);
         possibleMoves.forEach((move) => {
-            game.CommitMove(move, false);
+            game.commitMove(move, false);
 
             /* Base score based on maximizing future options */
             const controlDelta = Math.pow(Metrics.getPercentBoardControlled(game.board, this) - baseControlPercent + 1, 3.5);
@@ -53,7 +56,7 @@ class CPU extends Player {
             const newAttack = Metrics.getScoreOfCheckedPieces(game.board, enemy);
             const newDefense = Metrics.getScoreOfDefendedPieces(game.board, this);
             const destChecked = Metrics.isChecked(game.board, move.targetLocation);
-            game.Undo(move, false);
+            game.undo(move, false);
             const srcProtected = Metrics.isProtected(game.board, move.srcLocation);
             const srcChecked = Metrics.isChecked(game.board, move.srcLocation);
             const pieceValue = game.board.contents[move.srcLocation].value;
@@ -138,4 +141,9 @@ class CPU extends Player {
         this.weightCaptures = 1 - this.weightMoves;
         return this;
     }
+}
+
+
+if (typeof window === 'undefined') {
+    module.exports.CPU = CPU;
 }

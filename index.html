@@ -13,15 +13,21 @@
 				font-weight: bolder;
 				margin: 1px;
 			}
+
+			.oob {
+				border: 1px solid white;
+			}
 			
 			.hdimension {
 				display: flex;
 				flex-direction: row;
+				justify-content: center;
 			}
 			
 			.vdimension {
 				display: flex;
 				flex-direction: column;
+				justify-content: center;
 			}
 			
 			#mainDisplay, #undo, #redo {
@@ -33,19 +39,34 @@
 		<h1>Omnichess</h1>
 		<a href="https://github.com/joeabolt/Omnichess">Check it out on GitHub!</a><br />
 		<a href="https://github.com/joeabolt/Omnichess/issues/new/choose">File an issue</a>
+		<div id="error" style="color:red;"></div>
 		<div id="input">
 			<h4>Load a configuration file!</h4>
 			<input id="configInput" type="file"></input>
 			<hr />
 			<div>
 				<h4>Use a pre-configured game!</h4>
-				<button onclick="loadPreloadedConfig('./src/config/preloaded/2PChess.js');">2-Player Chess</button>
-				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPUChess.js');">Player vs CPU Chess</button> <br />
-				<button onclick="loadPreloadedConfig('./src/config/preloaded/2PRaumschach.js');">2-Player Raumschach</button>
-				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPURaumschach.js');">Player vs CPU Raumschach</button> <br />
-				<button onclick="loadPreloadedConfig('./src/config/preloaded/2POmegaChess.js');">2-Player Omega Chess</button>
-				<button onclick="loadPreloadedConfig('./src/config/preloaded/PvCPUOmegaChess.js');">Player vs CPU Omega Chess</button>
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/2PChess.js');">2-Player Chess</button>
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/PvCPUChess.js');">Player vs CPU Chess</button> <br />
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/2PRaumschach.js');">2-Player Raumschach</button>
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/PvCPURaumschach.js');">Player vs CPU Raumschach</button> <br />
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/2POmegaChess.js');">2-Player Omega Chess</button>
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/PvCPUOmegaChess.js');">Player vs CPU Omega Chess</button> <br />
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/2PHexChess.js');">2-Player Hex Chess</button>
+				<button onclick="loadPreloadedConfig2('./src/config/preloaded/PvCPUHexChess.js');">Player vs CPU Hex Chess</button>
 			</div>
+			<hr />
+			<h4>Join a Game!</h4>
+			<input id="gameIdInput" type="text" placeholder="Game ID">
+			<label for="gameIdInput">Game ID:</label> <br />
+			<input id="passwordInput" type="text" placeholder="Game Password">
+			<label for="passwordInput">Game ID:</label> <br />
+			<button onclick="joinGame();">Join Game</button>
+		</div>
+		<div id="lobby">
+			<h4>Waiting for more players to join...</h4>
+			<p>Invite more players by having them go to this page, 
+				using game id <span id="gameId"></span> and password <span id="password"></span>.</p>
 		</div>
 		<div id="mainDisplay">
 			<div id="output" style="font-family: monospace"></div>
@@ -56,19 +77,9 @@
 			<button id="save" onclick="save();">Save</button>
 		</div>
 		
+        <script src='/socket.io/socket.io.js'></script>
 		<script src="src/MatrixUtilities.js"></script>
-		<script src="src/Player.js"></script>
-		<script src="src/Component.js"></script>
-		<script src="src/Vector.js"></script>
-		<script src="src/Piece.js"></script>
-		<script src="src/Board.js"></script>
-		<script src="src/Metrics.js"></script>
-		<script src="src/CPU.js"></script>
-		<script src="src/EndCondition.js"></script>
 		<script src="src/Move.js"></script>
-		<script src="src/Turn.js"></script>
-		<script src="src/Game.js"></script>
-		<script src="src/Parser.js"></script>
 		<script src="src/Serializer.js"></script>
 		<script src="src/Realizer.js"></script>
 		<script src="src/main.js"></script>

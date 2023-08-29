@@ -1,8 +1,12 @@
+const {Turn} = require("./Turn.js");
+
 /* Manages the state of the game */
 class Game  {
     constructor(board, players, endConditions) {
         this.board = board;
         this.players = players;
+        this.nextUnclaimedHuman = this.players.findIndex(player => !player.isCPU);
+        this.unclaimedHumanPlayers = this.nextUnclaimedHuman >= 0;
         this.endConditions = endConditions;
 
         /* Default turn order is alternating, any legal move goes */
@@ -30,6 +34,26 @@ class Game  {
          *  Will need updating in the future.
          */
         this.gameState = 0;
+
+        this.log = [];
+        this.password = "";
+        this.gameId = "";
+    }
+
+    getHumanAssignment() {
+        if (this.nextUnclaimedHuman < 0) {
+            return null;
+        }
+        const toReturn = this.players[this.nextUnclaimedHuman].identifier;
+        this.nextUnclaimedHuman = this.players.findIndex((player, i) => !player.isCPU && i > this.nextUnclaimedHuman);
+        this.unclaimedHumanPlayers = this.nextUnclaimedHuman >= 0;
+        return toReturn;
+    }
+
+    startGame(io) {
+        this.startCPU();
+        const startGameEvent = {board: this.board.asJson(), log: this.log};
+        io.to(this.gameId).emit('start game', startGameEvent);
     }
 
     /**
@@ -37,47 +61,43 @@ class Game  {
      * Deliberately has no side effects so it can safely be called even 
      * if a human player ought to move first.
      */
-    StartCPU(realizer) {
+    startCPU() {
         if (this.nextTurn.player.isCPU) {
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this), true, realizer);
+            this.step(this.nextTurn.player.GetNextMove(this.board, this), true);
         }
     }
 
-    async Step(move, doCPUTurn = true, realizer = undefined) {
+    async step(move, doCPUTurn = true, callback = () => {}, depth = 0) {
         if (this.gameState === 0) {
-            if (this.DoTurn(move, realizer)) {
-                this.CheckGameEnd();
-            }
+            this.doTurn(move);
         }
+        this.checkGameEnd();
         if (this.gameState !== 0) {
-            document.getElementById("message").innerHTML = "The game is now over!<br />" + document.getElementById("message").innerHTML;
+            this.log.push("The game is now over!");
         }
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+        callback();
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU) {
-            await sleep(1000);
-            this.Step(this.nextTurn.player.GetNextMove(this.board, this), false, realizer);
+            await this.step(this.nextTurn.player.GetNextMove(this.board, this), false, callback, depth + 1);
         }
     }
 
-    DoTurn(move, realizer = undefined) {
+    doTurn(move) {
         if (!this.nextTurn.Validate(move)) {
             return false;
         }
-        if (!this.Validate(move)) {
+        if (!this.validate(move)) {
             console.warn("Game invalidated the move.");
-            document.getElementById("message").innerHTML = "Illegal move.";
+            this.log.push("Illegal move.");
             return false;
         }
 
         this.lastTurn = this.nextTurn;
-        this.CommitMove(move, true, realizer);
+        this.commitMove(move, true);
 
         return true;
     }
 
-    CheckGameEnd() {
+    checkGameEnd() {
         // TODO: Update to allow multiple simultaneous win/loss conditions
         this.endConditions.forEach((endCondition) => {
             const evaluation = endCondition.EvaluateGame(this.board, this.lastTurn, this.nextTurn);
@@ -85,6 +105,10 @@ class Game  {
                 this.gameState = evaluation * (this.players.indexOf(endCondition.player) + 1);
             }
         });
+        if (this.gameState !== 0) {
+            const name = this.players[Math.abs(this.gameState)-1].identifier;
+            this.log.push(`${name} ${this.gameState > 0 ? "won!" : "lost..."}`);
+        }
     }
 
     /**
@@ -92,8 +116,7 @@ class Game  {
      *
      *  TODO: Add support for promote, drop
      */
-    Validate(move) {
-        let validity = false;
+    validate(move) {
         const actor = this.board.contents[move.srcLocation];
 
         let vectorList = [];
@@ -111,17 +134,14 @@ class Game  {
             includeCaptureEligible = true;
         }
 
-        vectorList.forEach((vector) => {
-            validity = validity || this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.targetLocation);
-        });
-
-        return validity;
+        const allValidDestinations = vectorList.flatMap(vector => this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible));
+        return allValidDestinations.includes(move.targetLocation);
     }
 
     /**
      *  Commits a move to the board, and pushes it to the move stack
      */
-    CommitMove(move, showOutput = true, realizer = undefined) {
+    commitMove(move, showOutput = true) {
         let capturedPiece = null;
         if (move.capture) {
             capturedPiece = this.board.contents[move.targetLocation];
@@ -136,9 +156,6 @@ class Game  {
             this.board.contents[move.srcLocation].setMoves(1);
         }
         this.moveStack.push(move);
-        if (realizer) {
-            realizer.Realize();
-        }
         if (showOutput) {
             let message = [];
             if (move.move) {
@@ -152,17 +169,16 @@ class Game  {
                 const capturedPlayer = capturedPiece.player.identifier;
                 message.push(`${capturedPlayer}'s ${capturedPieceName} at ${move.targetLocation} was captured by ${capturingPieceName}.`);
             }
-            message = message.join(" ") + "<br />" + document.getElementById("message").innerHTML;
-            document.getElementById("message").innerHTML = message;
+            this.log.push(message.join(" "));
         }
 
         this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
         this.nextTurn = this.turnOrder[this.turnIndex];
-        this.UpdateUndoRedoVisibility();
+        this.updateUndoRedoVisibility();
         // TODO: Add support for promote, drop
     }
 
-    Undo(showOutput = true) {
+    undo(showOutput = true) {
         const moveToUndo = this.moveStack.pop();
         if (moveToUndo.move) {
             this.board.contents[moveToUndo.srcLocation] = this.board.contents[moveToUndo.targetLocation];
@@ -172,7 +188,7 @@ class Game  {
             this.board.contents[moveToUndo.targetLocation] = moveToUndo.capturedPiece;
         }
         this.redoStack.push(moveToUndo);
-        this.UpdateUndoRedoVisibility();
+        this.updateUndoRedoVisibility();
 
         this.board.contents[moveToUndo.srcLocation].setMoves(-1);
 
@@ -180,23 +196,29 @@ class Game  {
         this.nextTurn = this.turnOrder[this.turnIndex];
     }
 
-    Redo(showOutput = true) {
-        this.CommitMove(this.redoStack.pop(), showOutput);
+    redo(showOutput = true) {
+        this.commitMove(this.redoStack.pop(), showOutput);
     }
 
-    UpdateUndoRedoVisibility() {
-        if (game.moveStack.length > 0) {
-            document.getElementById("undo").style.display = "inline";
-        }
-        else {
-            document.getElementById("undo").style.display = "none";
-        }
+    updateUndoRedoVisibility() {
+        // TODO: Move this logic to the front-end
+        return;
+        // if (game.moveStack.length > 0) {
+        //     document.getElementById("undo").style.display = "inline";
+        // }
+        // else {
+        //     document.getElementById("undo").style.display = "none";
+        // }
 
-        if (game.redoStack.length > 0) {
-            document.getElementById("redo").style.display = "inline";
-        }
-        else {
-            document.getElementById("redo").style.display = "none";
-        }
+        // if (game.redoStack.length > 0) {
+        //     document.getElementById("redo").style.display = "inline";
+        // }
+        // else {
+        //     document.getElementById("redo").style.display = "none";
+        // }
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Game = Game;
 }

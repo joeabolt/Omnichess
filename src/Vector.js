@@ -1,7 +1,10 @@
+const {Component} = require("./Component.js");
+
 /* Convenience class to store a vector and its associated flags */
 class Vector {
     constructor(components) {
         this.components = components;
+        this.synchronized = false;
     }
 
     toString() {
@@ -28,7 +31,7 @@ class Vector {
                 return;
             }
 
-            const checkValid = vectorString.match(/\((\ *-?\d+[\d{}+jhdi]*\ *,)+\ *-?\d+[\d{}+jhdi]*\ *\)[\d{}+jhdi]*/g);
+            const checkValid = vectorString.match(/\((\ *-?\d+[\d{}+jhdi]*\ *,)+\ *-?\d+[\d{}+jhdi]*\ *\)[\d{}+jhdis]*/g);
             if (checkValid === null || checkValid.length <= 0) {
                 console.error(`Improperly formatted vector: ${vectorString}`);
                 return;
@@ -48,8 +51,16 @@ class Vector {
             components.reverse();
 
             /* Cross product all components to produce directional vectors */
-            Vector.CrossProduct(components).forEach((crossProduct) => {
-                vectors.push(new Vector(crossProduct));
+            let combinationMethod = Vector.CrossProduct;
+            if (globalFlags.includes("s")) {
+                combinationMethod = Vector.SyncCombineComponents;
+            }
+            combinationMethod(components).forEach(crossProduct => {
+                const newVector = new Vector(crossProduct);
+                if (globalFlags.includes("s")) {
+                    newVector.synchronized = true;
+                }
+                vectors.push(newVector);
             });
         });
 
@@ -81,4 +92,20 @@ class Vector {
         }
         return crossProducts;
     }
+
+    /**
+     * Instead of a cross-product, combine all "forward" components and all "backward" components
+     */
+    static SyncCombineComponents(components) {
+        const outputs = [];
+        components.reverse();
+        outputs.push(components.map(options => options[0]));
+        outputs.push(components.map(options => options.length === 2 ? options[1] : options[0]));
+        components.reverse();
+        return outputs;
+    }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Vector = Vector;
 }

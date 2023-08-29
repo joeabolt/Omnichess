@@ -1,3 +1,5 @@
+const {Move} = require("./Move.js");
+
 /* Calculates metrics based on board state */
 class Metrics {
     static countPossibleActions(board, player) {
@@ -228,4 +230,8 @@ class Metrics {
 
         return true;
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Metrics = Metrics;
 }

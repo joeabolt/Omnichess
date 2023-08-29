@@ -1,6 +1,54 @@
+const socket = io();
+document.getElementById("lobby").style.display = "none";
+document.getElementById("error").style.display = "none";
+
+// socket.emit('event');
+// socket.on('event', (data) => { func });
+
+function adminFunc1() {
+    socket.emit('admin function 1');
+}
+socket.on('admin response 1', data => {
+    console.log(data);
+});
+
+socket.on('start game', (data) => {
+    realizer = new Realizer(data.board);
+    realizer.realize();
+    realizer.setLog(data.log);
+    
+    document.getElementById("error").style.display = "none";
+    document.getElementById("input").style.display = "none";
+    document.getElementById("lobby").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "block";
+});
+socket.on('join lobby', (event) => {
+    document.getElementById("gameId").innerHTML = event.gameId;
+    document.getElementById("password").innerHTML = event.password;
+    
+    document.getElementById("error").style.display = "none";
+    document.getElementById("input").style.display = "none";
+    document.getElementById("lobby").style.display = "block";
+    document.getElementById("mainDisplay").style.display = "none";
+});
+socket.on('update', (data) => {
+    console.log(data);
+    // TODO: Receive message from game as well
+    realizer.board = data.board;
+    realizer.realize();
+    realizer.setLog(data.log);
+});
+socket.on('abandoned', () => {
+    document.getElementById("error").innerHTML = "The other player(s) left.";
+    document.getElementById("error").style.display = "block";
+    document.getElementById("input").style.display = "block";
+    document.getElementById("lobby").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "none";
+});
+
 let realizer = undefined;
 let game = undefined;
-const fileInput = document.getElementById("configInput")
+const fileInput = document.getElementById("configInput");
 
 fileInput.onchange = () => {
     const reader = new FileReader();
@@ -10,28 +58,37 @@ fileInput.onchange = () => {
     reader.readAsText(fileInput.files[0]);
 };
 
-function processClick(event, cellIndex) {
+function joinGame() {
+    console.log("Joining game.");
+    const gameId = document.getElementById("gameIdInput").value;
+    const password = document.getElementById("passwordInput").value;
+    socket.emit("join game", {gameId, password});
+}
+
+async function processClick(event, cellIndex) {
     if (realizer === undefined)
         return;
 
     event.stopPropagation();
-    realizer.ProcessClick(cellIndex);
-    realizer.Realize();
+    const move = realizer.processClick(cellIndex);
+    if (move != null) {
+        socket.emit('move', move);
+    }
 }
 
 function clickHandler() {
     if (realizer === undefined)
         return;
 
-    realizer.SetActiveCell(undefined);
-    realizer.Realize();
+    realizer.setActiveCell(undefined);
+    realizer.realize();
 }
 
 function loadConfig(config) {
     game = Parser.Load(config);
-    realizer = new Realizer(game);
-    realizer.Realize();
-    game.StartCPU(realizer);
+    realizer = new Realizer(game.board);
+    realizer.realize();
+    game.startCPU(realizer);
     
     document.getElementById("input").style.display = "none";
     document.getElementById("mainDisplay").style.display = "block";
@@ -44,6 +101,13 @@ function loadPreloadedConfig(path) {
         loadConfig(config);
     };
     document.body.appendChild(configScript);
+}
+
+function loadPreloadedConfig2(path) {
+    const actualPath = "preloaded" + path.substring(path.lastIndexOf('/'));
+    console.log("Actual path: " + actualPath);
+    const event = {configName: actualPath};
+    socket.emit('start game', event);
 }
 
 function save() {

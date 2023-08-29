@@ -1,15 +1,41 @@
+const {Board} = require("./Board.js");
+const {HexBoard} = require("./HexBoard.js");
+const {Player} = require("./Player.js");
+const {CPU} = require("./CPU.js");
+const {EndCondition} = require("./EndCondition.js");
+const {Vector} = require("./Vector.js");
+const {Piece} = require("./Piece.js");
+const {Game} = require("./Game.js");
+
 /* Class to create game resources based on a json file */
 class Parser  {
     static Load(config_data) {
         /* Build the board */
         const boardTemplate = config_data.board;
         let board = undefined;
-        if (boardTemplate.adjacencyMatrix !== undefined &&
-            boardTemplate.adjacencyMatrix !== null) {
-            board = new Board(boardTemplate.adjacencyMatrix);
-        }
-        else {
-            board = new Board(Board.Generate(boardTemplate.lengths));
+        if (boardTemplate.type && boardTemplate.type == "hex") {
+            // Hex board
+            if (boardTemplate.adjacencyMatrix) {
+                // Accept input
+                board = new HexBoard(boardTemplate.adjacencyMatrix);
+            } else {
+                // Auto-generate
+                board = new HexBoard(HexBoard.Generate(boardTemplate.lengths, boardTemplate.orientation, boardTemplate.oob));
+            }
+            if (boardTemplate.orientation) {
+                board.orientation = boardTemplate.orientation;
+            } else {
+                board.orientation = "horizontal";
+            }
+        } else {
+            // Square board
+            if (boardTemplate.adjacencyMatrix) {
+                // Accept input
+                board = new Board(boardTemplate.adjacencyMatrix);
+            } else {
+                // Auto-generate
+                board = new Board(Board.Generate(boardTemplate.lengths, boardTemplate.oob));
+            }
         }
 
         /* Build the players */
@@ -50,11 +76,9 @@ class Parser  {
         const pieceTemplates = new Map();
         config_data.pieces.forEach((template) => {
             if (template.value == null) {
-                const piece = new Piece()
-                    .setMoveVectors(Vector.Create(template.move))
-                    .setCaptureVectors(Vector.Create(template.capture))
-                    .setMoveCaptureVectors(Vector.Create(template.moveCapture));
-                const vectors = piece.moveVectors.concat(piece.captureVectors).concat(piece.moveCaptureVectors);
+                const vectors = Vector.Create(template.move)
+                        .concat(Vector.Create(template.capture))
+                        .concat(Vector.Create(template.moveCapture));
                 const maxDestinations = [...new Set(vectors.map(vector => board.GetCellIndices(vector, board.sink, true, false)).flat())];
                 const minDestinations = [...new Set(vectors.map(vector => board.GetCellIndices(vector, board.source, true, false)).flat())];
                 let value = (maxDestinations.length + minDestinations.length) / 4;
@@ -89,4 +113,8 @@ class Parser  {
 
         return game;
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Parser = Parser;
 }

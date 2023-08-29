@@ -16,6 +16,16 @@ class Piece  {
         this.initialMoveCaptureVectors = [];
     }
 
+    asJson() {
+        return {
+            moveVectors: this.moveVectors,
+            captureVectors: this.captureVectors,
+            moveCaptureVectors: this.moveCaptureVectors,
+            identifier: this.identifier,
+            color: this.player ? this.player.color : undefined
+        };
+    }
+
     static Create(baseObj) {
         /* Currently assumes baseObj has a string for
          * move, capture, moveCapture, and player.
@@ -44,8 +54,15 @@ class Piece  {
         }
         
         this.moveVectors.concat(this.captureVectors).concat(this.moveCaptureVectors).forEach((vector) => {
-            for (let i = 0; i < vector.components.length; i++) {
-                vector.components[i].length *= direction[i];
+            if (vector.synchronized) {
+                const flip = direction.reduce((flip, x) => flip * x, 1);
+                for (let i = 0; i < vector.components.length; i++) {
+                    vector.components[i].length *= flip;
+                }
+            } else {
+                for (let i = 0; i < vector.components.length; i++) {
+                    vector.components[i].length *= direction[i];
+                }
             }
         });
 
@@ -123,4 +140,8 @@ class Piece  {
         }
         this.setDirection(nextDirection);
     }
+}
+
+if (typeof window === 'undefined') {
+    module.exports.Piece = Piece;
 }

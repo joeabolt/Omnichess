@@ -228,3 +228,7 @@ const config = {
         }
     ]
 }
+
+if (typeof window === 'undefined') {
+    module.exports.config = config;
+}

@@ -18,3 +18,7 @@ class Player  {
 		this.isCPU = isCPU;
 	}
 }
+
+if (typeof window === 'undefined') {
+    module.exports.Player = Player;
+}
