@@ -1,16 +1,25 @@
 const socket = io();
+document.getElementById("lobby").style.display = "none";
 
 // socket.emit('event');
 // socket.on('event', (data) => { func });
 
 socket.on('start game', (data) => {
-    console.log(data);
     realizer = new Realizer(data.board);
     realizer.realize();
     realizer.setLog(data.log);
     
     document.getElementById("input").style.display = "none";
+    document.getElementById("lobby").style.display = "none";
     document.getElementById("mainDisplay").style.display = "block";
+});
+socket.on('join lobby', (event) => {
+    document.getElementById("gameId").innerHTML = event.gameId;
+    document.getElementById("password").innerHTML = event.password;
+    
+    document.getElementById("input").style.display = "none";
+    document.getElementById("lobby").style.display = "block";
+    document.getElementById("mainDisplay").style.display = "none";
 });
 socket.on('update', (data) => {
     console.log(data);
@@ -22,7 +31,7 @@ socket.on('update', (data) => {
 
 let realizer = undefined;
 let game = undefined;
-const fileInput = document.getElementById("configInput")
+const fileInput = document.getElementById("configInput");
 
 fileInput.onchange = () => {
     const reader = new FileReader();
@@ -31,6 +40,13 @@ fileInput.onchange = () => {
     };
     reader.readAsText(fileInput.files[0]);
 };
+
+function joinGame() {
+    console.log("Joining game.");
+    const gameId = document.getElementById("gameIdInput").value;
+    const password = document.getElementById("passwordInput").value;
+    socket.emit("join game", {gameId, password});
+}
 
 async function processClick(event, cellIndex) {
     if (realizer === undefined)

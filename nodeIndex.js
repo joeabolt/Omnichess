@@ -20,20 +20,30 @@ const activeGames = new Map();
 // More magic
 io.on('connection', (socket) => {
     let activeGame = undefined;
+    let playerIdentifier = undefined;
     console.log('user connected');
     // socket.broadcast.emit('hi'); // Goes to everyone except that socket
     // io.emit('event name', payload); // Goes to everyone
     socket.on('join game', (event) => {
-        // Expect event.id, event.password
-        // Start game with both players
-        // socket.join(gameId)
+        console.log("Trying to join game: " + JSON.stringify(event));
+        const game = activeGames.get(event.gameId);
+        if (game && game.password === event.password) {
+            // Join game and reserve slot
+            playerIdentifier = game.getHumanAssignment();
+            socket.join(event.gameId);
+            activeGame = event.gameId;
+            // Activate lobby if waiting on more players or start game
+            if (game.unclaimedHumanPlayers) {
+                const joinLobbyEvent = {"gameId": event.gameId, "password": game.password};
+                io.to(event.gameId).emit('join lobby', joinLobbyEvent);
+            } else {
+                game.startGame(io);
+            }
+        }
     });
     socket.on('start game', (event) => {
-        // Expect event.configId, event.configJson
-        // TODO: Return landing page with id and password
         const {config} = require(__dirname + '/src/config/' + event.configName);
         game = Parser.Load(config);
-        game.startCPU();
 
         // Update the server's log of who's in what games
         const gameId = getGameId();
@@ -41,10 +51,18 @@ io.on('connection', (socket) => {
         activeGames.set(gameId, game);
         activeGame = gameId;
 
-        // Update the display
-        // TODO: Move this logic to Game.js
-        const startGameEvent = {board: game.board, log: game.log};
-        io.to(gameId).emit('start game', startGameEvent);
+        // Cordinate between sever, game, and player
+        game.gameId = gameId;
+        game.password = getPassword();
+        playerIdentifier = game.getHumanAssignment();
+
+        // Either send player to lobby if waiting for friends or start the game
+        if (game.unclaimedHumanPlayers) {
+            const joinLobbyEvent = {"gameId": gameId, "password": game.password};
+            io.to(gameId).emit('join lobby', joinLobbyEvent);
+        } else {
+            game.startGame(io);
+        }
     });
     socket.on('disconnect', () => {
         console.log('user disconnected');
@@ -52,7 +70,15 @@ io.on('connection', (socket) => {
     });
     socket.on('move', (event) => {
         const move = new Move(event.move, event.capture, event.srcLocation, event.targetLocation, event.capturedPiece);
-        activeGames.get(activeGame).step(move, true, () => {sendUpdate(activeGame);})
+        const game = activeGames.get(activeGame);
+        const owner = game.board.contents[event.srcLocation].player.identifier;
+        if (owner === playerIdentifier) {
+            game.step(move, true, () => {sendUpdate(activeGame);});
+        } else {
+            // TODO: Probably need to silently ignore, otherwise this could be spammed.
+            game.log.push(`Illegal move - ${playerIdentifier} tried to move a piece they do not own.`);
+            sendUpdate(activeGame);
+        }
     });
 });
 
@@ -70,9 +96,18 @@ function getGameId() {
     return id;
 }
 
+function getPassword() {
+    return getNumber() + getNumber() + getNumber() + getNumber();
+}
+
 function getLetter() {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split("");
     return letters[Math.floor(Math.random() * letters.length)];
+}
+
+function getNumber() {
+    const symbols = 'AFLQRSUWXY23456789'.split("");
+    return symbols[Math.floor(Math.random() * symbols.length)];
 }
 
 // Initialize server

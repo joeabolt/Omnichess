@@ -5,6 +5,8 @@ class Game  {
     constructor(board, players, endConditions) {
         this.board = board;
         this.players = players;
+        this.nextUnclaimedHuman = this.players.findIndex(player => !player.isCPU);
+        this.unclaimedHumanPlayers = this.nextUnclaimedHuman >= 0;
         this.endConditions = endConditions;
 
         /* Default turn order is alternating, any legal move goes */
@@ -34,6 +36,24 @@ class Game  {
         this.gameState = 0;
 
         this.log = [];
+        this.password = "";
+        this.gameId = "";
+    }
+
+    getHumanAssignment() {
+        if (this.nextUnclaimedHuman < 0) {
+            return null;
+        }
+        const toReturn = this.players[this.nextUnclaimedHuman].identifier;
+        this.nextUnclaimedHuman = this.players.findIndex((player, i) => !player.isCPU && i > this.nextUnclaimedHuman);
+        this.unclaimedHumanPlayers = this.nextUnclaimedHuman >= 0;
+        return toReturn;
+    }
+
+    startGame(io) {
+        this.startCPU();
+        const startGameEvent = {board: this.board, log: this.log};
+        io.to(this.gameId).emit('start game', startGameEvent);
     }
 
     /**
