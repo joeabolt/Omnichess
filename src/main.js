@@ -5,6 +5,13 @@ document.getElementById("error").style.display = "none";
 // socket.emit('event');
 // socket.on('event', (data) => { func });
 
+function adminFunc1() {
+    socket.emit('admin function 1');
+}
+socket.on('admin response 1', data => {
+    console.log(data);
+});
+
 socket.on('start game', (data) => {
     realizer = new Realizer(data.board);
     realizer.realize();

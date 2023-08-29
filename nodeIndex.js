@@ -21,6 +21,11 @@ const activeGames = new Map();
 io.on('connection', (socket) => {
     let activeGame = undefined;
     let playerIdentifier = undefined;
+    socket.on('admin function 1', () => {
+        const keys = [];
+        activeGames.forEach((value, key) => keys.push(key));
+        socket.emit('admin response 1', keys);
+    });
     socket.on('join game', (event) => {
         const game = activeGames.get(event.gameId);
         if (game && game.password === event.password) {
@@ -63,6 +68,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         if (activeGame) {
             io.to(activeGame).emit('abandoned');
+            activeGames.delete(activeGame);
             playerIdentifier = undefined;
             activeGame = undefined;
         }
