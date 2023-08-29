@@ -32,6 +32,8 @@ class Game  {
          *  Will need updating in the future.
          */
         this.gameState = 0;
+
+        this.log = [];
     }
 
     /**
@@ -47,34 +49,30 @@ class Game  {
 
     async step(move, doCPUTurn = true, callback = () => {}) {
         if (this.gameState === 0) {
-            if (this.doTurn(move, callback)) {
-                this.checkGameEnd();
-            }
+            this.doTurn(move);
         }
+        this.checkGameEnd();
         if (this.gameState !== 0) {
-            document.getElementById("message").innerHTML = "The game is now over!<br />" + document.getElementById("message").innerHTML;
+            this.log.push("The game is now over!");
         }
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+        callback();
         while (doCPUTurn && this.gameState === 0 && this.nextTurn.player.isCPU) {
-            await sleep(1000);
-            this.step(this.nextTurn.player.GetNextMove(this.board, this), false, callback);
+            await this.step(this.nextTurn.player.GetNextMove(this.board, this), false, callback);
         }
     }
 
-    doTurn(move, callback = () => {}) {
+    doTurn(move) {
         if (!this.nextTurn.Validate(move)) {
             return false;
         }
         if (!this.validate(move)) {
             console.warn("Game invalidated the move.");
-            document.getElementById("message").innerHTML = "Illegal move.";
+            this.log.push("Illegal move.");
             return false;
         }
 
         this.lastTurn = this.nextTurn;
-        this.commitMove(move, true, callback);
+        this.commitMove(move, true);
 
         return true;
     }
@@ -87,6 +85,10 @@ class Game  {
                 this.gameState = evaluation * (this.players.indexOf(endCondition.player) + 1);
             }
         });
+        if (this.gameState !== 0) {
+            const name = this.players[Math.abs(this.gameState)-1].identifier;
+            this.log.push(`${name} ${this.gameState > 0 ? "won!" : "lost..."}`);
+        }
     }
 
     /**
@@ -95,7 +97,6 @@ class Game  {
      *  TODO: Add support for promote, drop
      */
     validate(move) {
-        let validity = false;
         const actor = this.board.contents[move.srcLocation];
 
         let vectorList = [];
@@ -113,17 +114,14 @@ class Game  {
             includeCaptureEligible = true;
         }
 
-        vectorList.forEach((vector) => {
-            validity = validity || this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible).includes(move.targetLocation);
-        });
-
-        return validity;
+        const allValidDestinations = vectorList.flatMap(vector => this.board.GetCellIndices(vector, move.srcLocation, includeCaptureEligible));
+        return allValidDestinations.includes(move.targetLocation);
     }
 
     /**
      *  Commits a move to the board, and pushes it to the move stack
      */
-    commitMove(move, showOutput = true, callback = () => {}) {
+    commitMove(move, showOutput = true) {
         let capturedPiece = null;
         if (move.capture) {
             capturedPiece = this.board.contents[move.targetLocation];
@@ -151,15 +149,13 @@ class Game  {
                 const capturedPlayer = capturedPiece.player.identifier;
                 message.push(`${capturedPlayer}'s ${capturedPieceName} at ${move.targetLocation} was captured by ${capturingPieceName}.`);
             }
-            message = message.join(" ") + "<br />" + document.getElementById("message").innerHTML;
-            document.getElementById("message").innerHTML = message;
+            this.log.push(message.join(" "));
         }
 
         this.turnIndex = (this.turnIndex + 1) % this.turnOrder.length;
         this.nextTurn = this.turnOrder[this.turnIndex];
         this.updateUndoRedoVisibility();
         // TODO: Add support for promote, drop
-        callback();
     }
 
     undo(showOutput = true) {
@@ -185,19 +181,21 @@ class Game  {
     }
 
     updateUndoRedoVisibility() {
-        if (game.moveStack.length > 0) {
-            document.getElementById("undo").style.display = "inline";
-        }
-        else {
-            document.getElementById("undo").style.display = "none";
-        }
+        // TODO: Move this logic to the front-end
+        return;
+        // if (game.moveStack.length > 0) {
+        //     document.getElementById("undo").style.display = "inline";
+        // }
+        // else {
+        //     document.getElementById("undo").style.display = "none";
+        // }
 
-        if (game.redoStack.length > 0) {
-            document.getElementById("redo").style.display = "inline";
-        }
-        else {
-            document.getElementById("redo").style.display = "none";
-        }
+        // if (game.redoStack.length > 0) {
+        //     document.getElementById("redo").style.display = "inline";
+        // }
+        // else {
+        //     document.getElementById("redo").style.display = "none";
+        // }
     }
 }
 

@@ -1,4 +1,5 @@
 const {Player} = require("./Player.js");
+const {Metrics} = require("./Metrics.js");
 
 /* A class that can serve as a computer-controlled opponent */
 class CPU extends Player {
@@ -14,7 +15,7 @@ class CPU extends Player {
         this.weightControl = 0.8; // Increases importance of being able to capture most of the board
         this.weightInfluence = 0.2; // Increases importance of being able to move to most of the board
 
-        this.verbose = true;
+        this.verbose = false;
         this.lastMove = null;
         this.doubleLastMove = null;
     }

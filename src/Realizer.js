@@ -21,34 +21,38 @@ class Realizer  {
         outputArea.appendChild(this.createDisplayBoard());
     }
 
+    setLog(log) {
+        if (log == undefined || log.length == 0) {
+            document.getElementById("message").innerHTML = "";
+        } else {
+            const reversed = [];
+            while (log.length > 0) reversed.push(log.pop());
+            document.getElementById("message").innerHTML = reversed.join("<br />");
+        }
+    }
+
     processClick(clickedCell) {
+        let move = null;
         if (this.activeCell === undefined) {
             this.setActiveCell(clickedCell);
-            return null;
-        }
-        if (clickedCell === this.activeCell) {
+        } else if (clickedCell === this.activeCell) {
             this.setActiveCell(undefined);
-            return null;
+        } else if (this.activeCellCanMoveCapture.includes(clickedCell)) {
+            move = this.createMove(true, true, this.activeCell, clickedCell);
+            this.setActiveCell(undefined);
+        } else if (this.activeCellCanCapture.includes(clickedCell)) {
+            move = this.createMove(false, true, this.activeCell, clickedCell);
+            this.setActiveCell(undefined);
+        } else if (this.activeCellCanMove.includes(clickedCell)) {
+            move = this.createMove(true, false, this.activeCell, clickedCell);
+            this.setActiveCell(undefined);
+        } else {
+            /* They just clicked another cell, not a viable action */
+            this.setActiveCell(clickedCell);
         }
 
-        if (this.activeCellCanMoveCapture.includes(clickedCell)) {
-            const move = this.createMove(true, true, this.activeCell, clickedCell);
-            this.setActiveCell(undefined);
-            return move;
-        }
-        if (this.activeCellCanCapture.includes(clickedCell)) {
-            const move = this.createMove(false, true, this.activeCell, clickedCell);
-            this.setActiveCell(undefined);
-            return move;
-        }
-        if (this.activeCellCanMove.includes(clickedCell)) {
-            const move = this.createMove(true, false, this.activeCell, clickedCell);
-            this.setActiveCell(undefined);
-            return move;
-        }
-
-        /* They just clicked another cell, not a viable action */
-        this.setActiveCell(clickedCell);
+        this.realize();
+        return move;
     }
 
     setActiveCell(newActiveCell) {
@@ -61,17 +65,17 @@ class Realizer  {
             const activePiece = this.board.contents[this.activeCell];
 
             activePiece.moveVectors.forEach((vector) => {
-                this.activeCellCanMove.push(...this.board.GetCellIndices(vector, this.activeCell, false));
+                this.activeCellCanMove.push(...this.GetCellIndices(vector, this.activeCell, false));
             });
             this.activeCellCanMove = [...new Set(this.activeCellCanMove)];
 
             activePiece.captureVectors.forEach((vector) => {
-                this.activeCellCanCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+                this.activeCellCanCapture.push(...this.GetCellIndices(vector, this.activeCell, true, true));
             });
             this.activeCellCanCapture = [...new Set(this.activeCellCanCapture)];
 
             activePiece.moveCaptureVectors.forEach((vector) => {
-                this.activeCellCanMoveCapture.push(...this.board.GetCellIndices(vector, this.activeCell, true, true));
+                this.activeCellCanMoveCapture.push(...this.GetCellIndices(vector, this.activeCell, true, true));
             });
             this.activeCellCanMoveCapture = [...new Set(this.activeCellCanMoveCapture)];
         }
@@ -217,5 +221,99 @@ class Realizer  {
         }
 
         return fgColor;
+    }
+
+
+
+
+
+
+
+
+
+    // STOLEN FROM BOARD.JS, IT'S A TEMPORARY SOLUTION, JUST A PHASE, MA
+    GetCellIndices(vector, startLocation, includeCaptureEligible = false, enforceCaptureEligible = false) {
+        const allCellIndices = new Set();
+
+        const maxRepetitions = vector.components.reduce((maximum, currComp) => {
+            return Math.max(maximum, currComp.maxRep);
+        }, 1);
+
+        for (let i = 1; i <= maxRepetitions; i++) {
+            const output = this.GetPathOutput(startLocation, vector.components, i);
+
+            if (output === null || output <= 0 || 
+                (this.board.contents[output] != undefined && !includeCaptureEligible) || 
+                (this.board.contents[output] == undefined && enforceCaptureEligible)) {
+                    continue;
+            }
+            allCellIndices.add(output);
+        }
+
+        /* Convert set to array */
+        return [...allCellIndices];
+    }
+
+    /**
+     *  Returns the index of the cell found by following
+     *  the components for the passed number of iterations.
+     *  Returns null if it goes off the board, or cannot find
+     *  a valid path (such as being obstructed).
+     */
+    GetPathOutput(start, components, iterations) {
+        let destCell = start;
+        let prevCell = start;
+        
+        /* Track total direction to go along each axis */
+        const deltas = [];
+        components.forEach((component, index) => {
+            deltas.push(component.length * Math.min(iterations, component.maxRep));
+        });
+
+        while (deltas.reduce((total, current) => total + Math.abs(current), 0) !== 0) {
+            /* Identify +1, -1, or no movement along each axis and convert to direction */
+            const steps = deltas.map((element) => Math.sign(element));
+            deltas.forEach((delta, index) => {
+                deltas[index] -= steps[index];
+            });
+            const direction = MatrixUtilities.VectorToDirection(steps);
+
+            /* Take the step */
+            prevCell = destCell;
+            destCell = this.board.cells[destCell - 1][direction];
+
+            /* Do not include OoB */
+            if (destCell === null || destCell <= 0) {
+                break;
+            }
+
+            /* Stop iterating when we hit an occupied square, unless jump or hop */
+            if (this.board.contents[destCell] != undefined) {
+                /* Only jump/hop when moving with that component */
+                let canHopObstacle = false;
+                components.forEach((component, index) => {
+                    if ((component.jump || component.hop) && deltas[index] !== 0)
+                        canHopObstacle = true;
+                });
+
+                if (canHopObstacle) {
+                    continue;
+                }
+                break;
+            }
+        }
+
+        /* If hop, only output when previous cell is occupied */
+        let hop = false;
+        components.forEach((component) => {
+            if (component.hop) {
+                hop = true;
+            }
+        });
+        if (hop && this.board.contents[prevCell] === undefined) {
+            return null;
+        }
+
+        return destCell;
     }
 }

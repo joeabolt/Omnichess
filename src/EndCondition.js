@@ -1,3 +1,5 @@
+const {Metrics} = require("./Metrics.js");
+
 /** Stores and checks a condition that could end the game
  *  Notated as:
  *    count piece_ident = 0 @ start player_ident (also <, >, and end instead of start)

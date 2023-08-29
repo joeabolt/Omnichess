@@ -5,6 +5,7 @@ const server = http.createServer(app);
 const io = require("socket.io")(server);
 
 const {Parser} = require("./src/Parser.js");
+const {Move} = require("./src/Move.js");
 
 // At the url, respond with the main page
 app.get('/', (req, res) => {
@@ -42,19 +43,24 @@ io.on('connection', (socket) => {
 
         // Update the display
         // TODO: Move this logic to Game.js
-        io.to(gameId).emit('start game', {board: game.board});
+        const startGameEvent = {board: game.board, log: game.log};
+        io.to(gameId).emit('start game', startGameEvent);
     });
     socket.on('disconnect', () => {
         console.log('user disconnected');
         // TODO
     });
     socket.on('move', (event) => {
-        // Expect event.player, event.gameId, event.src, event.dest, event.move, event.capture
-        // TODO: Lookup game and submit event
-        // TODO: broadcast state out io.to(gameId).emit('update', game.viewModel);
-        io.to('game_id').emit('update', {board: game.board});
+        const move = new Move(event.move, event.capture, event.srcLocation, event.targetLocation, event.capturedPiece);
+        activeGames.get(activeGame).step(move, true, () => {sendUpdate(activeGame);})
     });
 });
+
+function sendUpdate(gameId) {
+    const game = activeGames.get(gameId);
+    const event = {board: game.board, log: game.log};
+    io.to(gameId).emit('update', event);
+}
 
 function getGameId() {
     let id = getLetter() + getLetter() + getLetter() + getLetter();

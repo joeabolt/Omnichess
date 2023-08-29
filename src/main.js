@@ -7,13 +7,17 @@ socket.on('start game', (data) => {
     console.log(data);
     realizer = new Realizer(data.board);
     realizer.realize();
+    realizer.setLog(data.log);
     
     document.getElementById("input").style.display = "none";
     document.getElementById("mainDisplay").style.display = "block";
 });
 socket.on('update', (data) => {
+    console.log(data);
+    // TODO: Receive message from game as well
     realizer.board = data.board;
     realizer.realize();
+    realizer.setLog(data.log);
 });
 
 let realizer = undefined;
@@ -35,9 +39,8 @@ async function processClick(event, cellIndex) {
     event.stopPropagation();
     const move = realizer.processClick(cellIndex);
     if (move != null) {
-        await game.step(move, true, () => {realizer.realize();});
+        socket.emit('move', move);
     }
-    realizer.realize();
 }
 
 function clickHandler() {
