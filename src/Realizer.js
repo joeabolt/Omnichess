@@ -39,12 +39,15 @@ class Realizer  {
             this.setActiveCell(undefined);
         } else if (this.activeCellCanMoveCapture.includes(clickedCell)) {
             move = this.createMove(true, true, this.activeCell, clickedCell);
+            this.tentativeMove(this.activeCell, clickedCell);
             this.setActiveCell(undefined);
         } else if (this.activeCellCanCapture.includes(clickedCell)) {
             move = this.createMove(false, true, this.activeCell, clickedCell);
+            this.tentativeMove(this.activeCell, clickedCell);
             this.setActiveCell(undefined);
         } else if (this.activeCellCanMove.includes(clickedCell)) {
             move = this.createMove(true, false, this.activeCell, clickedCell);
+            this.tentativeMove(this.activeCell, clickedCell);
             this.setActiveCell(undefined);
         } else {
             /* They just clicked another cell, not a viable action */
@@ -91,6 +94,11 @@ class Realizer  {
     createMove(move, capture, source, target) {
         const moveObj = new Move(move, capture, source, target, this.board.contents[target]);
         return moveObj;
+    }
+
+    tentativeMove(source, target) {
+        this.board.contents[target] = this.board.contents[source];
+        this.board.contents[source] = undefined;
     }
 
     createDisplayBoard() {

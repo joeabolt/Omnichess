@@ -80,7 +80,6 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('move', (event) => {
-        console.log("Received a move event.");
         const move = new Move(event.move, event.capture, event.srcLocation, event.targetLocation, event.capturedPiece);
         const game = activeGames.get(activeGame);
         const owner = game.board.contents[event.srcLocation].player.identifier;
@@ -95,7 +94,6 @@ io.on('connection', (socket) => {
 });
 
 function sendUpdate(gameId) {
-    console.log("  Sending update.");
     const game = activeGames.get(gameId);
     const event = {board: game.board.asJson(), log: game.log, player: game.getNextPlayerIdentifier()};
     io.to(gameId).emit('update', event);
