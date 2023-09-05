@@ -77,11 +77,23 @@
 			<button id="save" onclick="save();">Save</button>
 		</div>
 		
-        <script src='/socket.io/socket.io.js'></script>
-		<script src="src/MatrixUtilities.js"></script>
-		<script src="src/Move.js"></script>
-		<script src="src/Serializer.js"></script>
-		<script src="src/Realizer.js"></script>
-		<script src="src/main.js"></script>
+		<script id="loadScripts">
+			function loadScript(path) {
+				const script = document.createElement("script");
+				let pathName = window.location.pathname + "/";
+				if (pathName === "//") pathName = "";
+				script.src = pathName + path;
+				document.body.appendChild(script);
+			}
+
+			loadScript("socket.io/socket.io.js");
+			loadScript("src/MatrixUtilities.js");
+			loadScript("src/Move.js");
+			loadScript("src/Serializer.js");
+			loadScript("src/Realizer.js");
+			loadScript("src/main.js");
+			loadScriptNode = document.getElementById("loadScripts");
+			loadScriptNode.parentNode.removeChild(loadScriptNode);
+		</script>
 	</body>
 </html>

@@ -1,6 +1,20 @@
-const socket = io();
 document.getElementById("lobby").style.display = "none";
 document.getElementById("error").style.display = "none";
+
+// Spin-block; still allows external resources to load
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+sleep(100);
+// TODO: Figure something else out, this is awful.
+if (typeof io == "undefined") {
+    location.reload();
+}
+const socket = io();
 
 // socket.emit('event');
 // socket.on('event', (data) => { func });
@@ -15,6 +29,10 @@ socket.on('admin response 1', data => {
 socket.on('start game', (data) => {
     realizer = new Realizer(data.board);
     realizer.realize();
+    const isMyTurn = data.player === playerId;
+    let turnMessage = `You are ${playerId}. Waiting for ${data.player} to play.`;
+    if (isMyTurn) turnMessage = `It is your turn to play, ${playerId}!`;
+    data.log.push(turnMessage);
     realizer.setLog(data.log);
     
     document.getElementById("error").style.display = "none";
@@ -31,11 +49,17 @@ socket.on('join lobby', (event) => {
     document.getElementById("lobby").style.display = "block";
     document.getElementById("mainDisplay").style.display = "none";
 });
+socket.on('assign player', (event) => {
+    playerId = event.player;
+})
 socket.on('update', (data) => {
     console.log(data);
-    // TODO: Receive message from game as well
     realizer.board = data.board;
     realizer.realize();
+    const isMyTurn = data.player === playerId;
+    let turnMessage = `You are ${playerId}. Waiting for ${data.player} to play.`;
+    if (isMyTurn) turnMessage = `It is your turn to play, ${playerId}!`;
+    data.log.push(turnMessage);
     realizer.setLog(data.log);
 });
 socket.on('abandoned', () => {
@@ -48,6 +72,7 @@ socket.on('abandoned', () => {
 
 let realizer = undefined;
 let game = undefined;
+let playerId = undefined;
 const fileInput = document.getElementById("configInput");
 
 fileInput.onchange = () => {

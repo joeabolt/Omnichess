@@ -40,6 +40,10 @@ class Game  {
         this.gameId = "";
     }
 
+    getNextPlayerIdentifier() {
+        return this.nextTurn.player.identifier;
+    }
+
     getHumanAssignment() {
         if (this.nextUnclaimedHuman < 0) {
             return null;
@@ -52,7 +56,7 @@ class Game  {
 
     startGame(io) {
         this.startCPU();
-        const startGameEvent = {board: this.board.asJson(), log: this.log};
+        const startGameEvent = {board: this.board.asJson(), log: this.log, player: this.getNextPlayerIdentifier()};
         io.to(this.gameId).emit('start game', startGameEvent);
     }
 

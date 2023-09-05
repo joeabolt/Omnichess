@@ -27,16 +27,20 @@ io.on('connection', (socket) => {
         socket.emit('admin response 1', keys);
     });
     socket.on('join game', (event) => {
-        const game = activeGames.get(event.gameId);
-        if (game && game.password === event.password) {
+        const gameId = event.gameId.trim();
+        const password = event.password.trim();
+        const game = activeGames.get(gameId);
+        if (game && game.password === password) {
             // Join game and reserve slot
             playerIdentifier = game.getHumanAssignment();
-            socket.join(event.gameId);
-            activeGame = event.gameId;
+            socket.join(gameId);
+            const assignmentEvent = {"player": playerIdentifier};
+            socket.emit('assign player', assignmentEvent);
+            activeGame = gameId;
             // Activate lobby if waiting on more players or start game
             if (game.unclaimedHumanPlayers) {
-                const joinLobbyEvent = {"gameId": event.gameId, "password": game.password};
-                io.to(event.gameId).emit('join lobby', joinLobbyEvent);
+                const joinLobbyEvent = {"gameId": gameId, "password": game.password};
+                io.to(gameId).emit('join lobby', joinLobbyEvent);
             } else {
                 game.startGame(io);
             }
@@ -56,6 +60,8 @@ io.on('connection', (socket) => {
         game.gameId = gameId;
         game.password = getPassword();
         playerIdentifier = game.getHumanAssignment();
+        const assignmentEvent = {"player": playerIdentifier};
+        socket.emit('assign player', assignmentEvent);
 
         // Either send player to lobby if waiting for friends or start the game
         if (game.unclaimedHumanPlayers) {
@@ -74,6 +80,7 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('move', (event) => {
+        console.log("Received a move event.");
         const move = new Move(event.move, event.capture, event.srcLocation, event.targetLocation, event.capturedPiece);
         const game = activeGames.get(activeGame);
         const owner = game.board.contents[event.srcLocation].player.identifier;
@@ -88,8 +95,9 @@ io.on('connection', (socket) => {
 });
 
 function sendUpdate(gameId) {
+    console.log("  Sending update.");
     const game = activeGames.get(gameId);
-    const event = {board: game.board.asJson(), log: game.log};
+    const event = {board: game.board.asJson(), log: game.log, player: game.getNextPlayerIdentifier()};
     io.to(gameId).emit('update', event);
 }
 
@@ -116,7 +124,6 @@ function getNumber() {
 }
 
 // Initialize server
-// Not using 8080 so I can throw this on my server that a different process on 8080
-server.listen(8192, () => {
-    console.log('listening on *:8192');
+server.listen(8080, () => {
+    console.log('listening on *:8080');
 });
