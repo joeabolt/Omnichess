@@ -21,13 +21,15 @@
 			.hdimension {
 				display: flex;
 				flex-direction: row;
-				justify-content: center;
+				justify-content: flex-start;
+				flex-wrap: nowrap;
 			}
 			
 			.vdimension {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
+				flex-wrap: nowrap;
 			}
 			
 			#mainDisplay, #undo, #redo {
@@ -36,7 +38,9 @@
 		</style>
 	</head>
 	<body>
-		<h1>Omnichess</h1>
+		<span id="gameIdHidden" style="display: hidden"></span>
+		<span id="playerIdHidden" style="display: hidden"></span>
+		<h1 onclick="socket.reconnect()">Omnichess</h1>
 		<a href="https://github.com/joeabolt/Omnichess">Check it out on GitHub!</a><br />
 		<a href="https://github.com/joeabolt/Omnichess/issues/new/choose">File an issue</a>
 		<div id="error" style="color:red;"></div>
@@ -91,6 +95,7 @@
 			loadScript("src/Move.js");
 			loadScript("src/Serializer.js");
 			loadScript("src/Realizer.js");
+			loadScript("src/RealizerAlgebraic.js");
 			loadScript("src/main.js");
 			loadScriptNode = document.getElementById("loadScripts");
 			loadScriptNode.parentNode.removeChild(loadScriptNode);

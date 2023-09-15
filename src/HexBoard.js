@@ -51,7 +51,8 @@ class HexBoard  {
             array: this.array,
             contents: this.contents.map(x => x ? x.asJson() : x),
             orientation: this.orientation,
-            cells: this.cells
+            cells: this.cells,
+            isEuclidean: true,
         };
     }
 

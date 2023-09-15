@@ -1,5 +1,24 @@
-document.getElementById("lobby").style.display = "none";
-document.getElementById("error").style.display = "none";
+function setMode(mode, errorMessage) {
+    document.getElementById("lobby").style.display = "none";
+    document.getElementById("error").style.display = "none";
+    document.getElementById("input").style.display = "none";
+    document.getElementById("mainDisplay").style.display = "block";
+    if (errorMessage) {
+        document.getElementById("error").innerHTML = errorMessage;
+        document.getElementById("error").style.display = "block";
+    }
+    if (mode === "lobby") {
+        document.getElementById("lobby").style.display = "block";
+    }
+    if (mode === "mainDisplay") {
+        document.getElementById("mainDisplay").style.display = "block";
+    }
+    if (mode === "input") {
+        document.getElementById("input").style.display = "block";
+    }
+}
+
+setMode("input");
 
 // Spin-block; still allows external resources to load
 function sleep(milliseconds) {
@@ -28,6 +47,9 @@ socket.on('admin response 1', data => {
 
 socket.on('start game', (data) => {
     realizer = new Realizer(data.board);
+    if (data.board.isEuclidean) {
+        realizer = new RealizerAlgebraic(data.board);
+    }
     realizer.realize();
     const isMyTurn = data.player === playerId;
     let turnMessage = `You are ${playerId}. Waiting for ${data.player} to play.`;
@@ -35,22 +57,18 @@ socket.on('start game', (data) => {
     data.log.push(turnMessage);
     realizer.setLog(data.log);
     
-    document.getElementById("error").style.display = "none";
-    document.getElementById("input").style.display = "none";
-    document.getElementById("lobby").style.display = "none";
-    document.getElementById("mainDisplay").style.display = "block";
+    setMode("mainDisplay");
 });
 socket.on('join lobby', (event) => {
     document.getElementById("gameId").innerHTML = event.gameId;
+    document.getElementById("gameIdHidden").innerHTML = event.gameId;
     document.getElementById("password").innerHTML = event.password;
     
-    document.getElementById("error").style.display = "none";
-    document.getElementById("input").style.display = "none";
-    document.getElementById("lobby").style.display = "block";
-    document.getElementById("mainDisplay").style.display = "none";
+    setMode("lobby");
 });
 socket.on('assign player', (event) => {
     playerId = event.player;
+    document.getElementById("playerIdHidden").innerHTML = event.player;
 })
 socket.on('update', (data) => {
     console.log(data);
@@ -63,11 +81,7 @@ socket.on('update', (data) => {
     realizer.setLog(data.log);
 });
 socket.on('abandoned', () => {
-    document.getElementById("error").innerHTML = "The other player(s) left.";
-    document.getElementById("error").style.display = "block";
-    document.getElementById("input").style.display = "block";
-    document.getElementById("lobby").style.display = "none";
-    document.getElementById("mainDisplay").style.display = "none";
+    setMode("input", "The other player(s) left.");
 });
 
 let realizer = undefined;
@@ -115,17 +129,7 @@ function loadConfig(config) {
     realizer.realize();
     game.startCPU(realizer);
     
-    document.getElementById("input").style.display = "none";
-    document.getElementById("mainDisplay").style.display = "block";
-}
-
-function loadPreloadedConfig(path) {
-    const configScript = document.createElement("script");
-    configScript.src = path;
-    configScript.onload = () => {
-        loadConfig(config);
-    };
-    document.body.appendChild(configScript);
+    setMode("mainDisplay");
 }
 
 function loadPreloadedConfig2(path) {

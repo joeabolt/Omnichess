@@ -85,16 +85,5 @@ class MockBoard  {
 			this.createAdjacencyMatrix()
 			.map(row => JSON.stringify(row))
 			.join(", ") + "]";
-		// const adjMatrix = this.createAdjacencyMatrix();
-		// let adjMatStr = "[";
-		// for (let row = 0; row < adjMatrix.length; row++) {
-		// 	adjMatStr += "[";
-		// 	for (let col = 0; col < adjMatrix[row].length; col++) {
-		// 		adjMatStr += (adjMatrix[row][col] !== null ? adjMatrix[row][col] : "null") + ",";
-		// 	}
-		// 	adjMatStr = adjMatStr.slice(0, -1) + "]";
-		// }
-		// adjMatStr += "]";
-		// return adjMatStr;
 	}
 }

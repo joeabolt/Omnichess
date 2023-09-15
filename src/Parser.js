@@ -35,6 +35,7 @@ class Parser  {
             } else {
                 // Auto-generate
                 board = new Board(Board.Generate(boardTemplate.lengths, boardTemplate.oob));
+                board.isEuclidean = true;
             }
         }
 

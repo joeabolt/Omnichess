@@ -34,8 +34,8 @@ function synthesizeConfig(mockBoard, mockPieces) {
                     return "";
                 }
                 return `{ "player": "Red", "win": false, ` + 
-                    `"config": "count ${piece.identifier} = 0 @ end Blue"},` + 
-                    `{"player": "Blue", "win": false, "config": "count ${piece.identifier} = 0 @ end Red"}`
+                    `"config": "check ${piece.identifier} end Blue"},` + 
+                    `{"player": "Blue", "win": false, "config": "check ${piece.identifier} @ end Red"}`
             }).filter(x => x.length > 0).join(", ") }
         ],
         "boardState": [

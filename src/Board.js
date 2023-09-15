@@ -4,6 +4,7 @@ const {MatrixUtilities} = require("./MatrixUtilities.js");
 /* Represents the board state at a point in time */
 class Board  {
     constructor(adjacencyMatrix) {
+        this.isEuclidean = false;
         this.cells = adjacencyMatrix;
         /* The below works because we insist on a square/cubic grid */
         this.dimensions = Math.round(Math.log(adjacencyMatrix[0].length) / Math.log(3));
@@ -40,7 +41,8 @@ class Board  {
             array: this.array,
             contents: this.contents.map(x => x ? x.asJson() : x),
             orientation: this.orientation,
-            cells: this.cells
+            cells: this.cells,
+            isEuclidean: this.isEuclidean,
         };
     }
 

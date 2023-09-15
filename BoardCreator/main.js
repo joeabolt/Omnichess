@@ -6,7 +6,7 @@ let cellSize = 50;
 let board = new MockBoard(8, 8);
 let pieceTypes = [];
 let player = 0;
-let mode = 0; // 0 => Activate / Deactivate; > 0 => toggle pieceTypes[mode - 1]
+let mode = 0; // 0 => Activate / Deactivate; >0 => toggle pieceTypes[mode - 1]
 updateBoard();
 updateOutput();
 
