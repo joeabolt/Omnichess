@@ -47,7 +47,12 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('start game', (event) => {
-        const {config} = require(__dirname + '/src/config/' + event.configName);
+        let config = event.config;
+        if (config == undefined) {
+            const path = __dirname + '/src/config/' + event.configName;
+            const preloadedConfig = require(path);
+            config = preloadedConfig.config;
+        }
         game = Parser.Load(config);
 
         // Update the server's log of who's in what games

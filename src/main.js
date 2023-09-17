@@ -2,7 +2,8 @@ function setMode(mode, errorMessage) {
     document.getElementById("lobby").style.display = "none";
     document.getElementById("error").style.display = "none";
     document.getElementById("input").style.display = "none";
-    document.getElementById("mainDisplay").style.display = "block";
+    document.getElementById("mainDisplay").style.display = "none";
+    document.getElementById("boardCreator").style.display = "none";
     if (errorMessage) {
         document.getElementById("error").innerHTML = errorMessage;
         document.getElementById("error").style.display = "block";
@@ -15,6 +16,9 @@ function setMode(mode, errorMessage) {
     }
     if (mode === "input") {
         document.getElementById("input").style.display = "block";
+    }
+    if (mode === "boardCreator") {
+        document.getElementById("boardCreator").style.display = "block";
     }
 }
 
@@ -134,8 +138,12 @@ function loadConfig(config) {
 
 function loadPreloadedConfig2(path) {
     const actualPath = "preloaded" + path.substring(path.lastIndexOf('/'));
-    console.log("Actual path: " + actualPath);
     const event = {configName: actualPath};
+    socket.emit('start game', event);
+}
+
+function loadCustomConfig(configJson) {
+    const event = {config: configJson};
     socket.emit('start game', event);
 }
 

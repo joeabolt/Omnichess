@@ -267,7 +267,7 @@ class MatrixUtilities {
     static Max(matrix) {
         const lengths = this.GetLengths(matrix);
         if (lengths.length === 0) {
-            return matrix;
+            return Math.abs(matrix);
         }
         const firstElement = this.Index(matrix, new Array(lengths.length).fill(0));
         return matrix.reduce((max, arr) => Math.max(max, this.Max(arr)), firstElement);
@@ -285,6 +285,7 @@ class MatrixUtilities {
         // Have all my children sort themselves
         matrix.forEach(x => this.RotateMaxesToEnd(x));
         // While elements not sorted, rotate
+        // TODO: Make infinite loop safe
         while (matrix.some((x,i,arr) => i>0 && this.Max(x) < this.Max(arr[i-1]))) {
             this.RotateAlongDimension(matrix, 0);
         }
