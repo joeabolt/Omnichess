@@ -2,7 +2,8 @@ function synthesizeConfig(mockBoard, mockPieces) {
     return `{
         "board": {
             "lengths": [${mockBoard.rows}, ${mockBoard.cols}],
-            "adjacencyMatrix": ${mockBoard.createAdjacencyMatrixString()}
+            "adjacencyMatrix": ${mockBoard.wraps() ? mockBoard.createAdjacencyMatrixString() : "null"},
+            "oob": [${mockBoard.getFalseCells().join(",")}]
         },
         "pieces": [
             ${ mockPieces.map(piece => {

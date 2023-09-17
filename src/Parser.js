@@ -1,4 +1,5 @@
 const {Board} = require("./Board.js");
+const {BoardGenerator} = require("./BoardGenerator.js");
 const {HexBoard} = require("./HexBoard.js");
 const {Player} = require("./Player.js");
 const {CPU} = require("./CPU.js");
@@ -34,7 +35,7 @@ class Parser  {
                 board = new Board(boardTemplate.adjacencyMatrix);
             } else {
                 // Auto-generate
-                board = new Board(Board.Generate(boardTemplate.lengths, boardTemplate.oob));
+                board = new Board(BoardGenerator.Generate(boardTemplate.lengths, boardTemplate.oob, boardTemplate.wrapping));
                 board.isEuclidean = true;
             }
         }

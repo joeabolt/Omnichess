@@ -70,11 +70,11 @@ class MatrixUtilities {
      *  for centered. vectorAxis indicates which axis to be used, with 0 meaning
      *  the smallest.
      */
-    static GetDirectionsByVector(vectorAxis, vectorSign, dimensions) {
+    static GetDirectionsByVector(vectorAxis, vectorSign, dimensionCount) {
         const directions = [];
-        for (let direction = 0; direction < Math.pow(3, dimensions); direction++) {
+        for (let direction = 0; direction < Math.pow(3, dimensionCount); direction++) {
             const vector = [];
-            for (let axis = 0; axis < dimensions; axis++) {
+            for (let axis = 0; axis < dimensionCount; axis++) {
                 vector.push(Math.floor(direction / Math.pow(3, axis)) % 3);
             }
             if (vector[vectorAxis] === vectorSign) {
@@ -264,25 +264,35 @@ class MatrixUtilities {
         );
     }
 
+    static Max(matrix) {
+        const lengths = this.GetLengths(matrix);
+        if (lengths.length === 0) {
+            return matrix;
+        }
+        const firstElement = this.Index(matrix, new Array(lengths.length).fill(0));
+        return matrix.reduce((max, arr) => Math.max(max, this.Max(arr)), firstElement);
+    }
+
     /**
      * Rotates the matrix along each dimension until the last value in the first vector is greater than the first value.
      * @param {Array} matrix 
      */
     static RotateMaxesToEnd(matrix) {
         const lengths = this.GetLengths(matrix);
-        const zeroCoordinates = new Array(lengths.length).fill(0);
-        for (let dimension = 0; dimension < lengths.length; dimension++) {
-            let maxCoords = JSON.parse(JSON.stringify(zeroCoordinates));
-            maxCoords[dimension] = lengths[dimension] - 1;
-            while (Math.abs(this.Index(matrix, maxCoords)) < Math.abs(this.Index(matrix, zeroCoordinates))) {
-                this.RotateAlongDimension(matrix, dimension);
-            }
+        if (lengths.length === 0) {
+            return; // Single value, already sorted
+        }
+        // Have all my children sort themselves
+        matrix.forEach(x => this.RotateMaxesToEnd(x));
+        // While elements not sorted, rotate
+        while (matrix.some((x,i,arr) => i>0 && this.Max(x) < this.Max(arr[i-1]))) {
+            this.RotateAlongDimension(matrix, 0);
         }
     }
 
     static RotateAlongDimension(matrix, dimension) {
         if (dimension === 0) {
-            save = matrix[0];
+            const save = matrix[0];
             for (let i = 1; i < matrix.length; i++) {
                 matrix[i - 1] = matrix[i];
             }
@@ -292,6 +302,33 @@ class MatrixUtilities {
         for (let i = 0; i < matrix.length; i++) {
             this.RotateAlongDimension(matrix[i], dimension - 1);
         }
+    }
+
+    static RotateNullsToFront(matrix) {
+        const lengths = this.GetLengths(matrix);
+        if (lengths.length === 0) {
+            return;
+        }
+        // Have all my children rotate their nulls to the front
+        matrix.forEach(x => this.RotateNullsToFront(x));
+        // If this row is filled with null, nothing can be done, exit
+        if (this.IsEntirelyNull(matrix)) {
+            return;
+        }
+        // If any of my children is entirely null, rotate them to the front
+        // TODO: Make infinite loop safe
+        while (matrix.some((x,i,arr) => i>0 && this.IsEntirelyNull(x) && !this.IsEntirelyNull(arr[i-1]))) {
+            this.RotateAlongDimension(matrix, 0);
+        }
+    }
+
+    static IsEntirelyNull(matrix) {
+        if (matrix == null) return true;
+        const lengths = this.GetLengths(matrix);
+        if (lengths.length === 0) {
+            return false;
+        }
+        return matrix.every(x => this.IsEntirelyNull(x));
     }
 }
 

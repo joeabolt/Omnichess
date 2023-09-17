@@ -12,6 +12,22 @@ class MockBoard  {
 	setCols(ncols) {
 		this.makeNewBoard(this.rows, ncols);
 	}
+
+	wraps() {
+		return this.wrapHorizontal || this.wrapVertical;
+	}
+
+	getFalseCells() {
+		const falseCells = [];
+		for (let r = 0; r < this.rows; r++) {
+			for (let c = 0; c < this.cols; c++) {
+				if (!this.cells[r][c]) {
+					falseCells.push(r * this.cols + c + 1);
+				}
+			}
+		}
+		return falseCells;
+	}
 	
 	makeNewBoard(rows, cols) {
 		this.rows = rows;

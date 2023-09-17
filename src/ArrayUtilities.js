@@ -1,6 +1,11 @@
+function clamp(x, min, max) {
+    return Math.max(Math.min(x, max), min);
+}
+
 class ArrayUtilities {
     static ProductOfLastN(array, n) {
-        const cutoff = Math.max(Math.min(array.length - n, array.length), 0);
+        // From the end of the array, how many spots forward to walk
+        const cutoff = clamp(array.length - n, 0, array.length);
         return array.reduceRight(
             (totalProduct, currentValue, currentIndex) => {
                 if (currentIndex < cutoff) return totalProduct;
