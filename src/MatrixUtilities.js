@@ -285,9 +285,11 @@ class MatrixUtilities {
         // Have all my children sort themselves
         matrix.forEach(x => this.RotateMaxesToEnd(x));
         // While elements not sorted, rotate
-        // TODO: Make infinite loop safe
-        while (matrix.some((x,i,arr) => i>0 && this.Max(x) < this.Max(arr[i-1]))) {
+        const maxIterations = matrix.length;
+        let i = 0;
+        while (matrix.some((x,i,arr) => i>0 && this.Max(x) < this.Max(arr[i-1])) && i < maxIterations) {
             this.RotateAlongDimension(matrix, 0);
+            i++;
         }
     }
 
@@ -317,9 +319,11 @@ class MatrixUtilities {
             return;
         }
         // If any of my children is entirely null, rotate them to the front
-        // TODO: Make infinite loop safe
-        while (matrix.some((x,i,arr) => i>0 && this.IsEntirelyNull(x) && !this.IsEntirelyNull(arr[i-1]))) {
+        const maxIterations = matrix.length;
+        let i = 0;
+        while (matrix.some((x,i,arr) => i>0 && this.IsEntirelyNull(x) && !this.IsEntirelyNull(arr[i-1])) && i < maxIterations) {
             this.RotateAlongDimension(matrix, 0);
+            i++;
         }
     }
 

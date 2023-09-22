@@ -51,7 +51,7 @@ socket.on('admin response 1', data => {
 
 socket.on('start game', (data) => {
     realizer = new Realizer(data.board);
-    if (data.board.isEuclidean) {
+    if (data.board.isEuclidean && data.board.array[0].length == data.board.array[1].length) {
         realizer = new RealizerAlgebraic(data.board);
     }
     realizer.realize();

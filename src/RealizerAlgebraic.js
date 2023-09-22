@@ -104,6 +104,12 @@ class RealizerAlgebraic  {
     createDisplayBoard() {
         let toDisplay = this.board.array;
         let dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
+
+        if (dimensionLengths.length % 2 != 0) {
+            toDisplay = [toDisplay];
+            dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
+        }
+
         let dimensionCount = dimensionLengths.length;
 
         let countOddDimensions = dimensionLengths.reduce((count, current) => {
@@ -117,48 +123,31 @@ class RealizerAlgebraic  {
         return board;
     }
 
-    assembleChild(matrix, dimensions, offsetColoring, tricoloring = false, verticalHex = false, index = -1) {
+    assembleChild(matrix, dimensions, offsetColoring, tricoloring = false, verticalHex = false) {
         if (dimensions === 0) {
-            /* It's a single cell; make it and return */
-            return this.makeSingleCell(matrix, offsetColoring, tricoloring, verticalHex)
+            // I am a single cell; make myself
+            return this.makeSingleCell(matrix, offsetColoring, tricoloring, verticalHex);
         }
 
-        let aggregateElement = document.createElement("div");
-        const dimensionality = ((dimensions % 2 === 0 ^ verticalHex) ? "vdimension" : "hdimension");
-        aggregateElement.className = dimensionality;
-        aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
-        for (let i = 0; i < matrix.length; i++) {
-            if (dimensions == 1 && tricoloring) {
-                aggregateElement.appendChild(
-                    this.assembleChild(matrix[i],
-                    dimensions - 1,
-                    (offsetColoring ? i + 1 : i) % 3,
-                    tricoloring, verticalHex, matrix.length - i)
-                );
-            } else {
-                aggregateElement.appendChild(
-                    this.assembleChild(matrix[i],
-                    dimensions - 1,
-                    (matrix[i].length % 2 === 0 && i % 2 === 0) ? 1 - offsetColoring : offsetColoring,
-                    tricoloring, verticalHex, matrix.length - i)
-                );
+        // I know I have even dimensions, building a 2D array of whatever I have
+        const aggregateElement = document.createElement("table");
+        let maxColumns = matrix.reduce((maxCols, row) => Math.max(maxCols, row.length), 0);
+        for (let row = 0; row < matrix.length; row++) {
+            const rowElement = document.createElement("tr");
+            for (let col = 0; col < matrix[row].length; col++) {
+                const childOffsetColoring = (matrix[row].length % 2 === 0 && row % 2 === 0) ? 1 - offsetColoring : offsetColoring;
+                const colElement = this.assembleChild(matrix[row][col], dimensions-2, childOffsetColoring, tricoloring, verticalHex);
+                colElement.style.display = "table-cell";
+                rowElement.appendChild(colElement);
             }
+            rowElement.appendChild(this.makeLabelCell(row+1));
+            aggregateElement.appendChild(rowElement);
         }
-
-        // TODO: Add label for children
-        if (dimensionality === "hdimension") {
-            aggregateElement.appendChild(this.makeLabelCell(index));
-        } else {
-            // I'm a vertical dimension, but need one label per thing in the rows I contain, not one label
-            const maxLength = matrix.reduce((maxRowLen, row) => Math.max(row.length, maxRowLen), 0);
-            const labelRow = document.createElement("div");
-            labelRow.className = "hdimension";
-            labelRow.style.margin = (10 * Math.floor((dimensions-1) / 2)) + "px";
-            for (let i = 0; i < maxLength; i++) {
-                labelRow.appendChild(this.makeLabelCell(this.convertNumberToLetters(i), true));
-            }
-            aggregateElement.appendChild(labelRow);
+        const labelRow = document.createElement("tr");
+        for (let i = 0; i < maxColumns; i++) {
+            labelRow.appendChild(this.makeLabelCell(this.convertNumberToLetters(i)));
         }
+        aggregateElement.appendChild(labelRow);
 
         return aggregateElement;
     }
@@ -175,28 +164,24 @@ class RealizerAlgebraic  {
         return finalString;
     }
 
-    makeLabelCell(contents, isForRow = false) {
-        const rando = document.createElement("div");
-        rando.innerHTML = `<div>${contents}</div>`;
-        rando.style.display = "flex";
-        if (isForRow) rando.style.justifyContent = "center";
-        if (!isForRow) rando.style.alignItems = "center";
-        rando.style.width = "37px";
+    makeLabelCell(contents) {
+        const rando = document.createElement("td");
+        rando.innerHTML = contents;
+        rando.style.margin = "auto";
+        rando.style.minWidth = "37px";
+        rando.style.minHeight = "37px";
         rando.style.height = "37px";
-        rando.style.margin = "1px";
-        rando.style.border = "1px solid white";
+        rando.style.textAlign = "center";
         return rando;
     }
 
     makeSingleCell(matrix, offsetColoring, tricoloring, verticalHex) {
-        const cellIndex = matrix; /* Rename for clarity */
-
-        const cell = document.createElement("div");
+        const cellIndex = matrix; // Rename for clarity
+        const cell = document.createElement("td");
         cell.className = `cell${cellIndex < 0 ? " oob" : ""}`;
         let contents = "&nbsp";
         const backgroundColor = this.determineBackgroundColor(cellIndex, offsetColoring, tricoloring);
         const foregroundColor = this.determineForegroundColor(cellIndex, offsetColoring, tricoloring);
-
         if (this.board.contents[cellIndex] != undefined) {
             contents = this.board.contents[cellIndex].identifier;
         }
@@ -205,11 +190,8 @@ class RealizerAlgebraic  {
         cell.style.color = foregroundColor;
 
         const size = "37px"; //TODO: Make this dynamic #55
-        cell.style.width = size;
-        cell.style.height = size;
-        cell.style.display = "flex";
-        cell.style.justifyContent = "center";
-        cell.style.alignItems = "center";
+        cell.style.minWidth = size;
+        cell.style.minHeight = size;
         if (tricoloring) {
             if (verticalHex) {
                 cell.style.height = "42px";
@@ -218,7 +200,7 @@ class RealizerAlgebraic  {
             }
         }
 
-        cell.innerHTML = `<div>${contents}<div>`;
+        cell.innerHTML = `${contents}`;
         cell.onclick = () => { processClick(event, cellIndex); };
 
         return cell;
@@ -230,7 +212,7 @@ class RealizerAlgebraic  {
         }
 
         let colorIndex = offsetColor ? (index + 1) : (index);
-        let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
+        let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#EEEEEE";
 
         if (tricoloring) {
             if (offsetColor == 0) bgColor = "#666666";
