@@ -64,6 +64,9 @@ class Parser  {
                     newPlayer.SetInfluenceWeight(template.influenceWeight);
                 }
             }
+            if (template.imgStyle) {
+                newPlayer.imgStyle = template.imgStyle;
+            }
             players.set(template.identifier, newPlayer);
         });
 
@@ -101,6 +104,9 @@ class Parser  {
                 .setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture))
                 .setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture))
                 .setValue(pieceTemplates.get(entry.piece).value);
+            if (pieceTemplates.get(entry.piece).image) {
+                piece.image = pieceTemplates.get(entry.piece).image;
+            }
             piece.setDirection(piece.player.direction);
             if (entry.hasMoved) {
                 piece.setMoves(1);

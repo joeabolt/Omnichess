@@ -154,7 +154,6 @@ class RealizerAlgebraic  {
 
     convertNumberToLetters(i) {
         const letters = "abcdefghijklmnopqrstuvwxyz";
-        // 17 => 17 (1s); 48 => 1 (26s) + 22 (1s); 30 => 1 (26s) + 4 (1s)
         let finalString = "";
         while (i > 0 || finalString.length == 0) {
             let mod = i % 26;
@@ -182,12 +181,19 @@ class RealizerAlgebraic  {
         let contents = "&nbsp";
         const backgroundColor = this.determineBackgroundColor(cellIndex, offsetColoring, tricoloring);
         const foregroundColor = this.determineForegroundColor(cellIndex, offsetColoring, tricoloring);
-        if (this.board.contents[cellIndex] != undefined) {
-            contents = this.board.contents[cellIndex].identifier;
-        }
-
-        cell.style.backgroundColor = backgroundColor;
         cell.style.color = foregroundColor;
+        
+        if (this.board.contents[cellIndex] != undefined) {
+            if (this.board.contents[cellIndex].image) {
+                cell.style.background = `url('${this.board.contents[cellIndex].image}'), ${backgroundColor}`;
+                cell.style.backgroundSize = 'contain';
+            } else {
+                contents = this.board.contents[cellIndex].identifier;
+                cell.style.backgroundColor = backgroundColor;
+            }
+        } else {
+            cell.style.backgroundColor = backgroundColor;
+        }
 
         const size = "37px"; //TODO: Make this dynamic #55
         cell.style.minWidth = size;
@@ -212,7 +218,7 @@ class RealizerAlgebraic  {
         }
 
         let colorIndex = offsetColor ? (index + 1) : (index);
-        let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#EEEEEE";
+        let bgColor = (colorIndex % 2 === 0) ? "#444444" : "#DDDDDD";
 
         if (tricoloring) {
             if (offsetColor == 0) bgColor = "#666666";

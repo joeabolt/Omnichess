@@ -7,268 +7,277 @@ const config = {
             move: "(0, 0, 1d); (0, 1d, 0)",
             capture: "",
             moveCapture: "(1, 1d, 0); (1, 0, 1d); (0, 1d, 1d)",
-            identifier: "p"
+            identifier: "p",
+            image: "Pawn"
         },
         {
             move: "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+)",
             capture: "",
             moveCapture: "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+)",
-            identifier: "R"
+            identifier: "R",
+            image: "Rook"
         },
         {
             move: "(0, 1, 2)j; (0, 2, 1)j; (1, 0, 2)j; (1, 2, 0)j; (2, 0, 1)j; (2, 1, 0)j;",
             capture: "",
             moveCapture: "(0, 1, 2)j; (0, 2, 1)j; (1, 0, 2)j; (1, 2, 0)j; (2, 0, 1)j; (2, 1, 0)j;",
-            identifier: "N"
+            identifier: "N",
+            image: "Knight"
         },
         {
             move: "(1, 1, 0)+; (1, 0, 1)+; (0, 1, 1)+",
             capture: "",
             moveCapture: "(1, 1, 0)+; (1, 0, 1)+; (0, 1, 1)+",
-            identifier: "B"
+            identifier: "B",
+            image: "Bishop"
         },
         {
             move: "(1, 1, 1)+",
             capture: "",
             moveCapture: "(1, 1, 1)+",
-            identifier: "U"
+            identifier: "U",
+            image: "Unicorn"
         },
         {
             move: "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+); (1, 1, 0)+; (1, 0, 1)+; (0, 1, 1)+; (1, 1, 1)+",
             capture: "",
             moveCapture: "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+); (1, 1, 0)+; (1, 0, 1)+; (0, 1, 1)+; (1, 1, 1)+",
-            identifier: "Q"
+            identifier: "Q",
+            image: "Queen"
         },
         {
             move: "(1, 0, 0); (0, 1, 0); (0, 0, 1); (1, 1, 0); (1, 0, 1); (0, 1, 1); (1, 1, 1)",
             capture: "",
             moveCapture: "(1, 0, 0); (0, 1, 0); (0, 0, 1); (1, 1, 0); (1, 0, 1); (0, 1, 1); (1, 1, 1)",
-            identifier: "K"
+            identifier: "K",
+            image: "King"
         }
     ],
     players: [{
-            identifier: "Blue",
+            identifier: "White",
             color: "#0088FF",
+            imgStyle: "light",
             direction: [1, -1, -1],
             dropablePieces: "",
             capturedPieces: ""
         },
         {
-            identifier: "Red",
+            identifier: "Black",
             color: "#FF0000",
+            imgStyle: "dark",
             direction: [1, 1, 1],
             dropablePieces: "",
             capturedPieces: ""
         }
     ],
     endConditions: [{
-            player: "Blue",
+            player: "White",
             win: false,
-            config: "check K @ end Red"
+            config: "check K @ end Black"
         },
         {
-            player: "Red",
+            player: "Black",
             win: false,
-            config: "check K @ end Blue"
+            config: "check K @ end White"
         }
     ],
     boardState: [{
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 6
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 7
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 8
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 9
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 10
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 31
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 32
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 33
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 34
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 35
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "R",
             location: 1
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "N",
             location: 2
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "K",
             location: 3
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "N",
             location: 4
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "R",
             location: 5
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "U",
             location: 26
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "B",
             location: 27
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "Q",
             location: 28
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "U",
             location: 29
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "B",
             location: 30
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 91
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 92
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 93
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 94
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 95
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 116
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 117
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 118
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 119
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 120
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "R",
             location: 121
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "N",
             location: 122
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "K",
             location: 123
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "N",
             location: 124
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "R",
             location: 125
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "B",
             location: 96
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "U",
             location: 97
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "Q",
             location: 98
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "B",
             location: 99
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "U",
             location: 100
         }

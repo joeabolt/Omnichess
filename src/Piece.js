@@ -8,6 +8,7 @@ class Piece  {
         this.value = 1;
         this.player = undefined;
         this.direction = undefined;
+        this.image = undefined;
 
         /* For distinguishing first-move actions */
         this.moves = 0;
@@ -16,13 +17,25 @@ class Piece  {
         this.initialMoveCaptureVectors = [];
     }
 
+    get imagePath() {
+        if (!this.image || !this.player) {
+            return null;
+        }
+        let imageType = "White";
+        if (this.player.imgStyle == "dark") {
+            imageType = "Black";
+        } 
+        return `images/${imageType}${this.image}.png`;
+    }
+
     asJson() {
         return {
             moveVectors: this.moveVectors,
             captureVectors: this.captureVectors,
             moveCaptureVectors: this.moveCaptureVectors,
             identifier: this.identifier,
-            color: this.player ? this.player.color : undefined
+            color: this.player ? this.player.color : undefined,
+            image: this.imagePath
         };
     }
 

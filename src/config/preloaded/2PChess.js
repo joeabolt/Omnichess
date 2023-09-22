@@ -7,222 +7,230 @@ const config = {
             move: "(0, 1d); (0, 2di)",
             capture: "",
             moveCapture: "(1, 1d)",
-            identifier: "p"
+            identifier: "p",
+            image: "Pawn"
         },
         {
             move: "(1+, 0); (0, 1+):",
             capture: "",
             moveCapture: "(1+, 0); (0, 1+)",
-            identifier: "R"
+            identifier: "R",
+            image: "Rook"
         },
         {
             move: "(1, 2)j; (2, 1)j",
             capture: "",
             moveCapture: "(1, 2)j; (2, 1)j",
-            identifier: "N"
+            identifier: "N",
+            image: "Knight"
         },
         {
             move: "(1, 1)+",
             capture: "",
             moveCapture: "(1, 1)+",
-            identifier: "B"
+            identifier: "B",
+            image: "Bishop"
         },
         {
             move: "(1, 0)+; (0, 1)+; (1, 1)+",
             capture: "",
             moveCapture: "(1, 0)+; (0, 1)+; (1, 1)+",
-            identifier: "Q"
+            identifier: "Q",
+            image: "Queen"
         },
         {
             move: "(1, 0); (0, 1); (1, 1)",
             capture: "",
             moveCapture: "(1, 0); (0, 1); (1, 1)",
-            identifier: "K"
+            identifier: "K",
+            image: "King"
         }
     ],
     players: [{
-            identifier: "Blue",
+            identifier: "White",
             color: "#0088FF",
+            imgStyle: "light",
             direction: [1, -1],
             dropablePieces: "",
             capturedPieces: ""
         },
         {
-            identifier: "Red",
+            identifier: "Black",
             color: "#FF0000",
+            imgStyle: "dark",
             direction: [1, 1],
             dropablePieces: "",
             capturedPieces: ""
         }
     ],
     endConditions: [{
-            player: "Blue",
+            player: "White",
             win: false,
-            config: "check K @ end Red"
+            config: "check K @ end Black"
         },
         {
-            player: "Red",
+            player: "Black",
             win: false,
-            config: "check K @ end Blue"
+            config: "check K @ end White"
         }
     ],
     boardState: [{
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 49
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 50
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 51
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 52
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 53
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 54
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 55
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "p",
             location: 56
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "R",
             location: 57
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "N",
             location: 58
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "B",
             location: 59
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "Q",
             location: 60
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "K",
             location: 61
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "B",
             location: 62
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "N",
             location: 63
         },
         {
-            player: "Blue",
+            player: "White",
             piece: "R",
             location: 64
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 9
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 10
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 11
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 12
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 13
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 14
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 15
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "p",
             location: 16
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "R",
             location: 1
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "N",
             location: 2
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "B",
             location: 3
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "Q",
             location: 4
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "K",
             location: 5
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "B",
             location: 6
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "N",
             location: 7
         },
         {
-            player: "Red",
+            player: "Black",
             piece: "R",
             location: 8
         }
