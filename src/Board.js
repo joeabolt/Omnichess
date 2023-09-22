@@ -4,6 +4,7 @@ const {MatrixUtilities} = require("./MatrixUtilities.js");
 /* Represents the board state at a point in time */
 class Board  {
     constructor(adjacencyMatrix) {
+        this.isEuclidean = false;
         this.cells = adjacencyMatrix;
         /* The below works because we insist on a square/cubic grid */
         this.dimensions = Math.round(Math.log(adjacencyMatrix[0].length) / Math.log(3));
@@ -40,7 +41,8 @@ class Board  {
             array: this.array,
             contents: this.contents.map(x => x ? x.asJson() : x),
             orientation: this.orientation,
-            cells: this.cells
+            cells: this.cells,
+            isEuclidean: this.isEuclidean,
         };
     }
 
@@ -216,6 +218,7 @@ class Board  {
             cellsToAdd.sort(directionSort);
         }
 
+        MatrixUtilities.RotateNullsToFront(outputBoard);
         MatrixUtilities.TrimUnusedHyperplanes(outputBoard);
         MatrixUtilities.RotateMaxesToEnd(outputBoard);
 
@@ -236,6 +239,9 @@ class Board  {
         }
         const neighbors = this.cells[Math.abs(index) - 1];
         const cellsAdded = [];
+        if (neighbors === undefined) {
+            console.warn("Neighbors was undefined for cell: " + Math.abs(index) - 1);
+        }
 
         for (let direction = 0; direction < neighbors.length; direction++) {
             /* Skip if no neighbor in this direction */
@@ -282,83 +288,6 @@ class Board  {
         }
 
         return cellsAdded;
-    }
-
-    /**
-     * Generates and returns an adjacency matrix with the lengths specified in dimensions,
-     * an array of integers. Uses a n-dimensional matrix, where n = dimensions.length.
-     */
-    static Generate(dimensions, oob = []) {
-        const adjacencyMatrix = [];
-        const cellCount = ArrayUtilities.ProductOfLastN(dimensions, dimensions.length);
-        const directions = Math.pow(3, dimensions.length);
-
-        /* This loop assumes validity of all directions and initalizes the adjacency matrix */
-        for (let i = 1; i <= cellCount; i++) {
-            adjacencyMatrix.push([]);
-            for (let direction = 0; direction < directions; direction++) {
-                let totalOffset = 0;
-                for (let axis = 0; axis < dimensions.length; axis++) {
-                    const powerOfThree = Math.pow(3, axis);
-                    const increment = ArrayUtilities.ProductOfLastN(dimensions, axis);
-
-                    /* Mod (direction divided by (3^axis), rounding up) by 3
-                     * If 0, subtract (3^axis) from totalOffset
-                     * If 1, direction is centered on axis - leave totalOffset unchanged
-                     * If 2, add (3^axis) from totalOffset
-                     */
-                    const magicNumber = Math.floor(direction / powerOfThree) % 3;
-                    if (magicNumber === 0) {
-                        totalOffset -= increment;
-                    }
-                    if (magicNumber === 2) {
-                        totalOffset += increment;
-                    }
-                }
-                let numberToInsert = i + totalOffset;
-                if (oob.includes(numberToInsert)) {
-                    numberToInsert *= -1;
-                }
-                adjacencyMatrix[i - 1].push(numberToInsert);
-            }
-        }
-
-        /* This loop marks invalid directions.
-         * It marks them one dimension at a time,
-         * first marking all negative out of bounds (stepping to a lower index)
-         * and then all positive out of bounds (stepping to a higher index).
-         *
-         * Note that invalids come in contiguous segments of indices based
-         * on which dimension we are operating in.
-         */
-        for (let dimension = 0; dimension < dimensions.length; dimension++) {
-            const segmentLength = ArrayUtilities.ProductOfLastN(dimensions, dimension);
-            const distanceBetweenSegments = ArrayUtilities.ProductOfLastN(dimensions, dimension + 1);
-            const negativeDirections = MatrixUtilities.GetDirectionsByVector(dimension, 0, dimensions.length);
-            const positiveDirections = MatrixUtilities.GetDirectionsByVector(dimension, 2, dimensions.length);
-
-            /* The negative invalids */
-            for (let segmentStart = 1; segmentStart <= cellCount; segmentStart += distanceBetweenSegments) {
-                for (let offset = 0; offset < segmentLength; offset++) {
-                    for (let directionIndex = 0; directionIndex < negativeDirections.length; directionIndex++) {
-                        /* - 1 to convert to matrix indices */
-                        adjacencyMatrix[segmentStart + offset - 1][negativeDirections[directionIndex]] = null;
-                    }
-                }
-            }
-
-            /* The positive invalids */
-            for (let segmentStart = (distanceBetweenSegments - segmentLength + 1); segmentStart <= cellCount; segmentStart += distanceBetweenSegments) {
-                for (let offset = 0; offset < segmentLength; offset++) {
-                    for (let directionIndex = 0; directionIndex < positiveDirections.length; directionIndex++) {
-                        /* - 1 to convert to matrix indices */
-                        adjacencyMatrix[segmentStart + offset - 1][positiveDirections[directionIndex]] = null;
-                    }
-                }
-            }
-        }
-
-        return adjacencyMatrix;
     }
 }
 

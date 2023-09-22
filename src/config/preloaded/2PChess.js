@@ -7,42 +7,49 @@ const config = {
             move: "(0, 1d); (0, 2di)",
             capture: "",
             moveCapture: "(1, 1d)",
-            identifier: "p"
+            identifier: "p",
+            image: "Pawn"
         },
         {
             move: "(1+, 0); (0, 1+):",
             capture: "",
             moveCapture: "(1+, 0); (0, 1+)",
-            identifier: "R"
+            identifier: "R",
+            image: "Rook"
         },
         {
             move: "(1, 2)j; (2, 1)j",
             capture: "",
             moveCapture: "(1, 2)j; (2, 1)j",
-            identifier: "N"
+            identifier: "N",
+            image: "Knight"
         },
         {
             move: "(1, 1)+",
             capture: "",
             moveCapture: "(1, 1)+",
-            identifier: "B"
+            identifier: "B",
+            image: "Bishop"
         },
         {
             move: "(1, 0)+; (0, 1)+; (1, 1)+",
             capture: "",
             moveCapture: "(1, 0)+; (0, 1)+; (1, 1)+",
-            identifier: "Q"
+            identifier: "Q",
+            image: "Queen"
         },
         {
             move: "(1, 0); (0, 1); (1, 1)",
             capture: "",
             moveCapture: "(1, 0); (0, 1); (1, 1)",
-            identifier: "K"
+            identifier: "K",
+            image: "King"
         }
     ],
     players: [{
             identifier: "White",
             color: "#0088FF",
+            imgStyle: "light",
             direction: [1, -1],
             dropablePieces: "",
             capturedPieces: ""
@@ -50,6 +57,7 @@ const config = {
         {
             identifier: "Black",
             color: "#FF0000",
+            imgStyle: "dark",
             direction: [1, 1],
             dropablePieces: "",
             capturedPieces: ""

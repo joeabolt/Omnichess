@@ -16,6 +16,7 @@ class Player  {
 		this.capturedPieces = capturedPieces;
 		this.color = color;
 		this.isCPU = isCPU;
+		this.imgStyle = undefined;
 	}
 }
 

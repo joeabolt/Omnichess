@@ -48,7 +48,7 @@ const config = {
     "players": [{
             "identifier": "Green",
             "color": "#00FF00",
-            "direction": [1, 1, 1],
+            "direction": [-1, -1, -1],
             "dropablePieces": "",
             "capturedPieces": "",
             "isCPU": false
@@ -56,201 +56,201 @@ const config = {
         {
             "identifier": "Orange",
             "color": "#FFAA00",
-            "direction": [-1, -1, -1],
+            "direction": [1, 1, 1],
             "dropablePieces": "",
             "capturedPieces": "",
             "isCPU": true
         }
     ],
     "endConditions": [{
-            "player": "Green",
-            "win": false,
-            "config": "check K @ end Orange"
-        },
-        {
             "player": "Orange",
             "win": false,
             "config": "check K @ end Green"
+        },
+        {
+            "player": "Green",
+            "win": false,
+            "config": "check K @ end Orange"
         }
     ],
     "boardState": [
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "B",
             "location": 59
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "B",
             "location": 60
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "B",
             "location": 61
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "Q",
             "location": 48
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "K",
             "location": 71
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "N",
             "location": 37
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "N",
             "location": 83
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "R",
             "location": 26
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "R",
             "location": 95
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 15
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 27
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 39
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 51
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 63
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 74
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 85
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 96
         },
         {
-            "player": "Green",
+            "player": "Orange",
             "piece": "p",
             "location": 107
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "B",
             "location": 69
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "B",
             "location": 68
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "B",
             "location": 67
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "Q",
             "location": 57
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "K",
             "location": 80
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "N",
             "location": 45
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "N",
             "location": 91
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "R",
             "location": 33
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "R",
             "location": 102
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 21
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 32
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 43
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 54
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 65
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 77
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 89
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 101
         },
         {
-            "player": "Orange",
+            "player": "Green",
             "piece": "p",
             "location": 113
         }

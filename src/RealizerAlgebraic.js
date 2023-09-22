@@ -1,5 +1,5 @@
 /* Manages the display of the board to the user */
-class Realizer  {
+class RealizerAlgebraic  {
     constructor(board) {
         this.board = board;
 
@@ -104,6 +104,12 @@ class Realizer  {
     createDisplayBoard() {
         let toDisplay = this.board.array;
         let dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
+
+        if (dimensionLengths.length % 2 != 0) {
+            toDisplay = [toDisplay];
+            dimensionLengths = MatrixUtilities.GetLengths(toDisplay);
+        }
+
         let dimensionCount = dimensionLengths.length;
 
         let countOddDimensions = dimensionLengths.reduce((count, current) => {
@@ -119,61 +125,91 @@ class Realizer  {
 
     assembleChild(matrix, dimensions, offsetColoring, tricoloring = false, verticalHex = false) {
         if (dimensions === 0) {
-            /* It's a single cell; make it and return */
-            const cellIndex = matrix; /* Rename for clarity */
-
-            const cell = document.createElement("div");
-            cell.className = `cell${cellIndex < 0 ? " oob" : ""}`;
-            let contents = "&nbsp";
-            const backgroundColor = this.determineBackgroundColor(cellIndex, offsetColoring, tricoloring);
-            const foregroundColor = this.determineForegroundColor(cellIndex, offsetColoring, tricoloring);
-
-            if (this.board.contents[cellIndex] != undefined) {
-                contents = this.board.contents[cellIndex].identifier;
-            }
-
-            cell.style.backgroundColor = backgroundColor;
-            cell.style.color = foregroundColor;
-
-            const size = "37px"; //TODO: Make this dynamic #55
-            cell.style.width = size;
-            cell.style.height = size;
-            if (tricoloring) {
-                if (verticalHex) {
-                    cell.style.height = "42px";
-                } else {
-                    cell.style.width = "42px";
-                }
-            }
-
-            cell.innerHTML = `${cellIndex}<br />${contents}`;
-            cell.onclick = () => { processClick(event, cellIndex); };
-
-            return cell;
+            // I am a single cell; make myself
+            return this.makeSingleCell(matrix, offsetColoring, tricoloring, verticalHex);
         }
 
-        let aggregateElement = document.createElement("div");
-        aggregateElement.className = ((dimensions % 2 === 0 ^ verticalHex) ? "vdimension" : "hdimension");
-        aggregateElement.style.margin = (10 * Math.floor(dimensions / 2)) + "px";
-        for (let i = 0; i < matrix.length; i++) {
-            if (dimensions == 1 && tricoloring) {
-                aggregateElement.appendChild(
-                    this.assembleChild(matrix[i],
-                    dimensions - 1,
-                    (offsetColoring ? i + 1 : i) % 3,
-                    tricoloring, verticalHex)
-                );
-            } else {
-                aggregateElement.appendChild(
-                    this.assembleChild(matrix[i],
-                    dimensions - 1,
-                    (matrix[i].length % 2 === 0 && i % 2 === 0) ? 1 - offsetColoring : offsetColoring,
-                    tricoloring, verticalHex)
-                );
+        // I know I have even dimensions, building a 2D array of whatever I have
+        const aggregateElement = document.createElement("table");
+        let maxColumns = matrix.reduce((maxCols, row) => Math.max(maxCols, row.length), 0);
+        for (let row = 0; row < matrix.length; row++) {
+            const rowElement = document.createElement("tr");
+            for (let col = 0; col < matrix[row].length; col++) {
+                const childOffsetColoring = (matrix[row].length % 2 === 0 && row % 2 === 0) ? 1 - offsetColoring : offsetColoring;
+                const colElement = this.assembleChild(matrix[row][col], dimensions-2, childOffsetColoring, tricoloring, verticalHex);
+                colElement.style.display = "table-cell";
+                rowElement.appendChild(colElement);
             }
+            rowElement.appendChild(this.makeLabelCell(row+1));
+            aggregateElement.appendChild(rowElement);
         }
+        const labelRow = document.createElement("tr");
+        for (let i = 0; i < maxColumns; i++) {
+            labelRow.appendChild(this.makeLabelCell(this.convertNumberToLetters(i)));
+        }
+        aggregateElement.appendChild(labelRow);
 
         return aggregateElement;
+    }
+
+    convertNumberToLetters(i) {
+        const letters = "abcdefghijklmnopqrstuvwxyz";
+        let finalString = "";
+        while (i > 0 || finalString.length == 0) {
+            let mod = i % 26;
+            finalString = letters.substring(mod, mod+1) + finalString;
+            i = Math.floor(i / 26);
+        }
+        return finalString;
+    }
+
+    makeLabelCell(contents) {
+        const rando = document.createElement("td");
+        rando.innerHTML = contents;
+        rando.style.margin = "auto";
+        rando.style.minWidth = "37px";
+        rando.style.minHeight = "37px";
+        rando.style.height = "37px";
+        rando.style.textAlign = "center";
+        return rando;
+    }
+
+    makeSingleCell(matrix, offsetColoring, tricoloring, verticalHex) {
+        const cellIndex = matrix; // Rename for clarity
+        const cell = document.createElement("td");
+        cell.className = `cell${cellIndex < 0 ? " oob" : ""}`;
+        let contents = "&nbsp";
+        const backgroundColor = this.determineBackgroundColor(cellIndex, offsetColoring, tricoloring);
+        const foregroundColor = this.determineForegroundColor(cellIndex, offsetColoring, tricoloring);
+        cell.style.color = foregroundColor;
+        
+        if (this.board.contents[cellIndex] != undefined) {
+            if (this.board.contents[cellIndex].image) {
+                cell.style.background = `url('${this.board.contents[cellIndex].image}'), ${backgroundColor}`;
+                cell.style.backgroundSize = 'contain';
+            } else {
+                contents = this.board.contents[cellIndex].identifier;
+                cell.style.backgroundColor = backgroundColor;
+            }
+        } else {
+            cell.style.backgroundColor = backgroundColor;
+        }
+
+        const size = "37px"; //TODO: Make this dynamic #55
+        cell.style.minWidth = size;
+        cell.style.minHeight = size;
+        if (tricoloring) {
+            if (verticalHex) {
+                cell.style.height = "42px";
+            } else {
+                cell.style.width = "42px";
+            }
+        }
+
+        cell.innerHTML = `${contents}`;
+        cell.onclick = () => { processClick(event, cellIndex); };
+
+        return cell;
     }
 
     determineBackgroundColor(index, offsetColor, tricoloring = false) {
@@ -182,7 +218,7 @@ class Realizer  {
         }
 
         let colorIndex = offsetColor ? (index + 1) : (index);
-        let bgColor = (colorIndex % 2 === 0) ? "#000000" : "#FFFFFF";
+        let bgColor = (colorIndex % 2 === 0) ? "#444444" : "#DDDDDD";
 
         if (tricoloring) {
             if (offsetColor == 0) bgColor = "#666666";

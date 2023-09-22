@@ -1,4 +1,5 @@
 const {Board} = require("./Board.js");
+const {BoardGenerator} = require("./BoardGenerator.js");
 const {HexBoard} = require("./HexBoard.js");
 const {Player} = require("./Player.js");
 const {CPU} = require("./CPU.js");
@@ -34,7 +35,8 @@ class Parser  {
                 board = new Board(boardTemplate.adjacencyMatrix);
             } else {
                 // Auto-generate
-                board = new Board(Board.Generate(boardTemplate.lengths, boardTemplate.oob));
+                board = new Board(BoardGenerator.Generate(boardTemplate.lengths, boardTemplate.oob, boardTemplate.wrapping));
+                board.isEuclidean = true;
             }
         }
 
@@ -61,6 +63,9 @@ class Parser  {
                 if (template.influenceWeight) {
                     newPlayer.SetInfluenceWeight(template.influenceWeight);
                 }
+            }
+            if (template.imgStyle) {
+                newPlayer.imgStyle = template.imgStyle;
             }
             players.set(template.identifier, newPlayer);
         });
@@ -99,6 +104,9 @@ class Parser  {
                 .setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture))
                 .setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture))
                 .setValue(pieceTemplates.get(entry.piece).value);
+            if (pieceTemplates.get(entry.piece).image) {
+                piece.image = pieceTemplates.get(entry.piece).image;
+            }
             piece.setDirection(piece.player.direction);
             if (entry.hasMoved) {
                 piece.setMoves(1);

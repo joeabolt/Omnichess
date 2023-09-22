@@ -8,26 +8,32 @@
 			}
 			
 			.cell {
-				border: 1px solid black;
 				text-align: center;
 				font-weight: bolder;
-				margin: 1px;
+				padding: 0px;
 			}
 
 			.oob {
 				border: 1px solid white;
+				background-color: #AAAAAA;
+			}
+
+			table {
+				border-collapse: collapse;
 			}
 			
 			.hdimension {
 				display: flex;
 				flex-direction: row;
-				justify-content: center;
+				justify-content: flex-start;
+				flex-wrap: nowrap;
 			}
 			
 			.vdimension {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
+				flex-wrap: nowrap;
 			}
 			
 			#mainDisplay, #undo, #redo {
@@ -36,7 +42,9 @@
 		</style>
 	</head>
 	<body>
-		<h1>Omnichess</h1>
+		<span id="gameIdHidden" style="display: none"></span>
+		<span id="playerIdHidden" style="display: none"></span>
+		<h1 onclick="socket.reconnect()">Omnichess</h1>
 		<a href="https://github.com/joeabolt/Omnichess">Check it out on GitHub!</a><br />
 		<a href="https://github.com/joeabolt/Omnichess/issues/new/choose">File an issue</a>
 		<div id="error" style="color:red;"></div>
@@ -62,6 +70,9 @@
 			<input id="passwordInput" type="text" placeholder="Game Password">
 			<label for="passwordInput">Game ID:</label> <br />
 			<button onclick="joinGame();">Join Game</button>
+			<hr />
+			<h4>Make a New Game!</h4>
+			<button onclick="setMode('boardCreator');">Load Creator</button>
 		</div>
 		<div id="lobby">
 			<h4>Waiting for more players to join...</h4>
@@ -76,12 +87,52 @@
 			<br />
 			<button id="save" onclick="save();">Save</button>
 		</div>
+		<div id="boardCreator">
+			<form>
+				Grid Size: <input id="gridwidth" type="number" onchange="updateBoard()" value="50"/><br />
+				Rows: <input id="rows" type="number" onchange="updateBoardSize()" value="8"/><br />
+				Columns: <input id="cols" type="number" onchange="updateBoardSize()" value="8"/><br />
+				Wrap Horizontal: <input id="wrapHorizontal" type="checkbox" /><br />
+				Wrap Vertical: <input id="wrapVertical" type="checkbox" /><br />
+				Player 2 is CPU: <input id="p2IsCpu" type="checkbox" onchange="updateP2()" checked /><br />
+				<input id="setBlue" type="radio" name="player" checked onclick="setPlayer(0);" />
+				<label for="setBlue">Player 1 (You)</label> <br />
+				<input id="setRed" type="radio" name="player" onclick="setPlayer(1);" />
+				<label for="setRed">Player 2</label> <br />
+				<button onclick="addPieceType(); return false;">Add new Piece type</button>
+				<button onclick="addChessPieces(); return false;">Add Chess Pieces</button>
+				<div id="modes">
+					<input id="toggleCells" type="radio" value="0" name="mode" checked onclick="setBCActionMode(0);" />
+					<label for="toggleCells">Activate/Deactivate Cells</label>
+				</div>
+				<div id="modeDetails">
+					<div id="mode0" style="display: none"></div>
+				</div>
+			</form>
+			<canvas width=400 height=400 id="canvas" style="border: 1px solid #000000"></canvas>
+			<br />
+			<button onclick="launchCustomGame();">Start Custom Game!</button>
+		</div>
 		
-        <script src='/socket.io/socket.io.js'></script>
-		<script src="src/MatrixUtilities.js"></script>
-		<script src="src/Move.js"></script>
-		<script src="src/Serializer.js"></script>
-		<script src="src/Realizer.js"></script>
-		<script src="src/main.js"></script>
+		<script id="loadScripts">
+			function loadScript(path) {
+				const script = document.createElement("script");
+				let pathName = window.location.pathname + "/";
+				if (pathName === "//") pathName = "";
+				script.src = pathName + path;
+				document.body.appendChild(script);
+			}
+
+			loadScript("socket.io/socket.io.js");
+			loadScript("src/boardCreator.js");
+			loadScript("src/MatrixUtilities.js");
+			loadScript("src/Move.js");
+			loadScript("src/Serializer.js");
+			loadScript("src/Realizer.js");
+			loadScript("src/RealizerAlgebraic.js");
+			loadScript("src/main.js");
+			loadScriptNode = document.getElementById("loadScripts");
+			loadScriptNode.parentNode.removeChild(loadScriptNode);
+		</script>
 	</body>
 </html>

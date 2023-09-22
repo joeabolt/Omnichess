@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TestRender</title>
+</head>
+<body>
+    <canvas id="canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let rotation = 0;
+        let elevation = 90;
+        let eDelta = -0.1;
+        const gridScaleMax = 0.5;
+
+        function getGridSpace(row, column) {
+            // const gridScaling = 1 + gridScaleMax - gridScaleMax*Math.abs(45 - (rotation % 90))/45;
+            const gridScaling = getGridScaling(rotation);
+            const width = 50 * gridScaling;
+            const height = 50 * Math.sin(elevation * Math.PI / 180) * gridScaling;
+            const xOffsetVector = getOffsetVector(rotation);
+            const yOffsetVector = getOffsetVector(rotation + 90);
+            const baseX = 120 - (width / 2);
+            const baseY = 120 - (height / 2);
+            const x = baseX + xOffsetVector.x * width * column + yOffsetVector.x * width * row;
+            const y = baseY + xOffsetVector.y * height * column + yOffsetVector.y * height * row;
+            return {x, y, w:width, h:height};
+        }
+
+        function getGridScaling(r) {
+            let rotationPercent = 1 - Math.abs(-1 + (r % 90) / 45);
+            const maxArea = 2;
+            const triangleArea = rotationPercent * (2-rotationPercent);
+            const scaling = (1-rotationPercent) / (2-rotationPercent);
+            const extraTriangleArea = 0.5 * (1-rotationPercent) * scaling*2*rotationPercent;
+            const actualArea = maxArea - triangleArea + extraTriangleArea;
+            return Math.sqrt(1 / actualArea);
+        }
+
+        function getOffsetVector(rotation) {
+            const rotationPercent = (rotation % 90) / 90;
+            let rotationCalc = (rotation % 360);
+            if (rotationCalc < 90) {
+                return {x: 1-rotationPercent, y: rotationPercent};
+            } else if (rotationCalc < 180) {
+                return {x: -rotationPercent, y:1-rotationPercent};
+            } else if (rotationCalc < 270) {
+                return {x:-1+rotationPercent, y:-rotationPercent};
+            } else {
+                return {x:rotationPercent, y: -1+rotationPercent};
+            }
+        }
+
+        function drawSquare(fill, x, y, w, h) {
+            ctx.fillStyle = fill;
+            ctx.beginPath();
+            ctx.moveTo(getCorner(x, y, w, h, true, true).x, getCorner(x, y, w, h, true, true).y);
+            ctx.lineTo(getCorner(x, y, w, h, true, false).x, getCorner(x, y, w, h, true, false).y);
+            ctx.lineTo(getCorner(x, y, w, h, false, false).x, getCorner(x, y, w, h, false, false).y);
+            ctx.lineTo(getCorner(x, y, w, h, false, true).x, getCorner(x, y, w, h, false, true).y);
+            ctx.fill();
+        }
+
+        function getCorner(x, y, w, h, top, left) {
+            let rotationCalc = rotation + (top ? 0 : 180);
+            rotationCalc = rotationCalc + ((top ^ left) ? 90 : 0);
+            rotationCalc = rotationCalc % 360;
+            if (rotationCalc <= 90) {
+                return {x: x + w * (rotationCalc / 90), y: y};
+            } else if (rotationCalc <= 180) {
+                return {x: x+w, y: y+h*((rotationCalc-90)/90)};
+            } else if (rotationCalc<=270) {
+                return {x: x+w-w*((rotationCalc-180)/90), y: y+h};
+            } else {
+                return {x: x, y: y+h-h*((rotationCalc-270)/90)};
+            }
+        }
+
+        function drawPiece(fill, stroke, x, y, w, h) {
+            ctx.fillStyle = stroke;
+            let pieceWidth = 30;
+            let pieceHeight = 50;
+            ctx.fillRect(x+(w-pieceWidth)/2, y+(h/2)-pieceHeight, pieceWidth, pieceHeight);
+            ctx.fillStyle = fill;
+            pieceWidth = pieceWidth - 2;
+            pieceHeight = pieceHeight - 2;
+            ctx.fillRect(x+(w-pieceWidth)/2, y+(h/2)-pieceHeight-1, pieceWidth, pieceHeight);
+        }
+
+        function getDrawTask(spot, fill, pieceFill, pieceStroke) {
+            return {
+                y: spot.y,
+                drawSquare: () => { drawSquare(fill, spot.x, spot.y, spot.w, spot.h);},
+                drawPiece: () => {
+                    if (pieceFill && pieceStroke) {
+                        drawPiece(pieceFill, pieceStroke, spot.x, spot.y, spot.w, spot.h);
+                    }
+                }
+            }
+        }
+
+        setInterval(() => {
+            ctx.clearRect(0, 0, 500, 500);
+            let drawTasks = [];
+            let spot = getGridSpace(0, 0);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+            spot = getGridSpace(0, 2);
+            drawTasks.push(getDrawTask(spot, "#000000", "#FFFFFF", "#000000"));
+            spot = getGridSpace(0, -2);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+            spot = getGridSpace(2, 0);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+            spot = getGridSpace(-2, 0);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+            spot = getGridSpace(1, 1);
+            drawTasks.push(getDrawTask(spot, "#000000", "#000000", "#FFFFFF"));
+            spot = getGridSpace(1, -1);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+            spot = getGridSpace(-1, 1);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+            spot = getGridSpace(-1, -1);
+            drawTasks.push(getDrawTask(spot, "#000000"));
+
+            drawTasks.sort((a, b) => a.y - b.y).forEach(x => {x.drawSquare(); x.drawPiece();});
+            rotation = rotation + 1
+            elevation = (elevation + eDelta);
+            if ((elevation < 1 && eDelta < 0) || (elevation > 89 && eDelta > 0)) eDelta = eDelta * -1;
+        }, 50);
+    </script>
+</body>
+</html>
