@@ -1,5 +1,5 @@
-const {ArrayUtilities} = require("./ArrayUtilities.js");
 const {MatrixUtilities} = require("./MatrixUtilities.js");
+const {Metrics} = require("./Metrics.js");
 /* Represents the board state at a point in time for a hexagonal board */
 
 /*
@@ -47,9 +47,23 @@ class HexBoard  {
     }
 
     asJson() {
+        const contents = this.contents.map((x,i) => {
+            if (x === undefined) {
+                return undefined;
+            } else {
+                return {
+                    identifier: x.identifier,
+                    color: x.player ? x.player.color : undefined,
+                    image: x.imagePath,
+                    moveLocations: Metrics.getMovesForPiece(this, x.player, i).map(move => move.targetLocation),
+                    captureLocations: Metrics.getCapturesForPiece(this, x.player, i).map(move => move.targetLocation),
+                    moveCaptureLocations: Metrics.getMoveCapturesForPiece(this, x.player, i).map(move => move.targetLocation)
+                }
+            }
+        });
         return {
             array: this.array,
-            contents: this.contents.map(x => x ? x.asJson() : x),
+            contents: contents,
             orientation: this.orientation,
             cells: this.cells,
             isEuclidean: true,

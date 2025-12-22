@@ -75,7 +75,6 @@ socket.on('assign player', (event) => {
     document.getElementById("playerIdHidden").innerHTML = event.player;
 })
 socket.on('update', (data) => {
-    console.log(data);
     realizer.board = data.board;
     realizer.realize();
     const isMyTurn = data.player === playerId;

@@ -54,6 +54,7 @@ class MockPiece {
         this.identifier = "";
         this.displayName = "";
         this.royal = false;
+		this.image = "";
     }
 }
 
@@ -125,7 +126,7 @@ function updateBoard() {
 			ctx.fillText(board.getCellIndex(r,c), c*cellSize+5, r*cellSize+13)
 			if (board.contents[r][c] != null) {
 				// TODO get color
-				const color = board.contents[r][c].player == "Blue" ? "#0088FF" : "#FF0000";
+				const color = board.contents[r][c].player == "White" ? "#0088FF" : "#AA0000";
 				ctx.save();
 				ctx.font= `${cellSize-13}px Arial`;
 				ctx.fillStyle = color;
@@ -198,7 +199,7 @@ document.getElementById("canvas").addEventListener("click", function(event) {
 			board.contents[r][c] = {
 				piece: pieceTypes[mode - 1].identifier,
 				displayName: pieceTypes[mode - 1].displayName,
-				player: player === 0 ? "Blue" : "Red",
+				player: player === 0 ? "White" : "Black",
 				location: board.getCellIndex(r, c)
 			}
 		}
@@ -211,7 +212,7 @@ function getById(id) {
 	return element;
 }
 
-function addChessPieceSubroutine(i, symbol, display, move, capture, movecapture, royal) {
+function addChessPieceSubroutine(i, symbol, display, move, capture, movecapture, royal, image = "") {
 	getById(`symbol${i}`).value = symbol;
 	getById(`display${i}`).value = display;
 	getById(`move${i}`).value = move;
@@ -231,46 +232,57 @@ function addChessPieces() {
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"K", "K", "(0, 1);(1, 0);(1, 1)", "", "(0, 1);(1, 0);(1, 1)", true);
+		pieceTypes[currentIndex-1].image = "King";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"Q", "Q", "(0, 1)+;(1, 0)+;(1, 1)+", "", "(0, 1)+;(1, 0)+;(1, 1)+", false);
+		pieceTypes[currentIndex-1].image = "Queen";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"B", "B", "(1, 1)+", "", "(1, 1)+", false);
+		pieceTypes[currentIndex-1].image = "Bishop";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"R", "R", "(1, 0)+;(0, 1)+", "", "(1, 0)+;(0, 1)+", false);
+		pieceTypes[currentIndex-1].image = "Rook";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"N", "N", "(1, 2)j;(2, 1)j", "", "(1, 2)j;(2, 1)j", false);
+		pieceTypes[currentIndex-1].image = "Knight";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"C", "C", "(2, 2)j; (2, 0)j; (0, 2)j; (0, 1); (1, 0)", "", "(2, 2)j; (2, 0)j; (0, 2)j; (0, 1); (1, 0)", false);
+		pieceTypes[currentIndex-1].image = "Champion";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"W", "W", "(3, 1)j; (1, 3)j; (1, 1)", "", "(3, 1)j; (1, 3)j; (1, 1)", false);
+		pieceTypes[currentIndex-1].image = "Wizard";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"pU", "p", "(0, -1d); (0, -1{3}di)", "", "(1, -1d)", false);
+		pieceTypes[currentIndex-1].image = "Pawn";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"pD", "p", "(0, 1d); (0, 1{3}di)", "", "(1, 1d)", false);
+		pieceTypes[currentIndex-1].image = "Pawn";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"pL", "p", "(-1d, 0); (-1{3}di, 0)", "", "(-1d, 1)", false);
+		pieceTypes[currentIndex-1].image = "Pawn";
 	
 		currentIndex++;
 		addChessPieceSubroutine(currentIndex, 
 			"pR", "p", "(1d, 0); (1{3}di, 0)", "", "(1d, 1)", false);
+		pieceTypes[currentIndex-1].image = "Pawn";
 	}, 50);
 }
 
@@ -288,32 +300,35 @@ function synthesizeConfig(mockBoard, mockPieces, p2IsCpu) {
                     ` "capture": "${piece.captureVectors}",` + 
                     ` "moveCapture": "${piece.moveCaptureVectors}",` + 
                     ` "identifier": "${piece.identifier}",` +
-                    ` "displayAs": "${piece.displayName}"}`;
+                    ` "displayAs": "${piece.displayName}",` + 
+				    ` "image": "${piece.image}"}`;
             }).join(",") }
         ],
         "players": [{
-            "identifier": "Blue",
+            "identifier": "White",
             "color": "#0088FF",
             "direction": [1, 1],
             "dropablePieces": "",
-            "capturedPieces": ""
+            "capturedPieces": "",
+			"imgStyle": "light"
         },
         {
-            "identifier": "Red",
-            "color": "#FF0000",
+            "identifier": "Black",
+            "color": "#AA0000",
             "direction": [1, 1],
             "dropablePieces": "",
             "capturedPieces": "",
-            "isCPU": ${p2IsCpu}
+            "isCPU": ${p2IsCpu},
+			"imgStyle": "dark"
         }],
         "endConditions": [
             ${ mockPieces.map(piece => {
                 if (!piece.royal) {
                     return "";
                 }
-                return `{ "player": "Red", "win": false, ` + 
-                    `"config": "check ${piece.identifier} end Blue"},` + 
-                    `{"player": "Blue", "win": false, "config": "check ${piece.identifier} @ end Red"}`
+                return `{ "player": "Black", "win": false, ` + 
+                    `"config": "check ${piece.identifier} end White"},` + 
+                    `{"player": "White", "win": false, "config": "check ${piece.identifier} @ end Black"}`
             }).filter(x => x.length > 0).join(", ") }
         ],
         "boardState": [
@@ -328,5 +343,6 @@ function synthesizeConfig(mockBoard, mockPieces, p2IsCpu) {
 
 function launchCustomGame() {
 	const configJson = JSON.parse(synthesizeConfig(board, pieceTypes, p2IsCpu));
+	console.log(JSON.stringify(configJson));
 	loadCustomConfig(configJson);
 }

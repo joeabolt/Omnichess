@@ -3,17 +3,11 @@ const {Move} = require("./Move.js");
 /* Calculates metrics based on board state */
 class Metrics {
     static countPossibleActions(board, player) {
-        return Metrics.getAllCaptures(board, player).length + Metrics.getAllMoves(board, player).length;
+        return Metrics.getAllCaptures(board, player).length + Metrics.getAllMoves(board, player).length + Metrics.getAllMoveCaptures(board, player).length;
     }
 
     static getAllAlliedPieces(board, player) {
-        const alliedPieces = [];
-        board.contents.forEach((piece) => {
-            if (piece && piece.player === player) {
-                alliedPieces.push(piece);
-            }
-        });
-        return alliedPieces;
+        return board.contents.filter(piece => piece && piece.player === player);
     }
 
     static getAllAlliedPieceLocationsByType(board, player, pieceType) {
@@ -27,42 +21,113 @@ class Metrics {
     }
 
     static getAllCaptures(board, player) {
-        const alliedPieces = Metrics.getAllAlliedPieces(board, player);
-        const captures = [];
-        alliedPieces.forEach((piece) => {
-            const pieceLocation = board.contents.indexOf(piece);
-            [...new Set(piece.moveCaptureVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
-            }, []))].forEach((captureDest) => {
-                if (board.contents[captureDest] && board.contents[captureDest].player !== player) {
-                    captures.push(new Move(true, true, pieceLocation, captureDest, board.contents[captureDest]));
-                }
-            });
-            [...new Set(piece.captureVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
-            }, []))].forEach((captureDest) => {
-                if (board.contents[captureDest] && board.contents[captureDest].player !== player) {
-                    captures.push(new Move(false, true, pieceLocation, captureDest, board.contents[captureDest]));
-                }
-            });
+        return Metrics.getAllAlliedPieces(board, player)
+            .flatMap(piece => this.getCapturesForPiece(board, player, board.contents.indexOf(piece)));
+    }
+
+    static getCapturesForPiece(board, player, pieceLocation) {
+        let captures = [];
+        const piece = board.contents[pieceLocation];
+        [...new Set(piece.captureVectors.reduce((returnSet, vector) => {
+            return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
+        }, []))].forEach((captureDest) => {
+            if (board.contents[captureDest] && board.contents[captureDest].player !== player) {
+                captures.push(new Move(false, true, pieceLocation, captureDest, board.contents[captureDest]));
+            }
         });
+
+        captures = captures.filter(move => {
+            const captured = board.contents[move.targetLocation];
+            if (move.move) {
+                board.contents[move.targetLocation] = board.contents[move.srcLocation];
+                board.contents[move.srcLocation] = undefined;
+            } else {
+                board.contents[move.targetLocation] = undefined;
+            }
+
+            // Test
+            const eligible = !Metrics.anyRoyalChecked(board, player);
+
+            if (move.move) {
+                board.contents[move.srcLocation] = board.contents[move.targetLocation];
+            }
+            board.contents[move.targetLocation] = captured;
+            return eligible;
+        });
+        
         return captures;
     }
 
     static getAllMoves(board, player) {
-        const alliedPieces = Metrics.getAllAlliedPieces(board, player);
-        const moves = [];
-        alliedPieces.forEach((piece) => {
-            const pieceLocation = board.contents.indexOf(piece);
-            [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
-                return returnSet.concat(board.GetCellIndices(vector, pieceLocation));
-            }, []))].forEach((destination) => {
-                if (board.contents[destination] === undefined) {
-                    moves.push(new Move(true, false, pieceLocation, destination));
-                }
-            });
+        return Metrics.getAllAlliedPieces(board, player)
+            .flatMap(piece => this.getMovesForPiece(board, player, board.contents.indexOf(piece)));
+    }
+
+    static getMovesForPiece(board, player, pieceLocation) {
+        const piece = board.contents[pieceLocation];
+        let moves = [];
+        [...new Set(piece.moveVectors.reduce((returnSet, vector) => {
+            return returnSet.concat(board.GetCellIndices(vector, pieceLocation));
+        }, []))].forEach((destination) => {
+            if (board.contents[destination] === undefined) {
+                moves.push(new Move(true, false, pieceLocation, destination));
+            }
+        });
+        // Royal pieces cannot move into check
+        if (piece.royal) {
+            moves = moves.filter(move => !Metrics.isCheckedFor(board, move.targetLocation, player));
+        }
+        // Cannot move to a location that would allow check on any royal piece by any enemy piece
+        moves = moves.filter(move => {
+            board.contents[move.targetLocation] = board.contents[move.srcLocation];
+            board.contents[move.srcLocation] = undefined;
+
+            // If any allied royal piece is now in check, I cannot make this move
+            const eligible = !Metrics.anyRoyalChecked(board, player);
+
+            board.contents[move.srcLocation] = board.contents[move.targetLocation];
+            board.contents[move.targetLocation] = undefined;
+            return eligible;
         });
         return moves;
+    }
+
+    static getAllMoveCaptures(board, player) {
+        return Metrics.getAllAlliedPieces(board, player)
+            .flatMap(piece => this.getMoveCapturesForPiece(board, player, board.contents.indexOf(piece)));
+    }
+
+    static getMoveCapturesForPiece(board, player, pieceLocation) {
+        const piece = board.contents[pieceLocation];
+        let captures = [];
+        [...new Set(piece.moveCaptureVectors.reduce((returnSet, vector) => {
+            return returnSet.concat(board.GetCellIndices(vector, pieceLocation, true, true));
+        }, []))].forEach((captureDest) => {
+            if (board.contents[captureDest] && board.contents[captureDest].player !== player) {
+                captures.push(new Move(true, true, pieceLocation, captureDest, board.contents[captureDest]));
+            }
+        });
+
+        captures = captures.filter(move => {
+            const captured = board.contents[move.targetLocation];
+            if (move.move) {
+                board.contents[move.targetLocation] = board.contents[move.srcLocation];
+                board.contents[move.srcLocation] = undefined;
+            } else {
+                board.contents[move.targetLocation] = undefined;
+            }
+
+            // Test
+            const eligible = !Metrics.anyRoyalChecked(board, player);
+
+            if (move.move) {
+                board.contents[move.srcLocation] = board.contents[move.targetLocation];
+            }
+            board.contents[move.targetLocation] = captured;
+            return eligible;
+        });
+        
+        return captures;
     }
 
     static getPercentBoardControlled(board, player) {
@@ -116,7 +181,9 @@ class Metrics {
                 const destinations = board.GetCellIndices(vector, enemyLocation, true, enforceCaptureEligible);
                 if (destinations.indexOf(pieceLocation) != -1) {
                     if (checkedBy.has(enemyLocation)) {
-                        checkedBy.set(enemyLocation, checkedBy.get(enemyLocation).push(vector));
+                        let checkedByLocation = checkedBy.get(enemyLocation);
+                        checkedByLocation.push(vector);
+                        checkedBy.set(enemyLocation, checkedByLocation);
                     } else {
                         checkedBy.set(enemyLocation, [vector]);
                     }
@@ -124,6 +191,18 @@ class Metrics {
             });
         });
         return checkedBy;
+    }
+
+    static anyRoyalChecked(board, player) {
+       const checkedRoyals = Metrics.getAllAlliedPieces(board, player).filter(piece => {
+            if (!piece.royal) {
+                // This is not a checked royal
+                return false;
+            }
+            const pieceLocation = board.contents.indexOf(piece);
+            return Metrics.checkedBy(board, pieceLocation).size > 0;
+        });
+        return checkedRoyals.length > 0;
     }
 
     static isProtected(board, pieceLocation, enforceCaptureEligible = false) {

@@ -92,6 +92,9 @@ class Parser  {
                 }
                 template.value = value;
             }
+            if (royals.indexOf(template.identifier) != -1) {
+                template.royal = true;
+            }
             pieceTemplates.set(template.identifier, template);
         });
 
@@ -103,7 +106,8 @@ class Parser  {
                 .setMoveVectors(Vector.Create(pieceTemplates.get(entry.piece).move))
                 .setCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).capture))
                 .setMoveCaptureVectors(Vector.Create(pieceTemplates.get(entry.piece).moveCapture))
-                .setValue(pieceTemplates.get(entry.piece).value);
+                .setValue(pieceTemplates.get(entry.piece).value)
+                .setRoyal(pieceTemplates.get(entry.piece).royal);
             if (pieceTemplates.get(entry.piece).image) {
                 piece.image = pieceTemplates.get(entry.piece).image;
             }
