@@ -21,7 +21,7 @@ class CPU extends Player {
     }
 
     GetNextMove(board, game) {
-        const possibleActions = Metrics.getAllCaptures(board, this).concat(Metrics.getAllMoves(board, this));
+        const possibleActions = Metrics.getAllCaptures(board, this).concat(Metrics.getAllMoves(board, this)).concat(Metrics.getAllMoveCaptures(board, this));
         const bestAction = this.GetBestOption(possibleActions, game);
         return bestAction;
     }

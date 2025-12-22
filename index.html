@@ -13,6 +13,11 @@
 				padding: 0px;
 			}
 
+			.hexpad {
+				padding: 0px;
+				width: 19px;
+			}
+
 			.oob {
 				border: 1px solid white;
 				background-color: #AAAAAA;
@@ -38,6 +43,14 @@
 			
 			#mainDisplay, #undo, #redo {
 				display: none;
+			}
+
+			.vhex {
+				clip-path: polygon(0% 50%, 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%);
+			}
+
+			.hhex {
+				clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 			}
 		</style>
 	</head>

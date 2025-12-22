@@ -12,245 +12,253 @@ const config = {
             "move": "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+)",
             "capture": "",
             "moveCapture": "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+)",
-            "identifier": "R"
+            "identifier": "R",
+            "image": "Rook"
         },
         {
             "move": "(2, 1, 0)sj; (2, 0, 1)sj; (1, 2, 0)sj; (1, 0, 2)sj; (0, -1, 2)sj; (0, 2, -1)sj;",
             "capture": "",
             "moveCapture": "(2, 1, 0)sj; (2, 0, 1)sj; (1, 2, 0)sj; (1, 0, 2)sj; (0, -1, 2)sj; (0, 2, -1)sj;",
-            "identifier": "N"
+            "identifier": "N",
+            "image": "Knight"
         },
         {
             "move": "(1, 1, 0)s+; (1, 0, 1)s+; (0, 1, -1)s+",
             "capture": "",
             "moveCapture": "(1, 1, 0)s+; (1, 0, 1)s+; (0, 1, -1)s+",
-            "identifier": "B"
+            "identifier": "B",
+            "image": "Bishop"
         },
         {
             "move": "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+); (1, 1, 0)s+; (1, 0, 1)s+; (0, 1, -1)s+",
             "capture": "",
             "moveCapture": "(1+, 0, 0); (0, 1+, 0); (0, 0, 1+); (1, 1, 0)s+; (1, 0, 1)s+; (0, 1, -1)s+",
-            "identifier": "Q"
+            "identifier": "Q",
+            "image": "Queen"
         },
         {
             "move": "(1, 0, 0); (0, 1, 0); (0, 0, 1); (1, 1, 0)s; (1, 0, 1)s; (0, 1, -1)s",
             "capture": "",
             "moveCapture": "(1, 0, 0); (0, 1, 0); (0, 0, 1); (1, 1, 0)s; (1, 0, 1)s; (0, 1, -1)s",
-            "identifier": "K"
+            "identifier": "K",
+            "image": "King"
         },
         {
             "move": "(1d, 0, 0); (2di, 0, 0);",
             "capture": "",
             "moveCapture": "(0, 0, 1d); (0, 1d, 0)",
-            "identifier": "p"
+            "identifier": "p",
+            "image": "Pawn"
         }
     ],
     "players": [{
-            "identifier": "Green",
-            "color": "#00FF00",
+            "identifier": "White",
+            "color": "#0000FF",
             "direction": [1, 1, 1],
             "dropablePieces": "",
             "capturedPieces": "",
-            "isCPU": false
+            "isCPU": false,
+            imgStyle: "light",
         },
         {
-            "identifier": "Orange",
-            "color": "#FFAA00",
+            "identifier": "Black",
+            "color": "#FF0000",
             "direction": [-1, -1, -1],
             "dropablePieces": "",
             "capturedPieces": "",
-            "isCPU": false
+            "isCPU": false,
+            imgStyle: "dark",
         }
     ],
     "endConditions": [{
-            "player": "Green",
+            "player": "White",
             "win": false,
-            "config": "check K @ end Orange"
+            "config": "check K @ end Black"
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "win": false,
-            "config": "check K @ end Green"
+            "config": "check K @ end White"
         }
     ],
     "boardState": [
         {
-            "player": "Green",
+            "player": "White",
             "piece": "B",
             "location": 59
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "B",
             "location": 60
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "B",
             "location": 61
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "Q",
             "location": 48
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "K",
             "location": 71
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "N",
             "location": 37
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "N",
             "location": 83
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "R",
             "location": 26
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "R",
             "location": 95
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 15
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 27
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 39
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 51
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 63
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 74
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 85
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 96
         },
         {
-            "player": "Green",
+            "player": "White",
             "piece": "p",
             "location": 107
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "B",
             "location": 69
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "B",
             "location": 68
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "B",
             "location": 67
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "Q",
             "location": 57
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "K",
             "location": 80
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "N",
             "location": 45
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "N",
             "location": 91
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "R",
             "location": 33
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "R",
             "location": 102
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 21
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 32
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 43
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 54
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 65
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 77
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 89
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 101
         },
         {
-            "player": "Orange",
+            "player": "Black",
             "piece": "p",
             "location": 113
         }

@@ -1,3 +1,4 @@
+const {Metrics} = require("./Metrics.js");
 const {Turn} = require("./Turn.js");
 
 /* Manages the state of the game */
@@ -109,6 +110,12 @@ class Game  {
                 this.gameState = evaluation * (this.players.indexOf(endCondition.player) + 1);
             }
         });
+        // If the next player has no legal moves, they lose
+        const nextPlayer = this.nextTurn.player;
+        const legalMoves = Metrics.getAllCaptures(this.board, nextPlayer).length + Metrics.getAllMoves(this.board, nextPlayer).length + Metrics.getAllMoveCaptures(this.board, nextPlayer).length;
+        if (legalMoves === 0) {
+            this.gameState = -1 * (this.players.indexOf(nextPlayer)+1);
+        }
         if (this.gameState !== 0) {
             const name = this.players[Math.abs(this.gameState)-1].identifier;
             this.log.push(`${name} ${this.gameState > 0 ? "won!" : "lost..."}`);

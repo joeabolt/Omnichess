@@ -15,6 +15,8 @@ class Piece  {
         this.initialMoveVectors = [];
         this.initialCaptureVectors = [];
         this.initialMoveCaptureVectors = [];
+
+        this.royal = false;
     }
 
     get imagePath() {
@@ -144,6 +146,11 @@ class Piece  {
             this.captureVectors = this.captureVectors.concat(this.initialCaptureVectors);
             this.moveCaptureVectors = this.moveCaptureVectors.concat(this.initialMoveCaptureVectors);
         }
+    }
+
+    setRoyal(royal) {
+        this.royal = !!royal;
+        return this;
     }
 
     undoDirection() {
